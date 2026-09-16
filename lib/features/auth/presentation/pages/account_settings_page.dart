@@ -55,6 +55,19 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     }
   }
 
+  ImageProvider _buildImage(String? path) {
+    if (path == null || path.isEmpty) {
+      return const AssetImage('assets/iconspng/avatar.png');
+    }
+    if (path.startsWith('http')) {
+      return NetworkImage(path);
+    }
+    if (path.startsWith('assets')) {
+      return AssetImage(path);
+    }
+    return FileImage(File(path));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,6 +75,9 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       appBar: AppBar(
         title: const Text("Hisob sozlamalari"),
         centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: Colors.black,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -77,11 +93,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                       CircleAvatar(
                         radius: 50,
                         backgroundColor: const Color(0xFFE2E8F0),
-                        backgroundImage: _imagePath != null && _imagePath!.isNotEmpty
-                            ? (_imagePath!.startsWith('assets') 
-                                ? AssetImage(_imagePath!) as ImageProvider
-                                : FileImage(File(_imagePath!)))
-                            : const AssetImage('assets/iconspng/avatar.png'),
+                        backgroundImage: _buildImage(_imagePath),
                       ),
                       Positioned(
                         bottom: 0,
@@ -132,27 +144,20 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
-          child: BlocConsumer<AuthCubit, AuthState>(
-            listener: (context, state) {
-              state.maybeWhen(
-                authenticated: (_) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Profil yangilandi!"), backgroundColor: Colors.green));
-                  Navigator.pop(context);
-                },
-                orElse: () {},
-              );
-            },
+          child: BlocBuilder<AuthCubit, AuthState>(
             builder: (context, state) {
-              final isLoading = state.maybeWhen(loading: () => true, orElse: () => false);
+              final bool isUpdating = state.maybeWhen(loading: () => true, orElse: () => false);
+
               return ElevatedButton(
-                onPressed: isLoading ? null : () {
+                onPressed: isUpdating ? null : () {
                   context.read<AuthCubit>().updateProfile(
-                    _nameController.text,
-                    _emailController.text,
-                    phone: _phoneController.text,
-                    currency: _currencyController.text,
+                    _nameController.text.trim(),
+                    _emailController.text.trim(),
+                    phone: _phoneController.text.trim(),
+                    currency: _currencyController.text.trim(),
                     imagePath: _imagePath,
                   );
+                  // Saqlashdan so'ng xabar chiqarish va orqaga qaytish mantiqi listenerda
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0D9488),
@@ -161,7 +166,9 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 0,
                 ),
-                child: isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text("Saqlash", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: isUpdating 
+                  ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : const Text("Saqlash", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               );
             },
           ),
