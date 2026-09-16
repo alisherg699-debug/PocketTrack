@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -5,6 +6,7 @@ import '../../../expense/application/expense/expense_bloc.dart';
 import '../../../expense/application/expense/expense_event.dart';
 import '../../../expense/application/expense/expense_state.dart';
 import '../../../expense/application/auth_cubit.dart';
+import '../../../expense/application/auth_state.dart';
 import '../../../expense/domain/entities/expense.dart';
 import 'add_expense_page.dart';
 import 'profile_page.dart';
@@ -91,7 +93,6 @@ class _HomeContent extends StatelessWidget {
   final VoidCallback onSeeAllPressed;
   const _HomeContent({required this.onSeeAllPressed});
 
-  // Raqamlarni minglik ajratkich bilan formatlash funksiyasi
   String _formatCurrency(double amount) {
     return amount.toStringAsFixed(0).replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), 
@@ -99,104 +100,147 @@ class _HomeContent extends StatelessWidget {
     );
   }
 
+  ImageProvider _buildImage(String? path) {
+    if (path == null || path.isEmpty) {
+      return const AssetImage('assets/iconspng/avatar.png');
+    }
+    if (path.startsWith('http')) {
+      return NetworkImage(path);
+    }
+    if (path.startsWith('assets')) {
+      return AssetImage(path);
+    }
+    return FileImage(File(path));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ExpenseBloc, ExpenseState>(
-      builder: (context, state) {
-        final authState = context.read<AuthCubit>().state;
-        final userName = authState.maybeWhen(
-          authenticated: (user) => user.firstName,
-          orElse: () => "Alisher",
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, authState) {
+        final user = authState.maybeWhen(
+          authenticated: (user) => user,
+          orElse: () => null,
         );
+        final userName = user?.firstName ?? "";
 
-        final bool isError = state is ExpenseError;
-        List<Expense> allExpenses = [];
-        List<Expense> todayExpenses = [];
-        double todayTotal = 0.0;
+        return BlocBuilder<ExpenseBloc, ExpenseState>(
+          builder: (context, state) {
+            final bool isError = state is ExpenseError;
+            List<Expense> allExpenses = [];
+            List<Expense> todayExpenses = [];
+            double todayTotal = 0.0;
 
-        if (state is ExpenseLoaded) {
-          allExpenses = state.expenses;
-          final now = DateTime.now();
-          todayExpenses = allExpenses.where((e) =>
-              e.date.year == now.year && e.date.month == now.month && e.date.day == now.day).toList();
-          todayTotal = todayExpenses.fold(0.0, (sum, item) => sum + item.amount);
-        }
+            if (state is ExpenseLoaded) {
+              allExpenses = state.expenses;
+              final now = DateTime.now();
+              todayExpenses = allExpenses.where((e) =>
+                  e.date.year == now.year && e.date.month == now.month && e.date.day == now.day).toList();
+              todayTotal = todayExpenses.fold(0.0, (sum, item) => sum + item.amount);
+            }
 
-        return SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            return SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text("Xayrli tong,", style: TextStyle(color: Color(0xFF64748B), fontSize: 14)),
-                        Text(userName, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 20, fontWeight: FontWeight.bold)),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("Xayrli tong,", style: TextStyle(color: Color(0xFF64748B), fontSize: 14)),
+                            Text(userName, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 20, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        // DINAMIK PROFIL RASMI
+                        CircleAvatar(
+                          radius: 22, 
+                          backgroundColor: const Color(0xFFE2E8F0),
+                          backgroundImage: _buildImage(user?.image),
+                        ),
                       ],
                     ),
-                    const CircleAvatar(radius: 22, backgroundImage: AssetImage('assets/iconspng/avatar.png')),
-                  ],
-                ),
-                const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                // TOP CARD - FORMATLANGAN SUMMA BILAN
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: isError ? const Color(0xFF94A3B8) : const Color(0xFF0D9488),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("BUGUNGI XARAJATLAR", style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-                      const SizedBox(height: 8),
-                      Text(
-                        isError ? "--.-- so'm" : "${_formatCurrency(todayTotal)} so'm",
-                        style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: isError ? const Color(0xFF94A3B8) : const Color(0xFF0D9488),
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                      const SizedBox(height: 16),
-                      Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.trending_up, color: Colors.white70, size: 16),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              todayExpenses.isNotEmpty ? "Bugun uchun ${todayExpenses.length} ta operatsiya" : "Bugun uchun ma'lumot yo'q",
-                              style: const TextStyle(color: Colors.white70, fontSize: 13),
-                            ),
+                          const Text("BUGUNGI XARAJATLAR", style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+                          const SizedBox(height: 8),
+                          Text(
+                            isError ? "--.-- so'm" : "${_formatCurrency(todayTotal)} so'm",
+                            style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              const Icon(Icons.trending_up, color: Colors.white70, size: 16),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  todayExpenses.isNotEmpty ? "Bugun uchun ${todayExpenses.length} ta operatsiya" : "Bugun uchun ma'lumot yo'q",
+                                  style: const TextStyle(color: Colors.white70, fontSize: 13),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    if (state is ExpenseLoading)
+                      const Padding(padding: EdgeInsets.only(top: 100), child: Center(child: CircularProgressIndicator()))
+                    else if (isError)
+                      _buildErrorState(context)
+                    else if (allExpenses.isEmpty)
+                      _buildEmptyState(context, isNewUser: true)
+                    else if (todayExpenses.isEmpty)
+                      _buildEmptyState(context, isNewUser: false)
+                    else
+                      _buildExpensesList(todayExpenses),
+
+                    const SizedBox(height: 100),
+                  ],
                 ),
-
-                const SizedBox(height: 32),
-
-                if (state is ExpenseLoading)
-                  const Padding(padding: EdgeInsets.only(top: 100), child: Center(child: CircularProgressIndicator()))
-                else if (isError)
-                  _buildErrorState(context)
-                else if (allExpenses.isEmpty)
-                  _buildEmptyState(context, isNewUser: true)
-                else if (todayExpenses.isEmpty)
-                  _buildEmptyState(context, isNewUser: false)
-                else
-                  _buildExpensesList(todayExpenses),
-
-                const SizedBox(height: 100),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          const SizedBox(height: 40),
+          Container(
+            padding: const EdgeInsets.all(30),
+            decoration: const BoxDecoration(color: Color(0xFFFEF2F2), shape: BoxShape.circle),
+            child: const Icon(Icons.error_outline, color: Colors.red, size: 40),
+          ),
+          const SizedBox(height: 24),
+          const Text("Xatolik yuz berdi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () => context.read<ExpenseBloc>().add(GetExpenses()),
+            child: const Text("Qaytadan urinish"),
+          ),
+        ],
+      ),
     );
   }
 
@@ -209,7 +253,7 @@ class _HomeContent extends StatelessWidget {
             width: 120, height: 120,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF0D9488).withOpacity(0.3), width: 2),
+              border: Border.all(color: const Color(0xFF0D9488).withValues(alpha: 0.3), width: 2),
             ),
             padding: const EdgeInsets.all(20),
             child: Container(
@@ -246,28 +290,6 @@ class _HomeContent extends StatelessWidget {
               elevation: 0,
             ),
             child: const Text("Xarajat qo'shish", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          const SizedBox(height: 40),
-          Container(
-            padding: const EdgeInsets.all(30),
-            decoration: const BoxDecoration(color: Color(0xFFFEF2F2), shape: BoxShape.circle),
-            child: const Icon(Icons.error_outline, color: Colors.red, size: 40),
-          ),
-          const SizedBox(height: 24),
-          const Text("Xatolik yuz berdi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () => context.read<ExpenseBloc>().add(GetExpenses()),
-            child: const Text("Qaytadan urinish"),
           ),
         ],
       ),
@@ -343,7 +365,6 @@ class _ExpenseItem extends StatelessWidget {
               ],
             ),
           ),
-          // ITEM SUMMASI HAM FORMATLANDI
           Text("- ${formatCurrency(expense.amount)} so'm", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))),
         ],
       ),

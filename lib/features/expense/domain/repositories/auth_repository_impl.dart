@@ -76,7 +76,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> updateUser(User user) async {
+  Future<String?> updateUser(User user) async {
     final currentUid = _firebaseAuth.currentUser?.uid;
     if (currentUid != null) {
       String? imageUrl = user.imagePath;
@@ -96,7 +96,9 @@ class AuthRepositoryImpl implements AuthRepository {
         'imagePath': imageUrl,
         'updatedAt': FieldValue.serverTimestamp(),
       });
+      return imageUrl;
     }
+    return null;
   }
 
   // XAVFSIZ RASM YUKLASH (BYTES ORQALI)
@@ -114,7 +116,9 @@ class AuthRepositoryImpl implements AuthRepository {
         SettableMetadata(contentType: 'image/jpeg'),
       );
       
-      return await uploadTask.ref.getDownloadURL();
+      final downloadUrl = await uploadTask.ref.getDownloadURL();
+      // Keshlashni oldini olish uchun vaqt tamg'asini qo'shamiz
+      return "$downloadUrl?v=${DateTime.now().millisecondsSinceEpoch}";
     } catch (e) {
       debugPrint("Rasm yuklashda xato: $e");
       return path; // Xato bo'lsa eski yo'lni qaytaramiz

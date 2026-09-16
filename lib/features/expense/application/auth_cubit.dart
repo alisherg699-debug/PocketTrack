@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../domain/repositories/auth_repository.dart';
 import '../domain/entities/user.dart';
@@ -71,15 +72,17 @@ class AuthCubit extends Cubit<AuthState> {
             currency: currency,
             imagePath: imagePath,
           );
-          await _repository.updateUser(user);
+          final updatedImageUrl = await _repository.updateUser(user);
 
           final updatedUser = authUser.copyWith(
             firstName: firstName,
             email: email,
             phone: phone,
             currency: currency,
-            image: imagePath ?? authUser.image,
+            image: updatedImageUrl ?? authUser.image,
           );
+          
+          debugPrint("Yangi rasm URL: $updatedImageUrl");
           emit(AuthState.authenticated(updatedUser));
         } catch (e) {
           emit(AuthState.error(e.toString()));
