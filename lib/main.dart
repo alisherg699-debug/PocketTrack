@@ -29,11 +29,7 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService.init();
   await Hive.initFlutter();
   Hive.registerAdapter(ExpenseModelImplAdapter());
@@ -42,19 +38,13 @@ void main() async {
 
   final dio = Dio();
   const secureStorage = FlutterSecureStorage();
-
   final localDataSource = AuthLocalDataSource(secureStorage);
-  
   dio.interceptors.add(AuthInterceptor(localDataSource, dio));
 
-  final authRepository = AuthRepositoryImpl(
-    localDataSource: localDataSource,
-  );
-
+  final authRepository = AuthRepositoryImpl(localDataSource: localDataSource);
   final expenseLocalDataSource = ExpenseLocalDataSource();
   await expenseLocalDataSource.init();
   final expenseRepository = ExpenseRepositoryImpl(expenseLocalDataSource);
-
   final incomeLocalDataSource = IncomeLocalDataSource();
   await incomeLocalDataSource.init();
   final incomeRepository = IncomeRepositoryImpl(incomeLocalDataSource);
@@ -62,9 +52,7 @@ void main() async {
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => AuthCubit(authRepository)..checkAuth(),
-        ),
+        BlocProvider(create: (context) => AuthCubit(authRepository)..checkAuth()),
         BlocProvider(create: (context) => ExpenseBloc(expenseRepository)),
         BlocProvider(create: (context) => IncomeBloc(incomeRepository)),
       ],
@@ -75,7 +63,6 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
-
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -90,43 +77,25 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         useMaterial3: true,
         primaryColor: const Color(0xFF0D9488),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0D9488),
-          primary: const Color(0xFF0D9488),
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0D9488)),
         fontFamily: 'Geist',
-        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: true,
-          titleTextStyle: TextStyle(
-            color: Color(0xFF1E293B),
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-          iconTheme: IconThemeData(color: Colors.black, size: 20),
-        ),
       ),
       home: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
-          return state.maybeWhen(
+          return state.when(
+            initial: () => const SplashPage(),
+            loading: () {
+              // AGAR FOYDALANUVCHI ALLAQACHON TIZIMDA BO'LSA, LOADINGDA SPLASHGA QAYTMAYMIZ
+              return const SplashPage(); 
+            },
             authenticated: (user) {
               if (_isPinVerified) return const HomePage();
-
               return FutureBuilder<String?>(
                 future: const FlutterSecureStorage().read(key: 'user_pin'),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SplashPage();
-                  }
-                  final String? pin = snapshot.data;
-                  if (pin != null && pin.isNotEmpty) {
-                    return PinEntryPage(onVerified: () {
-                      setState(() {
-                        _isPinVerified = true;
-                      });
-                    });
+                  if (snapshot.connectionState == ConnectionState.waiting) return const SplashPage();
+                  if (snapshot.data != null && snapshot.data!.isNotEmpty) {
+                    return PinEntryPage(onVerified: () => setState(() => _isPinVerified = true));
                   }
                   return const HomePage();
                 },
@@ -135,19 +104,12 @@ class _MyAppState extends State<MyApp> {
             unauthenticated: () => FutureBuilder<SharedPreferences>(
               future: SharedPreferences.getInstance(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const SplashPage();
-                }
-                final bool isCompleted = snapshot.data?.getBool('is_onboarding_completed') ?? false;
-                if (isCompleted) {
-                  return const LoginPage();
-                }
-                return const OnboardingPage();
+                if (snapshot.connectionState == ConnectionState.waiting) return const SplashPage();
+                final isCompleted = snapshot.data?.getBool('is_onboarding_completed') ?? false;
+                return isCompleted ? const LoginPage() : const OnboardingPage();
               },
             ),
-            loading: () => const SplashPage(),
-            initial: () => const SplashPage(),
-            orElse: () => const LoginPage(),
+            error: (message) => const LoginPage(),
           );
         },
       ),
