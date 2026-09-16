@@ -46,6 +46,10 @@ dependencies:
   flutter_local_notifications: ^17.2.2
   timezone: ^0.9.4
   fl_chart: ^0.68.0
+  pdf: ^3.11.1
+  excel_plus: ^2.4.0
+  path_provider: ^2.1.4
+  open_filex: ^4.5.0
   flutter_secure_storage: ^9.2.2
 
 dev_dependencies:

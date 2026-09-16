@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/services/export_service.dart';
+import '../../../expense/application/expense/expense_bloc.dart';
+import '../../../expense/application/expense/expense_state.dart';
 
 class ExportPage extends StatefulWidget {
   const ExportPage({super.key});
@@ -9,8 +13,8 @@ class ExportPage extends StatefulWidget {
 }
 
 class _ExportPageState extends State<ExportPage> {
-  DateTime startDate = DateTime(2026, 9, 1);
-  DateTime endDate = DateTime(2026, 9, 15);
+  DateTime startDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  DateTime endDate = DateTime.now();
   String selectedFormat = 'PDF';
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -33,6 +37,32 @@ class _ExportPageState extends State<ExportPage> {
         if (isStart) startDate = picked;
         else endDate = picked;
       });
+    }
+  }
+
+  void _handleExport() {
+    final state = context.read<ExpenseBloc>().state;
+    if (state is ExpenseLoaded) {
+      final filteredExpenses = state.expenses.where((e) {
+        return e.date.isAfter(startDate.subtract(const Duration(days: 1))) && 
+               e.date.isBefore(endDate.add(const Duration(days: 1)));
+      }).toList();
+
+      if (filteredExpenses.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Ushbu muddat uchun xarajatlar topilmadi")),
+        );
+        return;
+      }
+
+      if (selectedFormat == 'PDF') {
+        ExportService.exportToPdf(filteredExpenses, startDate, endDate);
+      } else if (selectedFormat == 'Excel') {
+        ExportService.exportToExcel(filteredExpenses, startDate, endDate);
+      } else if (selectedFormat == 'CSV') {
+        // CSV uchun Excel mantiqi mos keladi (Excel.xlsx yoki alohida CSV yozish mumkin)
+        ExportService.exportToExcel(filteredExpenses, startDate, endDate);
+      }
     }
   }
 
@@ -80,11 +110,7 @@ class _ExportPageState extends State<ExportPage> {
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: ElevatedButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("$selectedFormat fayl tayyorlanmoqda..."), backgroundColor: const Color(0xFF0D9488)),
-              );
-            },
+            onPressed: _handleExport,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0D9488),
               minimumSize: const Size(double.infinity, 64),

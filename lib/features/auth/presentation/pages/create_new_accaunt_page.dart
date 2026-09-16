@@ -15,8 +15,10 @@ class _NewAccountPageState extends State<NewAccountPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
@@ -25,6 +27,36 @@ class _NewAccountPageState extends State<NewAccountPage> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void _handleRegister() {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirm = _confirmPasswordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Barcha maydonlarni to'ldiring"), backgroundColor: Colors.orange),
+      );
+      return;
+    }
+
+    if (password != confirm) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Parollar mos kelmadi"), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Parol kamida 6 ta belgidan iborat bo'lishi kerak"), backgroundColor: Colors.orange),
+      );
+      return;
+    }
+
+    context.read<AuthCubit>().register(name, email, password);
   }
 
   @override
@@ -97,39 +129,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      SizedBox(
-                        height: 64,
-                        width: double.infinity,
-                        child: TextField(
-                          controller: _nameController,
-                          decoration: InputDecoration(
-                            hintText: "Alisher Ganiyev",
-                            filled: true,
-                            fillColor: const Color(0xFFFFFFFF),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE2E8F0),
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF94A3B8),
-                                width: 1.5,
-                              ),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 20,
-                            ),
-                          ),
-                        ),
+                      _buildTextField(
+                        controller: _nameController,
+                        hint: "Alisher Ganiyev",
                       ),
                       const SizedBox(height: 16),
                       const Text(
@@ -142,39 +144,10 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      SizedBox(
-                        height: 64,
-                        width: double.infinity,
-                        child: TextField(
-                          controller: _emailController,
-                          decoration: InputDecoration(
-                            hintText: "alisher@email.com",
-                            filled: true,
-                            fillColor: const Color(0xFFFFFFFF),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE2E8F0),
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF94A3B8),
-                                width: 1.5,
-                              ),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 20,
-                            ),
-                          ),
-                        ),
+                      _buildTextField(
+                        controller: _emailController,
+                        hint: "alisher@email.com",
+                        keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 16),
                       const Text(
@@ -187,39 +160,16 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      SizedBox(
-                        height: 64,
-                        width: double.infinity,
-                        child: TextField(
-                          controller: _passwordController,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: "Kuchli parol yarating",
-                            filled: true,
-                            fillColor: const Color(0xFFFFFFFF),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE2E8F0),
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF94A3B8),
-                                width: 1.5,
-                              ),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 20,
-                            ),
+                      _buildTextField(
+                        controller: _passwordController,
+                        hint: "Kuchli parol yarating",
+                        obscureText: !_isPasswordVisible,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: const Color(0xFF94A3B8),
                           ),
+                          onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -233,39 +183,16 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      SizedBox(
-                        height: 64,
-                        width: double.infinity,
-                        child: TextField(
-                          controller: _confirmPasswordController,
-                          obscureText: true,
-                          decoration: InputDecoration(
-                            hintText: "Parolni takrorlang",
-                            filled: true,
-                            fillColor: const Color(0xFFFFFFFF),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: BorderSide.none,
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE2E8F0),
-                                width: 1,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                color: Color(0xFF94A3B8),
-                                width: 1.5,
-                              ),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 20,
-                            ),
+                      _buildTextField(
+                        controller: _confirmPasswordController,
+                        hint: "Parolni takrorlang",
+                        obscureText: !_isConfirmPasswordVisible,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: const Color(0xFF94A3B8),
                           ),
+                          onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -280,34 +207,7 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         ),
                         onPressed: state.maybeWhen(
                           loading: () => null,
-                          orElse: () => () {
-                            if (_nameController.text.isNotEmpty &&
-                                _emailController.text.isNotEmpty &&
-                                _passwordController.text.isNotEmpty) {
-                              if (_passwordController.text ==
-                                  _confirmPasswordController.text) {
-                                context.read<AuthCubit>().register(
-                                  _nameController.text,
-                                  _emailController.text,
-                                  _passwordController.text,
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("Parollar mos kelmadi"),
-                                  ),
-                                );
-                              }
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Barcha maydonlarni to'ldiring",
-                                  ),
-                                ),
-                              );
-                            }
-                          },
+                          orElse: () => _handleRegister,
                         ),
                         child: state.maybeWhen(
                           loading: () => const CircularProgressIndicator(
@@ -359,6 +259,52 @@ class _NewAccountPageState extends State<NewAccountPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    bool obscureText = false,
+    Widget? suffixIcon,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return SizedBox(
+      height: 64,
+      width: double.infinity,
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          hintText: hint,
+          filled: true,
+          fillColor: const Color(0xFFFFFFFF),
+          suffixIcon: suffixIcon,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: const BorderSide(
+              color: Color(0xFFE2E8F0),
+              width: 1,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: const BorderSide(
+              color: Color(0xFF94A3B8),
+              width: 1.5,
+            ),
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 20,
+          ),
+        ),
       ),
     );
   }

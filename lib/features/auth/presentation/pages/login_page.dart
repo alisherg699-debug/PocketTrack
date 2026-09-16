@@ -17,12 +17,40 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
 
   @override
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _handleLogin() {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Iltimos, barcha maydonlarni to'ldiring"),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Parol kamida 6 ta belgidan iborat bo'lishi kerak"),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    context.read<AuthCubit>().login(username, password);
   }
 
   @override
@@ -156,11 +184,22 @@ class _LoginPageState extends State<LoginPage> {
                         width: double.infinity,
                         child: TextField(
                           controller: _passwordController,
-                          obscureText: true,
+                          obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
                             hintText: "Parolingizni kiriting",
                             filled: true,
                             fillColor: const Color(0xFFFFFFFF),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: const Color(0xFF94A3B8),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide: BorderSide.none,
@@ -223,25 +262,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         onPressed: state.maybeWhen(
                           loading: () => null,
-                          orElse: () => () {
-                            final username = _usernameController.text.trim();
-                            final password = _passwordController.text.trim();
-
-                            if (username.isNotEmpty && password.isNotEmpty) {
-                              context.read<AuthCubit>().login(
-                                username,
-                                password,
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Iltimos, barcha maydonlarni to'ldiring",
-                                  ),
-                                ),
-                              );
-                            }
-                          },
+                          orElse: () => _handleLogin,
                         ),
                         child: state.maybeWhen(
                           loading: () => const CircularProgressIndicator(
