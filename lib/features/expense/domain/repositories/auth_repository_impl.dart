@@ -31,7 +31,7 @@ class AuthRepositoryImpl implements AuthRepository {
         firstName: localUser.firstName,
         lastName: 'Lokal',
         gender: '',
-        image: '',
+        image: localUser.imagePath ?? '',
         accessToken: 'dummy_access_token_${localUser.id}',
         refreshToken: 'dummy_refresh_token_${localUser.id}',
         phone: localUser.phone,
@@ -65,6 +65,7 @@ class AuthRepositoryImpl implements AuthRepository {
         password: existingUser.password,
         phone: user.phone,
         currency: user.currency,
+        imagePath: user.imagePath,
       );
       await userLocalDataSource.add(updatedUserModel);
     }
@@ -107,7 +108,7 @@ class AuthRepositoryImpl implements AuthRepository {
           firstName: localUser.firstName,
           lastName: 'Lokal',
           gender: '',
-          image: '',
+          image: localUser.imagePath ?? '',
           accessToken: token,
           refreshToken: '',
           phone: localUser.phone,

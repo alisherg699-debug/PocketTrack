@@ -50,7 +50,13 @@ class AuthCubit extends Cubit<AuthState> {
     emit(const AuthState.unauthenticated());
   }
 
-  Future<void> updateProfile(String firstName, String email, {String? phone, String? currency}) async {
+  Future<void> updateProfile(
+    String firstName,
+    String email, {
+    String? phone,
+    String? currency,
+    String? imagePath,
+  }) async {
     final currentState = state;
     currentState.maybeWhen(
       authenticated: (authUser) async {
@@ -60,17 +66,19 @@ class AuthCubit extends Cubit<AuthState> {
             id: authUser.id.toString(),
             firstName: firstName,
             email: email,
-            password: '', 
+            password: '', // Repository implementatsiyasida bu boshqariladi
             phone: phone,
             currency: currency,
+            imagePath: imagePath,
           );
           await _repository.updateUser(user);
-          
+
           final updatedUser = authUser.copyWith(
             firstName: firstName,
             email: email,
             phone: phone,
             currency: currency,
+            image: imagePath ?? authUser.image,
           );
           emit(AuthState.authenticated(updatedUser));
         } catch (e) {

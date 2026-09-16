@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../expense/application/auth_cubit.dart';
 import '../../../expense/application/auth_state.dart';
 
@@ -15,6 +17,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
   late final TextEditingController _currencyController;
+  String? _imagePath;
 
   @override
   void initState() {
@@ -29,6 +32,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     _emailController = TextEditingController(text: user?.email ?? '');
     _phoneController = TextEditingController(text: user?.phone ?? '+998 90 123 45 67');
     _currencyController = TextEditingController(text: user?.currency ?? 'so\'m');
+    _imagePath = user?.image;
   }
 
   @override
@@ -40,23 +44,24 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    
+    if (image != null) {
+      setState(() {
+        _imagePath = image.path;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text(
-          "Hisob sozlamalari",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
+        title: const Text("Hisob sozlamalari"),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: Colors.black,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -69,23 +74,27 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                 children: [
                   Stack(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 50,
-                        backgroundImage: AssetImage('assets/iconspng/avatar.png'),
+                        backgroundColor: const Color(0xFFE2E8F0),
+                        backgroundImage: _imagePath != null && _imagePath!.isNotEmpty
+                            ? (_imagePath!.startsWith('assets') 
+                                ? AssetImage(_imagePath!) as ImageProvider
+                                : FileImage(File(_imagePath!)))
+                            : const AssetImage('assets/iconspng/avatar.png'),
                       ),
                       Positioned(
                         bottom: 0,
                         right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF0D9488),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.camera_alt,
-                            color: Colors.white,
-                            size: 18,
+                        child: GestureDetector(
+                          onTap: _pickImage,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF0D9488),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.camera_alt, color: Colors.white, size: 18),
                           ),
                         ),
                       ),
@@ -93,50 +102,27 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   ),
                   const SizedBox(height: 12),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: _pickImage,
                     child: const Text(
                       "Rasm o'zgartirish",
-                      style: TextStyle(
-                        color: Color(0xFF0D9488),
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
               ),
             ),
             const Divider(height: 1, color: Color(0xFFE2E8F0)),
-            
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildInputField(
-                    label: "To'liq ism",
-                    controller: _nameController,
-                    hint: "Alisher Karimov",
-                  ),
+                  _buildInputField(label: "To'liq ism", controller: _nameController, hint: "Alisher Karimov"),
                   const SizedBox(height: 20),
-                  _buildInputField(
-                    label: "Elektron pochta",
-                    controller: _emailController,
-                    hint: "alisher@email.com",
-                    keyboardType: TextInputType.emailAddress,
-                  ),
+                  _buildInputField(label: "Elektron pochta", controller: _emailController, hint: "alisher@email.com", keyboardType: TextInputType.emailAddress),
                   const SizedBox(height: 20),
-                  _buildInputField(
-                    label: "Telefon raqam",
-                    controller: _phoneController,
-                    hint: "+998 90 123 45 67",
-                    keyboardType: TextInputType.phone,
-                  ),
+                  _buildInputField(label: "Telefon raqam", controller: _phoneController, hint: "+998 90 123 45 67", keyboardType: TextInputType.phone),
                   const SizedBox(height: 20),
-                  _buildInputField(
-                    label: "Valyuta",
-                    controller: _currencyController,
-                    hint: "so'm",
-                  ),
+                  _buildInputField(label: "Valyuta", controller: _currencyController, hint: "so'm"),
                 ],
               ),
             ),
@@ -150,57 +136,32 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
             listener: (context, state) {
               state.maybeWhen(
                 authenticated: (_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Profil muvaffaqiyatli yangilandi!"),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Profil yangilandi!"), backgroundColor: Colors.green));
                   Navigator.pop(context);
-                },
-                error: (message) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(message), backgroundColor: Colors.red),
-                  );
                 },
                 orElse: () {},
               );
             },
             builder: (context, state) {
               final isLoading = state.maybeWhen(loading: () => true, orElse: () => false);
-              
               return ElevatedButton(
-                onPressed: isLoading
-                    ? null
-                    : () {
-                        if (_nameController.text.isNotEmpty && _emailController.text.isNotEmpty) {
-                          context.read<AuthCubit>().updateProfile(
-                                _nameController.text,
-                                _emailController.text,
-                                phone: _phoneController.text,
-                                currency: _currencyController.text,
-                              );
-                        }
-                      },
+                onPressed: isLoading ? null : () {
+                  context.read<AuthCubit>().updateProfile(
+                    _nameController.text,
+                    _emailController.text,
+                    phone: _phoneController.text,
+                    currency: _currencyController.text,
+                    imagePath: _imagePath,
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0D9488),
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 60),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 0,
                 ),
-                child: isLoading
-                    ? const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                      )
-                    : const Text(
-                        "Saqlash",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                child: isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text("Saqlash", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               );
             },
           ),
@@ -209,45 +170,19 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     );
   }
 
-  Widget _buildInputField({
-    required String label,
-    required TextEditingController controller,
-    required String hint,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
+  Widget _buildInputField({required String label, required TextEditingController controller, required String hint, TextInputType keyboardType = TextInputType.text}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1E293B),
-          ),
-        ),
+        Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
         const SizedBox(height: 8),
         Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
-          ),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE2E8F0))),
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
-            textAlignVertical: TextAlignVertical.center,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF1E293B),
-            ),
-            decoration: InputDecoration(
-              hintText: hint,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-              hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 16),
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF1E293B)),
+            decoration: InputDecoration(hintText: hint, border: InputBorder.none, contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18)),
           ),
         ),
       ],

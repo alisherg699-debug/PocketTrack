@@ -23,13 +23,14 @@ class UserModelImplAdapter extends TypeAdapter<_$UserModelImpl> {
       password: fields[3] as String,
       phone: fields[4] as String?,
       currency: fields[5] as String?,
+      imagePath: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, _$UserModelImpl obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class UserModelImplAdapter extends TypeAdapter<_$UserModelImpl> {
       ..writeByte(4)
       ..write(obj.phone)
       ..writeByte(5)
-      ..write(obj.currency);
+      ..write(obj.currency)
+      ..writeByte(6)
+      ..write(obj.imagePath);
   }
 
   @override
@@ -67,6 +70,7 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       password: json['password'] as String,
       phone: json['phone'] as String?,
       currency: json['currency'] as String?,
+      imagePath: json['imagePath'] as String?,
     );
 
 Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
@@ -77,4 +81,5 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
       'password': instance.password,
       'phone': instance.phone,
       'currency': instance.currency,
+      'imagePath': instance.imagePath,
     };

@@ -15,6 +15,7 @@ class UserModel with _$UserModel {
     @HiveField(3) required String password,
     @HiveField(4) String? phone,
     @HiveField(5) String? currency,
+    @HiveField(6) String? imagePath,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -28,6 +29,7 @@ class UserModel with _$UserModel {
       password: user.password,
       phone: user.phone,
       currency: user.currency,
+      imagePath: user.imagePath,
     );
   }
 }
@@ -41,6 +43,7 @@ extension UserModelMapper on UserModel {
       password: password,
       phone: phone,
       currency: currency,
+      imagePath: imagePath,
     );
   }
 }

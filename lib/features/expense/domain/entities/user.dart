@@ -5,6 +5,7 @@ class User {
   final String password;
   final String? phone;
   final String? currency;
+  final String? imagePath;
 
   User({
     required this.id,
@@ -13,5 +14,6 @@ class User {
     required this.password,
     this.phone,
     this.currency,
+    this.imagePath,
   });
 }

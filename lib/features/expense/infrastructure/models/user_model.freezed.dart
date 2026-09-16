@@ -32,6 +32,8 @@ mixin _$UserModel {
   String? get phone => throw _privateConstructorUsedError;
   @HiveField(5)
   String? get currency => throw _privateConstructorUsedError;
+  @HiveField(6)
+  String? get imagePath => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -50,7 +52,8 @@ abstract class $UserModelCopyWith<$Res> {
       @HiveField(2) String email,
       @HiveField(3) String password,
       @HiveField(4) String? phone,
-      @HiveField(5) String? currency});
+      @HiveField(5) String? currency,
+      @HiveField(6) String? imagePath});
 }
 
 /// @nodoc
@@ -72,6 +75,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? password = null,
     Object? phone = freezed,
     Object? currency = freezed,
+    Object? imagePath = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -98,6 +102,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.currency
           : currency // ignore: cast_nullable_to_non_nullable
               as String?,
+      imagePath: freezed == imagePath
+          ? _value.imagePath
+          : imagePath // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -116,7 +124,8 @@ abstract class _$$UserModelImplCopyWith<$Res>
       @HiveField(2) String email,
       @HiveField(3) String password,
       @HiveField(4) String? phone,
-      @HiveField(5) String? currency});
+      @HiveField(5) String? currency,
+      @HiveField(6) String? imagePath});
 }
 
 /// @nodoc
@@ -136,6 +145,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? password = null,
     Object? phone = freezed,
     Object? currency = freezed,
+    Object? imagePath = freezed,
   }) {
     return _then(_$UserModelImpl(
       id: null == id
@@ -162,6 +172,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.currency
           : currency // ignore: cast_nullable_to_non_nullable
               as String?,
+      imagePath: freezed == imagePath
+          ? _value.imagePath
+          : imagePath // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -176,7 +190,8 @@ class _$UserModelImpl implements _UserModel {
       @HiveField(2) required this.email,
       @HiveField(3) required this.password,
       @HiveField(4) this.phone,
-      @HiveField(5) this.currency});
+      @HiveField(5) this.currency,
+      @HiveField(6) this.imagePath});
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -199,10 +214,13 @@ class _$UserModelImpl implements _UserModel {
   @override
   @HiveField(5)
   final String? currency;
+  @override
+  @HiveField(6)
+  final String? imagePath;
 
   @override
   String toString() {
-    return 'UserModel(id: $id, firstName: $firstName, email: $email, password: $password, phone: $phone, currency: $currency)';
+    return 'UserModel(id: $id, firstName: $firstName, email: $email, password: $password, phone: $phone, currency: $currency, imagePath: $imagePath)';
   }
 
   @override
@@ -218,13 +236,15 @@ class _$UserModelImpl implements _UserModel {
                 other.password == password) &&
             (identical(other.phone, phone) || other.phone == phone) &&
             (identical(other.currency, currency) ||
-                other.currency == currency));
+                other.currency == currency) &&
+            (identical(other.imagePath, imagePath) ||
+                other.imagePath == imagePath));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, firstName, email, password, phone, currency);
+  int get hashCode => Object.hash(
+      runtimeType, id, firstName, email, password, phone, currency, imagePath);
 
   @JsonKey(ignore: true)
   @override
@@ -247,7 +267,8 @@ abstract class _UserModel implements UserModel {
       @HiveField(2) required final String email,
       @HiveField(3) required final String password,
       @HiveField(4) final String? phone,
-      @HiveField(5) final String? currency}) = _$UserModelImpl;
+      @HiveField(5) final String? currency,
+      @HiveField(6) final String? imagePath}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
       _$UserModelImpl.fromJson;
@@ -270,6 +291,9 @@ abstract class _UserModel implements UserModel {
   @override
   @HiveField(5)
   String? get currency;
+  @override
+  @HiveField(6)
+  String? get imagePath;
   @override
   @JsonKey(ignore: true)
   _$$UserModelImplCopyWith<_$UserModelImpl> get copyWith =>
