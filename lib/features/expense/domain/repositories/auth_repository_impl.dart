@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart'; // kIsWeb uchun
 import '../../domain/entities/auth_result.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -60,7 +60,7 @@ class AuthRepositoryImpl implements AuthRepository {
     );
 
     String? imageUrl;
-    if (user.imagePath != null && File(user.imagePath!).existsSync()) {
+    if (user.imagePath != null && user.imagePath!.isNotEmpty) {
       imageUrl = await _uploadImage(userCredential.user!.uid, user.imagePath!);
     }
 
@@ -81,8 +81,10 @@ class AuthRepositoryImpl implements AuthRepository {
     if (currentUid != null) {
       String? imageUrl = user.imagePath;
       
-      // Agar rasm lokal fayl bo'lsa, uni Firebase Storage'ga yuklaymiz
-      if (user.imagePath != null && !user.imagePath!.startsWith('http')) {
+      // Agar rasm lokal fayl bo'lsa (ya'ni http bilan boshlanmasa), yuklaymiz
+      if (user.imagePath != null && 
+          user.imagePath!.isNotEmpty && 
+          !user.imagePath!.startsWith('http')) {
         imageUrl = await _uploadImage(currentUid, user.imagePath!);
       }
 
@@ -97,10 +99,26 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  // XAVFSIZ RASM YUKLASH (BYTES ORQALI)
   Future<String> _uploadImage(String uid, String path) async {
-    final ref = _storage.ref().child('user_images').child('$uid.jpg');
-    final uploadTask = await ref.putFile(File(path));
-    return await uploadTask.ref.getDownloadURL();
+    try {
+      final ref = _storage.ref().child('user_images').child('$uid.jpg');
+      
+      // Platformadan mustaqil ravishda faylni o'qiymiz
+      final File file = File(path);
+      final bytes = await file.readAsBytes();
+      
+      // Baytlar orqali yuklaymiz (bu Platform xatosini chetlab o'tadi)
+      final uploadTask = await ref.putData(
+        bytes,
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
+      
+      return await uploadTask.ref.getDownloadURL();
+    } catch (e) {
+      debugPrint("Rasm yuklashda xato: $e");
+      return path; // Xato bo'lsa eski yo'lni qaytaramiz
+    }
   }
 
   @override

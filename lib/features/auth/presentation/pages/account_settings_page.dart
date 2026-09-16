@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -65,6 +66,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     if (path.startsWith('assets')) {
       return AssetImage(path);
     }
+    // Xavfsiz rasm yuklash (Vebda File ishlamaydi)
+    if (kIsWeb) {
+      return NetworkImage(path);
+    }
     return FileImage(File(path));
   }
 
@@ -79,10 +84,6 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: Colors.black,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -133,13 +134,13 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
-                  _buildInputField(label: "To'liq ism", controller: _nameController, hint: "Alisher Karimov"),
+                  _buildInputField(label: "To'liq ism", controller: _nameController, hint: ""),
                   const SizedBox(height: 20),
-                  _buildInputField(label: "Elektron pochta", controller: _emailController, hint: "alisher@email.com", keyboardType: TextInputType.emailAddress),
+                  _buildInputField(label: "Elektron pochta", controller: _emailController, hint: "", keyboardType: TextInputType.emailAddress),
                   const SizedBox(height: 20),
-                  _buildInputField(label: "Telefon raqam", controller: _phoneController, hint: "+998 90 123 45 67", keyboardType: TextInputType.phone),
+                  _buildInputField(label: "Telefon raqam", controller: _phoneController, hint: "", keyboardType: TextInputType.phone),
                   const SizedBox(height: 20),
-                  _buildInputField(label: "Valyuta", controller: _currencyController, hint: "so'm"),
+                  _buildInputField(label: "Valyuta", controller: _currencyController, hint: ""),
                 ],
               ),
             ),
