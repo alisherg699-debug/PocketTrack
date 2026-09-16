@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "367172964905",
+    "project_id": "pockettrack-629e7",
+    "storage_bucket": "pockettrack-629e7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367172964905:android:9bf5d7d97e1e0c60404238",
+        "android_client_info": {
+          "package_name": "com.example.pockettrack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsjF6JwHgNIOt9TO2nQYW46KEFTy-IXzs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

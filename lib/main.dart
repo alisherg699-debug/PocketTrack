@@ -9,7 +9,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pockettrack/features/expense/application/auth_cubit.dart';
 import 'package:pockettrack/features/expense/application/auth_state.dart';
 import 'package:pockettrack/features/expense/infrastructure/datasources/auth_local_data_source.dart';
-import 'package:pockettrack/features/expense/infrastructure/datasources/auth_remote_data_source.dart';
 import 'package:pockettrack/features/expense/domain/repositories/auth_repository_impl.dart';
 import 'package:pockettrack/features/expense/domain/repositories/expense_repository_impl.dart';
 import 'package:pockettrack/features/expense/infrastructure/datasources/expense_local_data_source.dart';
@@ -20,15 +19,20 @@ import 'package:pockettrack/features/auth/presentation/pages/onboarding_page.dar
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pockettrack/features/expense/infrastructure/models/expense_model.dart';
 import 'package:pockettrack/features/expense/infrastructure/models/user_model.dart';
-import 'package:pockettrack/features/expense/infrastructure/datasources/user_local_data_source.dart';
 import 'package:pockettrack/core/services/notification_service.dart';
 import 'package:pockettrack/features/income/application/income/income_bloc.dart';
 import 'package:pockettrack/features/income/domain/repositories/income_repository_impl.dart';
 import 'package:pockettrack/features/income/infrastructure/datasources/income_local_data_source.dart';
 import 'package:pockettrack/features/income/infrastructure/models/income_model.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   await NotificationService.init();
   await Hive.initFlutter();
@@ -40,16 +44,11 @@ void main() async {
   const secureStorage = FlutterSecureStorage();
 
   final localDataSource = AuthLocalDataSource(secureStorage);
-  final remoteDataSource = AuthRemoteDataSource(dio);
-  final userLocalDataSource = UserLocalDataSource();
-  await userLocalDataSource.init();
-
+  
   dio.interceptors.add(AuthInterceptor(localDataSource, dio));
 
   final authRepository = AuthRepositoryImpl(
-    remoteDataSource: remoteDataSource,
     localDataSource: localDataSource,
-    userLocalDataSource: userLocalDataSource,
   );
 
   final expenseLocalDataSource = ExpenseLocalDataSource();
