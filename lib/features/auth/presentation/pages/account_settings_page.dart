@@ -73,11 +73,16 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text("Hisob sozlamalari"),
+        title: const Text("Hisob sozlamalari", 
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
         foregroundColor: Colors.black,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -144,12 +149,38 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
-          child: BlocBuilder<AuthCubit, AuthState>(
+          child: BlocConsumer<AuthCubit, AuthState>(
+            listener: (context, state) {
+              state.maybeWhen(
+                authenticated: (_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Profil muvaffaqiyatli yangilandi!"),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                  Navigator.pop(context);
+                },
+                error: (message) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(message), backgroundColor: Colors.red),
+                  );
+                },
+                orElse: () {},
+              );
+            },
             builder: (context, state) {
               final bool isUpdating = state.maybeWhen(loading: () => true, orElse: () => false);
 
               return ElevatedButton(
                 onPressed: isUpdating ? null : () {
+                  if (_nameController.text.trim().isEmpty || _emailController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Ism va email bo'sh bo'lishi mumkin emas"), backgroundColor: Colors.orange),
+                    );
+                    return;
+                  }
+
                   context.read<AuthCubit>().updateProfile(
                     _nameController.text.trim(),
                     _emailController.text.trim(),
@@ -157,7 +188,6 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                     currency: _currencyController.text.trim(),
                     imagePath: _imagePath,
                   );
-                  // Saqlashdan so'ng xabar chiqarish va orqaga qaytish mantiqi listenerda
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF0D9488),
