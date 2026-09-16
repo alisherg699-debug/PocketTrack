@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'change_password_page.dart';
 
 class SecurityPage extends StatefulWidget {
   const SecurityPage({super.key});
@@ -206,6 +207,42 @@ class _SecurityPageState extends State<SecurityPage> {
                       onChanged: _togglePin,
                     ),
                   ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ChangePasswordPage()),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFF1F5F9)),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.password_rounded, color: Color(0xFF0D9488)),
+                      SizedBox(width: 16),
+                      Text(
+                        "Parolni o'zgartirish",
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1E293B),
+                        ),
+                      ),
+                      Spacer(),
+                      Icon(Icons.arrow_forward_ios, size: 14, color: Color(0xFF94A3B8)),
+                    ],
+                  ),
                 ),
               ),
             ),

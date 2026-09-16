@@ -98,4 +98,16 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthState.error(e.toString()));
     }
   }
+
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    emit(const AuthState.loading());
+    try {
+      await _repository.changePassword(currentPassword, newPassword);
+      // Muvaffaqiyatli bo'lsa, foydalanuvchini holatida saqlab qolamiz
+      final user = await _repository.getAuthenticatedUser();
+      emit(AuthState.authenticated(user));
+    } catch (e) {
+      emit(AuthState.error(e.toString()));
+    }
+  }
 }

@@ -95,6 +95,22 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    final user = _firebaseAuth.currentUser;
+    if (user != null && user.email != null) {
+      // 1. Avval eski parol orqali qayta tasdiqlaymiz (Xavfsizlik uchun)
+      fb_auth.AuthCredential credential = fb_auth.EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+      
+      // 2. Yangi parolni o'rnatamiz
+      await user.updatePassword(newPassword);
+    }
+  }
+
+  @override
   Future<void> logout() async {
     await _firebaseAuth.signOut();
     await localDataSource.clearTokens();
