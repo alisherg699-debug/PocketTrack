@@ -130,7 +130,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 const SizedBox(height: 24),
 
                 _buildLabel("Yangi parolni tasdiqlang"),
-                _buildField(_confirmPasswordController, _confirmVisible, (val) => setState(() => _confirmVisible = !val), hint: "Yangi parolni qayta kiritimg"),
+                _buildField(_confirmPasswordController, _confirmVisible, (val) => setState(() => _confirmVisible = !val), hint: "Yangi parolni qayta kiriting"),
                 
                 const SizedBox(height: 32),
                 _buildRequirement("Kamida 8 belgi", has8Chars),

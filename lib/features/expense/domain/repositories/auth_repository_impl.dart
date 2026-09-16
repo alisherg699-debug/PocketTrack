@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import '../../domain/entities/auth_result.dart';
 import '../../domain/entities/user.dart';
@@ -9,6 +11,7 @@ import '../../infrastructure/datasources/auth_local_data_source.dart';
 class AuthRepositoryImpl implements AuthRepository {
   final fb_auth.FirebaseAuth _firebaseAuth = fb_auth.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
   final AuthLocalDataSource localDataSource;
 
   AuthRepositoryImpl({
@@ -19,15 +22,12 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthResult> login(String email, String password) async {
     debugPrint('Firebase Login: $email');
     
-    // 1. Firebase Auth orqali kirish
     final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
       email: email.trim(),
       password: password.trim(),
     );
 
     final fbUser = userCredential.user!;
-
-    // 2. Firestore'dan qo'shimcha ma'lumotlarni olish (ism, telefon va h.k.)
     final userDoc = await _firestore.collection('users').doc(fbUser.uid).get();
     final userData = userDoc.data() ?? {};
 
@@ -45,7 +45,6 @@ class AuthRepositoryImpl implements AuthRepository {
       currency: userData['currency'],
     );
 
-    // Tokenlarni saqlash (Interseptorlar uchun kerak bo'lishi mumkin)
     await localDataSource.saveAccessToken(result.accessToken);
     
     return result;
@@ -55,20 +54,23 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> register(User user) async {
     debugPrint('Firebase Register: ${user.email}');
     
-    // 1. Firebase Auth'da foydalanuvchi yaratish
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
       email: user.email.trim(),
       password: user.password.trim(),
     );
 
-    // 2. Firestore'da profil ma'lumotlarini saqlash
+    String? imageUrl;
+    if (user.imagePath != null && File(user.imagePath!).existsSync()) {
+      imageUrl = await _uploadImage(userCredential.user!.uid, user.imagePath!);
+    }
+
     await _firestore.collection('users').doc(userCredential.user!.uid).set({
       'uid': userCredential.user!.uid,
       'firstName': user.firstName,
       'email': user.email,
       'phone': user.phone,
       'currency': user.currency,
-      'imagePath': user.imagePath,
+      'imagePath': imageUrl ?? user.imagePath,
       'createdAt': FieldValue.serverTimestamp(),
     });
   }
@@ -77,20 +79,32 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> updateUser(User user) async {
     final currentUid = _firebaseAuth.currentUser?.uid;
     if (currentUid != null) {
+      String? imageUrl = user.imagePath;
+      
+      // Agar rasm lokal fayl bo'lsa, uni Firebase Storage'ga yuklaymiz
+      if (user.imagePath != null && !user.imagePath!.startsWith('http')) {
+        imageUrl = await _uploadImage(currentUid, user.imagePath!);
+      }
+
       await _firestore.collection('users').doc(currentUid).update({
         'firstName': user.firstName,
         'email': user.email,
         'phone': user.phone,
         'currency': user.currency,
-        'imagePath': user.imagePath,
+        'imagePath': imageUrl,
         'updatedAt': FieldValue.serverTimestamp(),
       });
     }
   }
 
+  Future<String> _uploadImage(String uid, String path) async {
+    final ref = _storage.ref().child('user_images').child('$uid.jpg');
+    final uploadTask = await ref.putFile(File(path));
+    return await uploadTask.ref.getDownloadURL();
+  }
+
   @override
   Future<void> resetPassword(String email, String newPassword) async {
-    // Firebase'da xavfsizlik uchun faqat email orqali reset link yuboriladi
     await _firebaseAuth.sendPasswordResetEmail(email: email.trim());
   }
 
@@ -98,14 +112,11 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> changePassword(String currentPassword, String newPassword) async {
     final user = _firebaseAuth.currentUser;
     if (user != null && user.email != null) {
-      // 1. Avval eski parol orqali qayta tasdiqlaymiz (Xavfsizlik uchun)
       fb_auth.AuthCredential credential = fb_auth.EmailAuthProvider.credential(
         email: user.email!,
         password: currentPassword,
       );
       await user.reauthenticateWithCredential(credential);
-      
-      // 2. Yangi parolni o'rnatamiz
       await user.updatePassword(newPassword);
     }
   }
