@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../expense/application/auth_cubit.dart';
-import '../../../expense/application/auth_state.dart';
-import 'login_page.dart';
+import 'package:pockettrack/features/auth/application/auth_cubit.dart';
+import 'package:pockettrack/features/auth/application/auth_state.dart';
+import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
 
 enum ResetStage { enterEmail, verifyCode, newPassword }
 

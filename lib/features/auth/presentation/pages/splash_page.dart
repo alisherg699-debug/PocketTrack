@@ -3,10 +3,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'login_page.dart';
-import 'home_page.dart';
-import 'onboarding_page.dart';
-import 'pin_entry_page.dart';
+import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
+import 'package:pockettrack/features/expense/presentation/pages/home_page.dart';
+import 'package:pockettrack/features/auth/presentation/pages/onboarding_page.dart';
+import 'package:pockettrack/features/auth/presentation/pages/pin_entry_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});

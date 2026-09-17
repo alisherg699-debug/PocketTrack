@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/repositories/income_repository.dart';
-import 'income_event.dart';
-import 'income_state.dart';
+import 'package:pockettrack/features/income/domain/repositories/income_repository.dart';
+import 'package:pockettrack/features/income/application/income/income_event.dart';
+import 'package:pockettrack/features/income/application/income/income_state.dart';
 
 class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
   final IncomeRepository repository;

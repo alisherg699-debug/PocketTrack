@@ -1,4 +1,4 @@
-import '../../domain/entities/expense.dart';
+import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 
 abstract class ExpenseEvent {}
 

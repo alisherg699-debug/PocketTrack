@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/services/notification_service.dart';
-import '../../../income/application/income/income_bloc.dart';
-import '../../../income/application/income/income_event.dart';
-import '../../../income/domain/entities/income.dart';
+import 'package:pockettrack/core/services/notification_service.dart';
+import 'package:pockettrack/features/income/application/income/income_bloc.dart';
+import 'package:pockettrack/features/income/application/income/income_event.dart';
+import 'package:pockettrack/features/income/domain/entities/income.dart';
 
 class AddIncomePage extends StatefulWidget {
   const AddIncomePage({super.key});

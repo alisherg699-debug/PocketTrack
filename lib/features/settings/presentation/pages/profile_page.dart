@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../expense/application/auth_cubit.dart';
-import '../../../expense/application/auth_state.dart';
-import 'login_page.dart';
-import 'account_settings_page.dart';
-import 'notifications_page.dart';
-import 'categories_page.dart';
-import 'security_page.dart';
+import 'package:pockettrack/features/auth/application/auth_cubit.dart';
+import 'package:pockettrack/features/auth/application/auth_state.dart';
+import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
+import 'package:pockettrack/features/settings/presentation/pages/account_settings_page.dart';
+import 'package:pockettrack/features/settings/presentation/pages/notifications_page.dart';
+import 'package:pockettrack/features/settings/presentation/pages/categories_page.dart';
+import 'package:pockettrack/features/settings/presentation/pages/security_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

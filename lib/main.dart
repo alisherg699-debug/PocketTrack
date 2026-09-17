@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pockettrack/features/expense/application/auth_cubit.dart';
+import 'package:pockettrack/features/auth/application/auth_cubit.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/income/application/income/income_bloc.dart';
 import 'package:pockettrack/features/auth/presentation/pages/splash_page.dart';
@@ -34,7 +34,6 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0D9488)),
           fontFamily: 'Geist',
         ),
-        // Endi ilova har doim SplashPage dan boshlanadi
         home: const SplashPage(),
       ),
     );

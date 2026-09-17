@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart'; // kIsWeb uchun
-import '../../domain/entities/auth_result.dart';
-import '../../domain/entities/user.dart';
-import '../../domain/repositories/auth_repository.dart';
-import '../../infrastructure/datasources/auth_local_data_source.dart';
+import 'package:pockettrack/features/auth/domain/entities/auth_result.dart';
+import 'package:pockettrack/features/auth/domain/entities/user.dart';
+import 'package:pockettrack/features/auth/domain/repositories/auth_repository.dart';
+import 'package:pockettrack/features/auth/infrastructure/datasources/auth_local_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final fb_auth.FirebaseAuth _firebaseAuth = fb_auth.FirebaseAuth.instance;

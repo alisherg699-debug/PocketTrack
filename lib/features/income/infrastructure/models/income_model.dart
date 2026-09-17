@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
 
-import '../../domain/entities/income.dart';
+import 'package:pockettrack/features/income/domain/entities/income.dart';
 
 part 'income_model.freezed.dart';
 part 'income_model.g.dart';

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-import '../../features/expense/infrastructure/datasources/auth_local_data_source.dart';
+import 'package:pockettrack/features/auth/infrastructure/datasources/auth_local_data_source.dart';
 
 class AuthInterceptor extends Interceptor {
   final AuthLocalDataSource _localDataSource;

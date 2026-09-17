@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../domain/repositories/auth_repository.dart';
-import '../domain/entities/user.dart';
-import 'auth_state.dart';
+import 'package:pockettrack/features/auth/domain/repositories/auth_repository.dart';
+import 'package:pockettrack/features/auth/domain/entities/user.dart';
+import 'package:pockettrack/features/auth/application/auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository _repository;

@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import '../models/income_model.dart';
+import 'package:pockettrack/features/income/infrastructure/models/income_model.dart';
 
 class IncomeLocalDataSource {
   late Box incomesBox;

@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../expense/application/auth_cubit.dart';
-import '../../../expense/application/auth_state.dart';
+import 'package:pockettrack/features/auth/application/auth_cubit.dart';
+import 'package:pockettrack/features/auth/application/auth_state.dart';
 
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({super.key});

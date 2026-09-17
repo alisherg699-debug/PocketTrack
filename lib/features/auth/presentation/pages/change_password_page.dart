@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../expense/application/auth_cubit.dart';
-import '../../../expense/application/auth_state.dart';
+import 'package:pockettrack/features/auth/application/auth_cubit.dart';
+import 'package:pockettrack/features/auth/application/auth_state.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});

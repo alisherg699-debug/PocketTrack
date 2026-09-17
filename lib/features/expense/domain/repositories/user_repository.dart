@@ -1,4 +1,4 @@
-import '../entities/user.dart';
+import 'package:pockettrack/features/auth/domain/entities/user.dart';
 
 abstract class UserRepository {
   Future<void> register(User user);

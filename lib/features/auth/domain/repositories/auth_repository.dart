@@ -1,5 +1,5 @@
-import '../entities/auth_result.dart';
-import '../entities/user.dart';
+import 'package:pockettrack/features/auth/domain/entities/auth_result.dart';
+import 'package:pockettrack/features/auth/domain/entities/user.dart';
 
 abstract class AuthRepository {
   Future<AuthResult> login(String username, String password);

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import '../../../expense/application/expense/expense_bloc.dart';
-import '../../../expense/application/expense/expense_event.dart';
-import '../../../expense/domain/entities/expense.dart';
-import 'add_expense_page.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_event.dart';
+import 'package:pockettrack/features/expense/domain/entities/expense.dart';
+import 'package:pockettrack/features/expense/presentation/pages/add_expense_page.dart';
 
 class ExpenseDetailsPage extends StatefulWidget {
   final Expense expense;

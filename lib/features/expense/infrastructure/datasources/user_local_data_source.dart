@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import '../models/user_model.dart';
+import 'package:pockettrack/features/auth/infrastructure/models/user_model.dart';
 
 class UserLocalDataSource {
   late Box<UserModel> usersBox;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
-import '../../../expense/application/expense/expense_bloc.dart';
-import '../../../expense/application/expense/expense_state.dart';
-import '../../../expense/domain/entities/expense.dart';
-import 'monthly_report_page.dart';
-import 'comparison_page.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
+import 'package:pockettrack/features/expense/domain/entities/expense.dart';
+import 'package:pockettrack/features/report/presentation/pages/monthly_report_page.dart';
+import 'package:pockettrack/features/report/presentation/pages/comparison_page.dart';
 
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({super.key});

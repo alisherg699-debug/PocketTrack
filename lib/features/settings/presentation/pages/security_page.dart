@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'change_password_page.dart';
+import 'package:pockettrack/features/auth/presentation/pages/change_password_page.dart';
 
 class SecurityPage extends StatefulWidget {
   const SecurityPage({super.key});

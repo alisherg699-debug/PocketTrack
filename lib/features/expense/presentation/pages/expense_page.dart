@@ -3,12 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../expense/application/expense/expense_bloc.dart';
-import '../../../expense/application/expense/expense_state.dart';
-import '../../../expense/domain/entities/expense.dart';
-import 'expense_details_page.dart';
-import 'statistics_page.dart';
-import 'budget_page.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
+import 'package:pockettrack/features/expense/domain/entities/expense.dart';
+import 'package:pockettrack/features/expense/presentation/pages/expense_details_page.dart';
+import 'package:pockettrack/features/report/presentation/pages/statistics_page.dart';
+import 'package:pockettrack/features/settings/presentation/pages/budget_page.dart';
 
 class ExpensePage extends StatefulWidget {
   const ExpensePage({super.key});

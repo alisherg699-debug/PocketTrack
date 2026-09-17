@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'login_page.dart';
+import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});

@@ -5,22 +5,29 @@ import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pockettrack/core/network/auth_interceptor.dart';
 import 'package:pockettrack/core/services/notification_service.dart';
-import 'package:pockettrack/features/expense/application/auth_cubit.dart';
+
+// Auth Feature
+import 'package:pockettrack/features/auth/application/auth_cubit.dart';
+import 'package:pockettrack/features/auth/domain/repositories/auth_repository.dart';
+import 'package:pockettrack/features/auth/infrastructure/repositories/auth_repository_impl.dart';
+import 'package:pockettrack/features/auth/infrastructure/datasources/auth_local_data_source.dart';
+import 'package:pockettrack/features/auth/infrastructure/models/user_model.dart';
+
+// Expense Feature
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
-import 'package:pockettrack/features/expense/domain/repositories/auth_repository.dart';
-import 'package:pockettrack/features/expense/domain/repositories/auth_repository_impl.dart';
 import 'package:pockettrack/features/expense/domain/repositories/expense_repository.dart';
-import 'package:pockettrack/features/expense/domain/repositories/expense_repository_impl.dart';
-import 'package:pockettrack/features/expense/infrastructure/datasources/auth_local_data_source.dart';
+import 'package:pockettrack/features/expense/infrastructure/repositories/expense_repository_impl.dart';
 import 'package:pockettrack/features/expense/infrastructure/datasources/expense_local_data_source.dart';
 import 'package:pockettrack/features/expense/infrastructure/models/expense_model.dart';
-import 'package:pockettrack/features/expense/infrastructure/models/user_model.dart';
+
+// Income Feature
 import 'package:pockettrack/features/income/application/income/income_bloc.dart';
 import 'package:pockettrack/features/income/domain/repositories/income_repository.dart';
-import 'package:pockettrack/features/income/domain/repositories/income_repository_impl.dart';
+import 'package:pockettrack/features/income/infrastructure/repositories/income_repository_impl.dart';
 import 'package:pockettrack/features/income/infrastructure/datasources/income_local_data_source.dart';
 import 'package:pockettrack/features/income/infrastructure/models/income_model.dart';
-import 'firebase_options.dart';
+
+import 'package:pockettrack/firebase_options.dart';
 
 final sl = GetIt.instance;
 
@@ -52,7 +59,7 @@ Future<void> init() async {
   sl.registerLazySingleton<ExpenseRepository>(() => ExpenseRepositoryImpl(sl()));
   sl.registerLazySingleton<IncomeRepository>(() => IncomeRepositoryImpl(sl()));
 
-  // 5. Blocs
+  // 5. Blocs & Cubits
   sl.registerFactory(() => AuthCubit(sl()));
   sl.registerFactory(() => ExpenseBloc(sl()));
   sl.registerFactory(() => IncomeBloc(sl()));

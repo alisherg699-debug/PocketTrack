@@ -5,7 +5,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:intl/intl.dart';
-import '../../features/expense/domain/entities/expense.dart';
+import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 
 class ExportService {
   // 1. PDF EXPORT

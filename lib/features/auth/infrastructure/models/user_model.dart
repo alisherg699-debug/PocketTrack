@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
-import '../../domain/entities/user.dart';
+import 'package:pockettrack/features/auth/domain/entities/user.dart';
 
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';

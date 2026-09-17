@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../domain/entities/auth_result.dart';
+import 'package:pockettrack/features/auth/domain/entities/auth_result.dart';
 
 part 'auth_state.freezed.dart';
 

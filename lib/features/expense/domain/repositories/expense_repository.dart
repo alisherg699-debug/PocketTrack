@@ -1,4 +1,4 @@
-import '../entities/expense.dart';
+import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 
 abstract class ExpenseRepository {
   Future<List<Expense>> getAll();

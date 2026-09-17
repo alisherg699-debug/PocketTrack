@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pockettrack/features/expense/application/auth_cubit.dart';
-import 'package:pockettrack/features/expense/application/auth_state.dart';
-import 'create_new_accaunt_page.dart';
-import 'home_page.dart';
-import 'password_reset_page.dart';
+import 'package:pockettrack/features/auth/application/auth_cubit.dart';
+import 'package:pockettrack/features/auth/application/auth_state.dart';
+import 'package:pockettrack/features/auth/presentation/pages/create_new_accaunt_page.dart';
+import 'package:pockettrack/features/expense/presentation/pages/home_page.dart';
+import 'package:pockettrack/features/auth/presentation/pages/password_reset_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

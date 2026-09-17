@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/repositories/expense_repository.dart';
-import 'expense_event.dart';
-import 'expense_state.dart';
+import 'package:pockettrack/features/expense/domain/repositories/expense_repository.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_event.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
 
 class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   final ExpenseRepository repository;

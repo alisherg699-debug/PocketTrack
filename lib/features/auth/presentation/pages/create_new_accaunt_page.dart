@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pockettrack/features/expense/application/auth_cubit.dart';
-import 'package:pockettrack/features/expense/application/auth_state.dart';
-import 'login_page.dart';
+import 'package:pockettrack/features/auth/application/auth_cubit.dart';
+import 'package:pockettrack/features/auth/application/auth_state.dart';
+import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
 
 class NewAccountPage extends StatefulWidget {
   const NewAccountPage({super.key});

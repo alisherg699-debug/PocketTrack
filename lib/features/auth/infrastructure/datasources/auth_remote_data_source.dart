@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../domain/entities/auth_result.dart';
+import 'package:pockettrack/features/auth/domain/entities/auth_result.dart';
 
 class AuthRemoteDataSource {
   final Dio _dio;

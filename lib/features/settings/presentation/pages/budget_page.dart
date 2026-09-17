@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../expense/application/expense/expense_bloc.dart';
-import '../../../expense/application/expense/expense_state.dart';
-import '../../../expense/domain/entities/expense.dart';
-import 'add_income_page.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
+import 'package:pockettrack/features/expense/domain/entities/expense.dart';
+import 'package:pockettrack/features/income/presentation/pages/add_income_page.dart';
 
 class BudgetPage extends StatefulWidget {
   const BudgetPage({super.key});

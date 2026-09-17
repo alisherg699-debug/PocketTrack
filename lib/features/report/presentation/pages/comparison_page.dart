@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import '../../../expense/application/expense/expense_bloc.dart';
-import '../../../expense/application/expense/expense_state.dart';
-import '../../../expense/domain/entities/expense.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
+import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 
 class ComparisonPage extends StatefulWidget {
   const ComparisonPage({super.key});
