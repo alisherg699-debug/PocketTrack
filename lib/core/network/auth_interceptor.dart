@@ -59,7 +59,7 @@ class AuthInterceptor extends Interceptor {
           if (newAccessToken != null) {
             await _localDataSource.saveAccessToken(newAccessToken);
             
-            // Kutib turgan barcha so'rovlarga yangi tokenni yuboramiz
+            // Kutib turgan barcha so'rovlarga yangi tokenni yuborish
             _refreshCompleter?.complete(newAccessToken);
             _isRefreshing = false;
 

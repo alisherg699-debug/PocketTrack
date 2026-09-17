@@ -140,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: TextField(
                           controller: _usernameController,
                           decoration: InputDecoration(
-                            hintText: "Username (masalan: emilys)",
+                            hintText: "pochta@misol.com",
                             filled: true,
                             fillColor: const Color(0xFFFFFFFF),
                             border: OutlineInputBorder(
