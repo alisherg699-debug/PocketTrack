@@ -60,8 +60,7 @@ class _ExportPageState extends State<ExportPage> {
       } else if (selectedFormat == 'Excel') {
         ExportService.exportToExcel(filteredExpenses, startDate, endDate);
       } else if (selectedFormat == 'CSV') {
-        // CSV uchun Excel mantiqi mos keladi (Excel.xlsx yoki alohida CSV yozish mumkin)
-        ExportService.exportToExcel(filteredExpenses, startDate, endDate);
+        ExportService.exportToCsv(filteredExpenses, startDate, endDate);
       }
     }
   }

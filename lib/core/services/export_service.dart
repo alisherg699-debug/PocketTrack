@@ -72,4 +72,17 @@ class ExportService {
       await OpenFilex.open(file.path);
     }
   }
+
+  static Future<void> exportToCsv(List<Expense> expenses, DateTime start, DateTime end) async {
+    String csvData = "Sana,Nomi,Kategoriya,Summa\n";
+    
+    for (var e in expenses) {
+      csvData += "${DateFormat('dd.MM.yyyy').format(e.date)},${e.title},${e.category},${e.amount}\n";
+    }
+
+    final output = await getTemporaryDirectory();
+    final file = File("${output.path}/pockettrack_report_${DateTime.now().millisecondsSinceEpoch}.csv");
+    await file.writeAsString(csvData);
+    await OpenFilex.open(file.path);
+  }
 }
