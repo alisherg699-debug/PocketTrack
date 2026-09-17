@@ -113,6 +113,15 @@ class _HomeContent extends StatelessWidget {
     return FileImage(File(path));
   }
 
+  // DINAMIK SALOMLASHISH
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) return "Xayrli tong,";
+    if (hour >= 12 && hour < 18) return "Xayrli kun,";
+    if (hour >= 18 && hour < 24) return "Xayrli kech,";
+    return "Xayrli tun,";
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
@@ -121,7 +130,7 @@ class _HomeContent extends StatelessWidget {
           authenticated: (user) => user,
           orElse: () => null,
         );
-        final userName = user?.firstName ?? "";
+        final userName = user?.firstName ?? "Foydalanuvchi";
 
         return BlocBuilder<ExpenseBloc, ExpenseState>(
           builder: (context, state) {
@@ -151,11 +160,10 @@ class _HomeContent extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text("Xayrli tong,", style: TextStyle(color: Color(0xFF64748B), fontSize: 14)),
+                            Text(_getGreeting(), style: const TextStyle(color: Color(0xFF64748B), fontSize: 14)),
                             Text(userName, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 20, fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        // DINAMIK PROFIL RASMI
                         CircleAvatar(
                           radius: 22, 
                           backgroundColor: const Color(0xFFE2E8F0),
@@ -175,7 +183,7 @@ class _HomeContent extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text("BUGUNGI XARAJATLAR", style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+                          const Text("BUGUNGI JAMI XARAJAT", style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
                           const SizedBox(height: 8),
                           Text(
                             isError ? "--.-- so'm" : "${_formatCurrency(todayTotal)} so'm",
@@ -188,7 +196,7 @@ class _HomeContent extends StatelessWidget {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  todayExpenses.isNotEmpty ? "Bugun uchun ${todayExpenses.length} ta operatsiya" : "Bugun uchun ma'lumot yo'q",
+                                  todayExpenses.isNotEmpty ? "Bugun uchun ${todayExpenses.length} ta operatsiya" : "Bugun hali xarajat qilinmadi",
                                   style: const TextStyle(color: Colors.white70, fontSize: 13),
                                 ),
                               ),
@@ -253,7 +261,7 @@ class _HomeContent extends StatelessWidget {
             width: 120, height: 120,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF0D9488).withValues(alpha: 0.3), width: 2),
+              border: Border.all(color: const Color(0xFF0D9488).withOpacity(0.3), width: 2),
             ),
             padding: const EdgeInsets.all(20),
             child: Container(
