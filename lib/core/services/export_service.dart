@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:excel_plus/excel_plus.dart';
+import 'dart:typed_data';
+import 'package:excel/excel.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
@@ -7,6 +8,7 @@ import 'package:intl/intl.dart';
 import '../../features/expense/domain/entities/expense.dart';
 
 class ExportService {
+  // 1. PDF EXPORT
   static Future<void> exportToPdf(List<Expense> expenses, DateTime start, DateTime end) async {
     final pdf = pw.Document();
 
@@ -37,23 +39,27 @@ class ExportService {
       ),
     );
 
-    final output = await getTemporaryDirectory();
-    final file = File("${output.path}/pockettrack_report_${DateTime.now().millisecondsSinceEpoch}.pdf");
-    await file.writeAsBytes(await pdf.save());
-    await OpenFilex.open(file.path);
+    final bytes = await pdf.save();
+    await _saveAndOpenFile(bytes, "pdf", "application/pdf");
   }
 
+  // 2. EXCEL EXPORT
   static Future<void> exportToExcel(List<Expense> expenses, DateTime start, DateTime end) async {
-    final excel = Excel.createExcel();
-    final Sheet sheetObject = excel['Sheet1'];
+    var excel = Excel.createExcel();
+    
+    // Standart 'Sheet1'ni o'chirib, o'zimiznikini yaratamiz
+    excel.rename(excel.getDefaultSheet()!, 'Hisobot');
+    Sheet sheetObject = excel['Hisobot'];
 
+    // Sarlavhalar
     sheetObject.appendRow([
       TextCellValue('Sana'),
       TextCellValue('Nomi'),
       TextCellValue('Kategoriya'),
-      TextCellValue('Summa'),
+      TextCellValue('Summa (so\'m)'),
     ]);
 
+    // Ma'lumotlar
     for (var e in expenses) {
       sheetObject.appendRow([
         TextCellValue(DateFormat('dd.MM.yyyy').format(e.date)),
@@ -63,26 +69,39 @@ class ExportService {
       ]);
     }
 
-    final output = await getTemporaryDirectory();
     final fileBytes = excel.save();
-    final file = File("${output.path}/pockettrack_report_${DateTime.now().millisecondsSinceEpoch}.xlsx");
-    
     if (fileBytes != null) {
-      await file.writeAsBytes(fileBytes);
-      await OpenFilex.open(file.path);
+      await _saveAndOpenFile(
+        Uint8List.fromList(fileBytes), 
+        "xlsx", 
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      );
     }
   }
 
+  // 3. CSV EXPORT
   static Future<void> exportToCsv(List<Expense> expenses, DateTime start, DateTime end) async {
-    String csvData = "Sana,Nomi,Kategoriya,Summa\n";
+    // UTF-8 BOM qo'shish (Excel CSV-ni to'g'ri o'qishi uchun kerak)
+    String csvData = "\uFEFFSana,Nomi,Kategoriya,Summa\n";
     
     for (var e in expenses) {
       csvData += "${DateFormat('dd.MM.yyyy').format(e.date)},${e.title},${e.category},${e.amount}\n";
     }
 
-    final output = await getTemporaryDirectory();
-    final file = File("${output.path}/pockettrack_report_${DateTime.now().millisecondsSinceEpoch}.csv");
-    await file.writeAsString(csvData);
-    await OpenFilex.open(file.path);
+    final bytes = Uint8List.fromList(csvData.codeUnits);
+    await _saveAndOpenFile(bytes, "csv", "text/csv");
+  }
+
+  // Yordamchi funksiya: Faylni saqlash va ochish
+  static Future<void> _saveAndOpenFile(Uint8List bytes, String extension, String mimeType) async {
+    // Temporary o'rniga Documents papkasidan foydalanamiz (ko'proq ruxsatlarga ega)
+    final directory = await getApplicationDocumentsDirectory();
+    final fileName = "pockettrack_${DateTime.now().millisecondsSinceEpoch}.$extension";
+    final file = File("${directory.path}/$fileName");
+    
+    await file.writeAsBytes(bytes);
+    
+    // Faylni ochishda MIME turini aniq ko'rsatamiz
+    await OpenFilex.open(file.path, type: mimeType);
   }
 }

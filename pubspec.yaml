@@ -44,7 +44,7 @@ dependencies:
   timezone: ^0.9.4
   fl_chart: ^0.68.0
   pdf: ^3.11.1
-  excel_plus: ^2.4.0
+  excel: ^4.0.3
   path_provider: ^2.1.4
   open_filex: ^4.5.0
   image_picker: ^1.1.2
