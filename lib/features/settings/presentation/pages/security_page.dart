@@ -49,86 +49,168 @@ class _SecurityPageState extends State<SecurityPage> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text(
-          "PIN-kod o'rnatish",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              "Ilovani himoya qilish uchun 4 xonali kod kiriting",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Color(0xFF64748B), fontSize: 14),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(4, (index) => SizedBox(
-                width: 50,
-                child: TextField(
-                  controller: controllers[index],
-                  focusNode: focusNodes[index],
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  maxLength: 1,
-                  obscureText: true,
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  decoration: InputDecoration(
-                    counterText: "",
-                    filled: true,
-                    fillColor: const Color(0xFFF8FAFC),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                    ),
-                  ),
-                  onChanged: (value) {
-                    if (value.isNotEmpty && index < 3) {
-                      focusNodes[index + 1].requestFocus();
-                    } else if (value.isEmpty && index > 0) {
-                      focusNodes[index - 1].requestFocus();
-                    }
-                  },
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFFF8FAFC),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                    )
+                  ],
                 ),
-              )),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Bekor qilish", style: TextStyle(color: Color(0xFF64748B))),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0D9488),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            onPressed: () async {
-              String pin = controllers.map((e) => e.text).join();
-              if (pin.length == 4) {
-                await _storage.write(key: 'user_pin', value: pin);
-                setState(() {
-                  _isPinEnabled = true;
-                });
-                if (context.mounted) Navigator.pop(context);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("PIN-kod muvaffaqiyatli o'rnatildi"),
-                      backgroundColor: Colors.green,
+                child: const Icon(
+                  Icons.lock_outline,
+                  color: Color(0xFF0D9488),
+                  size: 28,
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                "PIN-kod o'rnatish",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1E293B),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "Ilovani himoya qilish uchun 4 xonali kod kiriting",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFF94A3B8),
+                  fontSize: 14,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(4, (index) => SizedBox(
+                  width: 55,
+                  height: 60,
+                  child: TextField(
+                    controller: controllers[index],
+                    focusNode: focusNodes[index],
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    maxLength: 1,
+                    obscureText: true,
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    decoration: InputDecoration(
+                      counterText: "",
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      if (value.isNotEmpty && index < 3) {
+                        focusNodes[index + 1].requestFocus();
+                      } else if (value.isEmpty && index > 0) {
+                        focusNodes[index - 1].requestFocus();
+                      }
+                      setDialogState(() {});
+                    },
+                  ),
+                )),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(4, (index) {
+                  bool filled = controllers[index].text.isNotEmpty;
+                  return Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: filled ? const Color(0xFF0D9488) : const Color(0xFFE2E8F0),
                     ),
                   );
-                }
-              }
-            },
-            child: const Text("Saqlash", style: TextStyle(color: Colors.white)),
+                }),
+              ),
+              const SizedBox(height: 40),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text(
+                        "Bekor qilish",
+                        style: TextStyle(
+                          color: Color(0xFF1E293B),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 3,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0D9488),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: () async {
+                        String pin = controllers.map((e) => e.text).join();
+                        if (pin.length == 4) {
+                          await _storage.write(key: 'user_pin', value: pin);
+                          setState(() {
+                            _isPinEnabled = true;
+                          });
+                          if (context.mounted) Navigator.pop(context);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("PIN-kod muvaffaqiyatli o'rnatildi"),
+                                backgroundColor: Color(0xFF0D9488),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      child: const Text(
+                        "Saqlash",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
