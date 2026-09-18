@@ -9,6 +9,7 @@ import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/expense/presentation/pages/expense_details_page.dart';
 import 'package:pockettrack/features/report/presentation/pages/statistics_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/budget_page.dart';
+import '../../../../core/utils/currency_formatter.dart';
 
 class ExpensePage extends StatefulWidget {
   const ExpensePage({super.key});
@@ -272,35 +273,131 @@ class _ExpensePageState extends State<ExpensePage> {
   }
 
   void _showSetLimitDialog() {
-    final controller = TextEditingController(text: monthlyLimit.toStringAsFixed(0));
+    final controller = TextEditingController(
+      text: monthlyLimit > 0 ? ThousandsSeparatorInputFormatter.format(monthlyLimit) : "",
+    );
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("Oylik limitni o'rnatish"),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          autofocus: true,
-          decoration: const InputDecoration(hintText: "Summani kiriting", suffixText: " so'm", border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12)))),
+        backgroundColor: const Color(0xFFF8FAFC),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ICON BOX
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                  )
+                ],
+              ),
+              child: const Icon(
+                Icons.money,
+                color: Color(0xFF0D9488),
+                size: 28,
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              "Oylik limit o'rnatish",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1E293B),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "Oylik sarf-xarajatlaringiz uchun limit belgilang",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFF94A3B8),
+                fontSize: 14,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 32),
+            // AMOUNT INPUT
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9. ]')),
+                  ThousandsSeparatorInputFormatter(),
+                ],
+                decoration: const InputDecoration(
+                  hintText: "Masalan: 2 000 000",
+                  suffixText: "so'm ",
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(vertical: 18),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+            // BUTTONS
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      "Bekor qilish",
+                      style: TextStyle(
+                        color: Color(0xFF1E293B),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0D9488),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    onPressed: () async {
+                      if (controller.text.isNotEmpty) {
+                        final newLimit = double.tryParse(controller.text.replaceAll(' ', ''));
+                        if (newLimit != null) {
+                          await _saveLimit(newLimit);
+                        }
+                        if (context.mounted) Navigator.pop(context);
+                      }
+                    },
+                    child: const Text(
+                      "Saqlash",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Bekor qilish")),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D9488), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-            onPressed: () async {
-              if (controller.text.isNotEmpty) {
-                final newLimit = double.tryParse(controller.text);
-                if (newLimit != null) {
-                  await _saveLimit(newLimit);
-                }
-                if (context.mounted) Navigator.pop(context);
-              }
-            },
-            child: const Text("Saqlash", style: TextStyle(color: Colors.white)),
-          ),
-        ],
       ),
     );
   }
