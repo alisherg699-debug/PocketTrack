@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pockettrack/core/services/notification_service.dart';
+import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/features/income/application/income/income_bloc.dart';
 import 'package:pockettrack/features/income/application/income/income_event.dart';
 import 'package:pockettrack/features/income/domain/entities/income.dart';
@@ -38,7 +39,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
 
   void _saveIncome() {
     final name = _nameController.text.trim();
-    final amountText = _amountController.text.trim();
+    final amountText = _amountController.text.replaceAll(' ', '').trim();
     final amount = double.tryParse(amountText) ?? 0.0;
 
     if (name.isEmpty || amount <= 0) {
@@ -61,11 +62,10 @@ class _AddIncomePageState extends State<AddIncomePage> {
 
     context.read<IncomeBloc>().add(AddIncome(income));
 
-    // Bildirishnoma yuborish
     NotificationService.showNotification(
       id: DateTime.now().hashCode,
       title: "Daromad qo'shildi",
-      body: "$name uchun ${amount.toStringAsFixed(0)} so'm qabul qilindi",
+      body: "$name uchun ${ThousandsSeparatorInputFormatter.format(amount)} so'm qabul qilindi",
     );
 
     Navigator.pop(context);
@@ -101,30 +101,37 @@ class _AddIncomePageState extends State<AddIncomePage> {
             ),
             const SizedBox(height: 12),
             Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IntrinsicWidth(
-                    child: TextField(
-                      controller: _amountController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      autofocus: true,
-                      style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
-                      decoration: InputDecoration(
-                        hintText: "0.00",
-                        hintStyle: TextStyle(color: Colors.black.withValues(alpha: 0.1)),
-                        border: InputBorder.none, 
-                        isDense: true
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 280),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: TextField(
+                        controller: _amountController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        autofocus: true,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                        decoration: InputDecoration(
+                          hintText: "0",
+                          hintStyle: TextStyle(color: Colors.black.withValues(alpha: 0.1)),
+                          border: InputBorder.none, 
+                          isDense: true
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9. ]')),
+                          ThousandsSeparatorInputFormatter(),
+                        ],
                       ),
-                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    "so'm",
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF0D9488)),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    const Text(
+                      "so'm",
+                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF0D9488)),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 40),

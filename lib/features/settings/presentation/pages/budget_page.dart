@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
@@ -209,7 +210,9 @@ class _BudgetPageState extends State<BudgetPage> {
   }
 
   void _showEditDialog(String title, double currentValue, Function(double) onSave) {
-    final controller = TextEditingController(text: currentValue > 0 ? currentValue.toStringAsFixed(0) : "");
+    final controller = TextEditingController(
+      text: currentValue > 0 ? ThousandsSeparatorInputFormatter.format(currentValue) : "",
+    );
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -218,9 +221,16 @@ class _BudgetPageState extends State<BudgetPage> {
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+            ThousandsSeparatorInputFormatter(),
+          ],
           autofocus: true,
-          decoration: const InputDecoration(hintText: "Summani kiriting", suffixText: " so'm", border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12)))),
+          decoration: const InputDecoration(
+            hintText: "Summani kiriting",
+            suffixText: " so'm",
+            border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+          ),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Bekor qilish")),
@@ -228,7 +238,7 @@ class _BudgetPageState extends State<BudgetPage> {
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D9488), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
             onPressed: () {
               if (controller.text.isNotEmpty) {
-                onSave(double.parse(controller.text));
+                onSave(double.parse(controller.text.replaceAll(' ', '')));
                 Navigator.pop(context);
               }
             },
