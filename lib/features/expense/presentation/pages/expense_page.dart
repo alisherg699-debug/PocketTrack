@@ -9,7 +9,7 @@ import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/expense/presentation/pages/expense_details_page.dart';
 import 'package:pockettrack/features/report/presentation/pages/statistics_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/budget_page.dart';
-import '../../../../core/utils/currency_formatter.dart';
+import 'package:pockettrack/core/utils/currency_formatter.dart';
 
 class ExpensePage extends StatefulWidget {
   const ExpensePage({super.key});

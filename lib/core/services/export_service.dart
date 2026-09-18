@@ -4,6 +4,7 @@ import 'package:excel/excel.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:intl/intl.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 
@@ -24,14 +25,14 @@ class ExportService {
               DateFormat('dd.MM.yyyy').format(e.date),
               e.title,
               e.category,
-              "${e.amount.toStringAsFixed(0)} so'm"
+              "${ThousandsSeparatorInputFormatter.format(e.amount)} so'm"
             ]).toList(),
           ),
           pw.SizedBox(height: 20),
           pw.Align(
             alignment: pw.Alignment.centerRight,
             child: pw.Text(
-              "Jami: ${expenses.fold(0.0, (sum, e) => sum + e.amount).toStringAsFixed(0)} so'm",
+              "Jami: ${ThousandsSeparatorInputFormatter.format(expenses.fold(0.0, (sum, e) => sum + e.amount))} so'm",
               style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
             ),
           ),

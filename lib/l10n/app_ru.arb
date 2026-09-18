@@ -1,0 +1,16 @@
+{
+  "appTitle": "PocketTrack",
+  "welcome": "Добро пожаловать",
+  "login": "Вход",
+  "register": "Регистрация",
+  "home": "Главная",
+  "expenses": "Расходы",
+  "income": "Доходы",
+  "profile": "Профиль",
+  "settings": "Настройки",
+  "budget": "Бюджет",
+  "statistics": "Статистика",
+  "report": "Отчет",
+  "export": "Экспорт",
+  "security": "Безопасность"
+}

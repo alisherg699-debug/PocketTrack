@@ -1,0 +1,16 @@
+{
+  "appTitle": "PocketTrack",
+  "welcome": "Xush kelibsiz",
+  "login": "Kirish",
+  "register": "Ro'yxatdan o'tish",
+  "home": "Bosh sahifa",
+  "expenses": "Xarajatlar",
+  "income": "Daromad",
+  "profile": "Profil",
+  "settings": "Sozlamalar",
+  "budget": "Byudjet",
+  "statistics": "Statistika",
+  "report": "Hisobot",
+  "export": "Eksport",
+  "security": "Xavfsizlik"
+}

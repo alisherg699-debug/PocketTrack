@@ -26,6 +26,7 @@ import 'package:pockettrack/features/income/domain/repositories/income_repositor
 import 'package:pockettrack/features/income/infrastructure/repositories/income_repository_impl.dart';
 import 'package:pockettrack/features/income/infrastructure/datasources/income_local_data_source.dart';
 import 'package:pockettrack/features/income/infrastructure/models/income_model.dart';
+import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 
 import 'package:pockettrack/firebase_options.dart';
 
@@ -63,6 +64,7 @@ Future<void> init() async {
   sl.registerFactory(() => AuthCubit(sl()));
   sl.registerFactory(() => ExpenseBloc(sl()));
   sl.registerFactory(() => IncomeBloc(sl()));
+  sl.registerFactory(() => SettingsCubit());
 
   // 6. Network
   final dio = Dio();

@@ -9,6 +9,9 @@ import 'package:pockettrack/features/settings/presentation/pages/notifications_p
 import 'package:pockettrack/features/settings/presentation/pages/categories_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/security_page.dart';
 
+import 'package:pockettrack/features/settings/presentation/pages/help_support_page.dart';
+import 'package:pockettrack/features/settings/presentation/pages/language_page.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -138,9 +141,19 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 12),
                       _buildMenuItem(
+                        icon: Icons.language_outlined,
+                        title: "Tilni o'zgartirish",
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const LanguagePage()));
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      _buildMenuItem(
                         icon: Icons.help_outline,
                         title: "Yordam va qo'llab-quvvatlash",
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpSupportPage()));
+                        },
                       ),
                     ],
                   ),

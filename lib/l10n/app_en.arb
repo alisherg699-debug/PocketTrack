@@ -1,0 +1,16 @@
+{
+  "appTitle": "PocketTrack",
+  "welcome": "Welcome",
+  "login": "Login",
+  "register": "Register",
+  "home": "Home",
+  "expenses": "Expenses",
+  "income": "Income",
+  "profile": "Profile",
+  "settings": "Settings",
+  "budget": "Budget",
+  "statistics": "Statistics",
+  "report": "Report",
+  "export": "Export",
+  "security": "Security"
+}

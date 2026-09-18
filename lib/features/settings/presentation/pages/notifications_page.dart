@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pockettrack/core/services/notification_service.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -14,7 +15,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
   bool weeklyReport = true;
   bool budgetAlert = true;
   bool newFeatures = false;
-  int alertThreshold = 80; // Standart 80%
+  int alertThreshold = 80; 
+  int reminderHour = 20;
+  int reminderMinute = 0;
 
   @override
   void initState() {
@@ -30,6 +33,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
       budgetAlert = prefs.getBool('budget_alert') ?? true;
       newFeatures = prefs.getBool('new_features') ?? false;
       alertThreshold = prefs.getInt('alert_threshold') ?? 80;
+      reminderHour = prefs.getInt('reminder_hour') ?? 20;
+      reminderMinute = prefs.getInt('reminder_minute') ?? 0;
     });
   }
 
@@ -40,10 +45,45 @@ class _NotificationsPageState extends State<NotificationsPage> {
     } else if (value is int) {
       await prefs.setInt(key, value);
     }
+    
+    if (dailyReminder) {
+      _scheduleDaily();
+    } else {
+      NotificationService.cancelAllNotifications();
+    }
+  }
+
+  void _scheduleDaily() {
+    NotificationService.scheduleDailyNotification(
+      id: 100,
+      title: "Xarajatlarni kiritish vaqti keldi!",
+      body: "Bugungi barcha sarf-xarajatlaringizni PocketTrack-ga yozib qo'ydingizmi?",
+      hour: reminderHour,
+      minute: reminderMinute,
+    );
+  }
+
+  Future<void> _selectTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: reminderHour, minute: reminderMinute),
+    );
+    if (picked != null) {
+      setState(() {
+        reminderHour = picked.hour;
+        reminderMinute = picked.minute;
+      });
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('reminder_hour', picked.hour);
+      await prefs.setInt('reminder_minute', picked.minute);
+      if (dailyReminder) _scheduleDaily();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    String timeLabel = "${reminderHour.toString().padLeft(2, '0')}:${reminderMinute.toString().padLeft(2, '0')}";
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -74,8 +114,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 children: [
                   _buildNotificationItem(
                     title: "Kundalik eslatma",
-                    description: "Har kuni xarajatlarni kiritishni eslatuvchi xabar",
+                    description: "Har kuni $timeLabel da xarajatlarni kiritishni eslatish",
                     value: dailyReminder,
+                    onTap: _selectTime,
                     onChanged: (val) {
                       setState(() => dailyReminder = val);
                       _updateSetting('daily_reminder', val);
@@ -92,12 +133,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  // Byudjet ogohlantirishi - endi uni bossa foizni o'zgartirsa bo'ladi
                   _buildNotificationItem(
                     title: "Byudjet ogohlantirishi",
                     description: "Oy limiti $alertThreshold% dan oshganda xabar berish",
                     value: budgetAlert,
-                    onTap: () => _showThresholdDialog(), // Bosilganda dialog chiqadi
+                    onTap: () => _showThresholdDialog(),
                     onChanged: (val) {
                       setState(() => budgetAlert = val);
                       _updateSetting('budget_alert', val);
@@ -150,7 +190,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 ],
               ),
             ),
-            if (onTap != null) const Icon(Icons.edit_outlined, size: 18, color: Color(0xFF94A3B8)),
+            if (onTap != null) const Icon(Icons.access_time_rounded, size: 18, color: Color(0xFF94A3B8)),
             const SizedBox(width: 8),
             Switch.adaptive(
               value: value,
