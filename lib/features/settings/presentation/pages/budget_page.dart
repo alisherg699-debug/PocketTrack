@@ -216,35 +216,123 @@ class _BudgetPageState extends State<BudgetPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(title),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-            ThousandsSeparatorInputFormatter(),
+        backgroundColor: const Color(0xFFF8FAFC),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ICON BOX
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                  )
+                ],
+              ),
+              child: const Icon(
+                Icons.account_balance_wallet_outlined,
+                color: Color(0xFF0D9488),
+                size: 28,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1E293B),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "Byudjet miqdorini tahrirlash uchun yangi qiymat kiriting",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFF94A3B8),
+                fontSize: 14,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 32),
+            // AMOUNT INPUT
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9. ]')),
+                  ThousandsSeparatorInputFormatter(),
+                ],
+                decoration: const InputDecoration(
+                  hintText: "Masalan: 2 000 000",
+                  suffixText: "so'm ",
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(vertical: 18),
+                ),
+              ),
+            ),
+            const SizedBox(height: 40),
+            // BUTTONS
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      "Bekor qilish",
+                      style: TextStyle(
+                        color: Color(0xFF1E293B),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 3,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0D9488),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    onPressed: () {
+                      if (controller.text.isNotEmpty) {
+                        onSave(double.parse(controller.text.replaceAll(' ', '')));
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text(
+                      "Saqlash",
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: "Summani kiriting",
-            suffixText: " so'm",
-            border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-          ),
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Bekor qilish")),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D9488), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                onSave(double.parse(controller.text.replaceAll(' ', '')));
-                Navigator.pop(context);
-              }
-            },
-            child: const Text("Saqlash", style: TextStyle(color: Colors.white)),
-          ),
-        ],
       ),
     );
   }
