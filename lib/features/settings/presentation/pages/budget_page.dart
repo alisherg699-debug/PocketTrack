@@ -8,6 +8,8 @@ import 'package:pockettrack/features/expense/application/expense/expense_state.d
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/income/presentation/pages/add_income_page.dart';
 
+import '../../../../l10n/app_localizations.dart';
+
 class BudgetPage extends StatefulWidget {
   const BudgetPage({super.key});
 
@@ -59,10 +61,11 @@ class _BudgetPageState extends State<BudgetPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text("Byudjet", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(l10n.budget, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -70,7 +73,7 @@ class _BudgetPageState extends State<BudgetPage> {
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new, size: 20), onPressed: () => Navigator.pop(context)),
         actions: [
           IconButton(
-            onPressed: () => _showEditDialog("Oylik byudjet miqdori", totalMonthlyBudget, _saveTotalBudget),
+            onPressed: () => _showEditDialog(l10n.monthlyBudget, totalMonthlyBudget, _saveTotalBudget, l10n),
             icon: const Icon(Icons.tune_rounded),
           ),
           const SizedBox(width: 8),
@@ -91,21 +94,21 @@ class _BudgetPageState extends State<BudgetPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTotalCard(totalSpent, totalMonthlyBudget, totalPercent),
+                  _buildTotalCard(l10n, totalSpent, totalMonthlyBudget, totalPercent),
                   const SizedBox(height: 32),
-                  const Text("Kategoriyalar bo'yicha", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                  Text(l10n.categoryAnalysis, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
                   const SizedBox(height: 16),
                   ...categories.map((cat) {
                     final spent = monthlyExpenses.where((e) => e.category == cat).fold(0.0, (sum, e) => sum + e.amount);
                     final limit = categoryBudgetLimits[cat] ?? 0;
-                    return _buildCategoryBudgetCard(cat, spent, limit);
+                    return _buildCategoryBudgetCard(l10n, cat, spent, limit);
                   }).toList(),
                   const SizedBox(height: 80),
                 ],
               ),
             );
           }
-          return const Center(child: Text("Ma'lumotlar yo'q"));
+          return Center(child: Text(l10n.noData));
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -116,13 +119,13 @@ class _BudgetPageState extends State<BudgetPage> {
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         icon: const Icon(Icons.add_circle_outline, color: Colors.white),
-        label: const Text("Daromad qo'shish", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        label: Text(l10n.addIncome, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
-  Widget _buildTotalCard(double spent, double budget, double percent) {
+  Widget _buildTotalCard(AppLocalizations l10n, double spent, double budget, double percent) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
@@ -134,15 +137,15 @@ class _BudgetPageState extends State<BudgetPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("OYLIK BYUDJET", style: TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+          Text(l10n.monthlyBudget, style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
           const SizedBox(height: 8),
-          Text("${_format(budget)} so'm", style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800)),
+          Text("${_format(budget)} ${l10n.som}", style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800)),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Byudjetning ${(percent * 100).toInt()}% sarflandi", style: const TextStyle(color: Colors.white70, fontSize: 12)),
-              Text("${_format(spent)} so'm", style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+              Text(l10n.spentOfBudget((percent * 100).toInt().toString()), style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              Text("${_format(spent)} ${l10n.som}", style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 12),
@@ -155,7 +158,7 @@ class _BudgetPageState extends State<BudgetPage> {
     );
   }
 
-  Widget _buildCategoryBudgetCard(String title, double spent, double limit) {
+  Widget _buildCategoryBudgetCard(AppLocalizations l10n, String title, double spent, double limit) {
     final double displayLimit = limit > 0 ? limit : 1.0; 
     final double percent = (spent / displayLimit).clamp(0, 1);
     final bool isOverBudget = spent > limit && limit > 0;
@@ -171,7 +174,7 @@ class _BudgetPageState extends State<BudgetPage> {
     if (isOverBudget) barColor = Colors.red;
 
     return GestureDetector(
-      onTap: () => _showEditDialog("$title uchun ajratilgan byudjet", limit, (val) => _saveCategoryLimit(title, val)),
+      onTap: () => _showEditDialog("$title uchun ajratilgan byudjet", limit, (val) => _saveCategoryLimit(title, val), l10n),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
@@ -209,7 +212,7 @@ class _BudgetPageState extends State<BudgetPage> {
     );
   }
 
-  void _showEditDialog(String title, double currentValue, Function(double) onSave) {
+  void _showEditDialog(String title, double currentValue, Function(double) onSave, AppLocalizations l10n) {
     final controller = TextEditingController(
       text: currentValue > 0 ? ThousandsSeparatorInputFormatter.format(currentValue) : "",
     );
@@ -252,10 +255,10 @@ class _BudgetPageState extends State<BudgetPage> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              "Byudjet miqdorini tahrirlash uchun yangi qiymat kiriting",
+            Text(
+              l10n.budgetEditDesc,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF94A3B8),
                 fontSize: 14,
                 height: 1.4,
@@ -278,11 +281,11 @@ class _BudgetPageState extends State<BudgetPage> {
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9. ]')),
                   ThousandsSeparatorInputFormatter(),
                 ],
-                decoration: const InputDecoration(
-                  hintText: "Masalan: 2 000 000",
-                  suffixText: "so'm ",
+                decoration: InputDecoration(
+                  hintText: "${l10n.exampleLunch.split(':')[0]}: 2 000 000",
+                  suffixText: "${l10n.som} ",
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 18),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 18),
                 ),
               ),
             ),
@@ -294,9 +297,9 @@ class _BudgetPageState extends State<BudgetPage> {
                   flex: 2,
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      "Bekor qilish",
-                      style: TextStyle(
+                    child: Text(
+                      l10n.cancel,
+                      style: const TextStyle(
                         color: Color(0xFF1E293B),
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -323,9 +326,9 @@ class _BudgetPageState extends State<BudgetPage> {
                         Navigator.pop(context);
                       }
                     },
-                    child: const Text(
-                      "Saqlash",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    child: Text(
+                      l10n.save,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),

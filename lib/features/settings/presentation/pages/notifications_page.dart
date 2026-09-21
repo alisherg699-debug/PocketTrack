@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pockettrack/core/services/notification_service.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -54,10 +55,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   void _scheduleDaily() {
+    final l10n = AppLocalizations.of(context)!;
     NotificationService.scheduleDailyNotification(
       id: 100,
-      title: "Xarajatlarni kiritish vaqti keldi!",
-      body: "Bugungi barcha sarf-xarajatlaringizni PocketTrack-ga yozib qo'ydingizmi?",
+      title: l10n.notificationTitle,
+      body: l10n.notificationBody,
       hour: reminderHour,
       minute: reminderMinute,
     );
@@ -82,12 +84,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     String timeLabel = "${reminderHour.toString().padLeft(2, '0')}:${reminderMinute.toString().padLeft(2, '0')}";
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text("Bildirishnomalar", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(l10n.notifications, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -101,11 +104,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(24, 24, 24, 12),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
               child: Text(
-                "TIZIM BILDIRISHNOMALARI",
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF94A3B8), letterSpacing: 0.5),
+                l10n.systemNotifications,
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF94A3B8), letterSpacing: 0.5),
               ),
             ),
             Padding(
@@ -113,8 +116,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
               child: Column(
                 children: [
                   _buildNotificationItem(
-                    title: "Kundalik eslatma",
-                    description: "Har kuni $timeLabel da xarajatlarni kiritishni eslatish",
+                    title: l10n.dailyReminderTitle,
+                    description: l10n.dailyReminderDesc(timeLabel),
                     value: dailyReminder,
                     onTap: _selectTime,
                     onChanged: (val) {
@@ -124,8 +127,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   ),
                   const SizedBox(height: 12),
                   _buildNotificationItem(
-                    title: "Haftalik hisobot",
-                    description: "O'tgan hafta xarajatlarining qisqacha tahlili",
+                    title: l10n.weeklyReportTitle,
+                    description: l10n.weeklyReportDesc,
                     value: weeklyReport,
                     onChanged: (val) {
                       setState(() => weeklyReport = val);
@@ -134,10 +137,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   ),
                   const SizedBox(height: 12),
                   _buildNotificationItem(
-                    title: "Byudjet ogohlantirishi",
-                    description: "Oy limiti $alertThreshold% dan oshganda xabar berish",
+                    title: l10n.budgetAlertTitle,
+                    description: l10n.budgetAlertDesc(alertThreshold),
                     value: budgetAlert,
-                    onTap: () => _showThresholdDialog(),
+                    onTap: () => _showThresholdDialog(l10n),
                     onChanged: (val) {
                       setState(() => budgetAlert = val);
                       _updateSetting('budget_alert', val);
@@ -145,8 +148,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   ),
                   const SizedBox(height: 12),
                   _buildNotificationItem(
-                    title: "Yangi xususiyatlar",
-                    description: "Ilovadagi yangilanishlar va takliflar haqida ma'lumot",
+                    title: l10n.newFeaturesTitle,
+                    description: l10n.newFeaturesDesc,
                     value: newFeatures,
                     onChanged: (val) {
                       setState(() => newFeatures = val);
@@ -203,17 +206,17 @@ class _NotificationsPageState extends State<NotificationsPage> {
     );
   }
 
-  void _showThresholdDialog() {
+  void _showThresholdDialog(AppLocalizations l10n) {
     final controller = TextEditingController(text: alertThreshold.toString());
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("Limit foizini tanlang"),
+        title: Text(l10n.selectLimitPercentage),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Qaysi foizdan oshganda sizga xabar beraylik?", style: TextStyle(color: Colors.grey, fontSize: 14)),
+            Text(l10n.thresholdQuestion, style: const TextStyle(color: Colors.grey, fontSize: 14)),
             const SizedBox(height: 16),
             TextField(
               controller: controller,
@@ -228,7 +231,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Bekor qilish")),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D9488), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
             onPressed: () {
@@ -239,7 +242,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 Navigator.pop(context);
               }
             },
-            child: const Text("Saqlash", style: TextStyle(color: Colors.white)),
+            child: Text(l10n.save, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pockettrack/core/services/notification_service.dart';
@@ -44,7 +45,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
 
     if (name.isEmpty || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Iltimos, nomi va miqdorini to'g'ri kiriting")),
+        SnackBar(content: Text(l10n.invalidInput)),
       );
       return;
     }
@@ -73,6 +74,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -82,9 +84,9 @@ class _AddIncomePageState extends State<AddIncomePage> {
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          "Daromad qo'shish",
-          style: TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.bold, fontSize: 18),
+        title: Text(
+          l10n.addIncome,
+          style: const TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,
       ),
@@ -93,10 +95,10 @@ class _AddIncomePageState extends State<AddIncomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Center(
+            Center(
               child: Text(
-                "MIQDORNI KIRITING",
-                style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1),
+                l10n.enterAmount.toUpperCase(),
+                style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1),
               ),
             ),
             const SizedBox(height: 12),
@@ -126,30 +128,30 @@ class _AddIncomePageState extends State<AddIncomePage> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Text(
-                      "so'm",
-                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF0D9488)),
+                    Text(
+                      l10n.som,
+                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF0D9488)),
                     ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 40),
-            _buildLabel("Daromad nomi"),
-            _buildTextField(_nameController, "Masalan: Oylik"),
+            _buildLabel(l10n.title),
+            _buildTextField(_nameController, l10n.exampleSalary),
             const SizedBox(height: 24),
-            _buildLabel("Kategoriya"),
+            _buildLabel(l10n.category),
             Wrap(
               spacing: 12,
               runSpacing: 12,
               children: _categories.map((cat) => _buildCategoryChip(cat)).toList(),
             ),
             const SizedBox(height: 24),
-            _buildLabel("Tavsif"),
-            _buildTextField(_descController, "Qo'shimcha ma'lumot kiriting...", maxLines: 3),
+            _buildLabel(l10n.description),
+            _buildTextField(_descController, l10n.addDescription, maxLines: 3),
             const SizedBox(height: 24),
-            _buildLabel("Sana va vaqt"),
-            _buildStaticField("Bugun, ${DateFormat('HH:mm').format(DateTime.now())}"),
+            _buildLabel(l10n.date),
+            _buildStaticField("${l10n.today}, ${DateFormat('HH:mm', l10n.localeName).format(DateTime.now())}"),
             const SizedBox(height: 120),
           ],
         ),
@@ -165,9 +167,9 @@ class _AddIncomePageState extends State<AddIncomePage> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               elevation: 0,
             ),
-            child: const Text(
-              "Daromadni saqlash",
-              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            child: Text(
+              l10n.save,
+              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
         ),

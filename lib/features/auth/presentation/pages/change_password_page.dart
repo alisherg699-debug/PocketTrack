@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pockettrack/features/auth/application/auth_cubit.dart';
 import 'package:pockettrack/features/auth/application/auth_state.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -70,12 +71,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     int strengthCount = [has8Chars, hasUppercase, hasDigits, hasSpecial].where((e) => e).length;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text("Parolni o'zgartirish", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(l10n.changePassword, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -101,11 +103,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildLabel("Joriy parol"),
+                _buildLabel(l10n.currentPassword),
                 _buildField(_oldPasswordController, _oldVisible, (val) => setState(() => _oldVisible = !val)),
                 const SizedBox(height: 24),
                 
-                _buildLabel("Yangi parol"),
+                _buildLabel(l10n.newPassword),
                 _buildField(_newPasswordController, _newVisible, (val) => setState(() => _newVisible = !val), isNew: true),
                 const SizedBox(height: 12),
                 
@@ -124,19 +126,19 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  strengthCount == 4 ? "Kuchli parol" : (strengthCount >= 2 ? "O'rtacha parol" : "Bo'sh parol"),
+                  strengthCount == 4 ? l10n.strong : (strengthCount >= 2 ? l10n.medium : l10n.weak),
                   style: TextStyle(color: strengthCount == 4 ? const Color(0xFF0D9488) : Colors.grey, fontSize: 12, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 24),
 
-                _buildLabel("Yangi parolni tasdiqlang"),
+                _buildLabel(l10n.confirmPassword),
                 _buildField(_confirmPasswordController, _confirmVisible, (val) => setState(() => _confirmVisible = !val), hint: "Yangi parolni qayta kiriting"),
                 
                 const SizedBox(height: 32),
-                _buildRequirement("Kamida 8 belgi", has8Chars),
-                _buildRequirement("Katta harf", hasUppercase),
-                _buildRequirement("Raqam", hasDigits),
-                _buildRequirement("Maxsus belgi", hasSpecial),
+                _buildRequirement(l10n.min8Chars, has8Chars),
+                _buildRequirement(l10n.uppercase, hasUppercase),
+                _buildRequirement(l10n.digit, hasDigits),
+                _buildRequirement(l10n.specialChar, hasSpecial),
                 
                 const SizedBox(height: 48),
                 ElevatedButton(
@@ -149,7 +151,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   ),
                   child: isLoading 
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("Parolni yangilash", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                    : Text(l10n.save, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),

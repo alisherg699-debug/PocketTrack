@@ -5,6 +5,7 @@ import 'package:pockettrack/features/expense/application/expense/expense_bloc.da
 import 'package:pockettrack/features/expense/application/expense/expense_event.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/expense/presentation/pages/add_expense_page.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class ExpenseDetailsPage extends StatefulWidget {
   final Expense expense;
@@ -18,6 +19,7 @@ class ExpenseDetailsPage extends StatefulWidget {
 class _ExpenseDetailsPageState extends State<ExpenseDetailsPage> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     IconData categoryIcon;
     switch (widget.expense.category.toLowerCase()) {
       case 'oziq-ovqat': categoryIcon = Icons.restaurant; break;
@@ -29,9 +31,9 @@ class _ExpenseDetailsPageState extends State<ExpenseDetailsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text(
-          "Xarajat tafsilotlari",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        title: Text(
+          l10n.expenseDetails,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -75,15 +77,15 @@ class _ExpenseDetailsPageState extends State<ExpenseDetailsPage> {
               ),
               child: Column(
                 children: [
-                  _buildDetailRow("Kategoriya", widget.expense.category),
+                  _buildDetailRow(l10n.category, widget.expense.category),
                   _buildDivider(),
-                  _buildDetailRow("Tavsif", widget.expense.description ?? "Izoh yo'q"),
+                  _buildDetailRow(l10n.description, widget.expense.description ?? l10n.noDescription),
                   _buildDivider(),
-                  _buildDetailRow("Sana", DateFormat('dd-MMMM, yyyy').format(widget.expense.date)),
+                  _buildDetailRow(l10n.date, DateFormat('dd-MMMM, yyyy').format(widget.expense.date)),
                   _buildDivider(),
-                  _buildDetailRow("Yaratilgan", DateFormat('dd-MMMM, yyyy HH:mm').format(widget.expense.createdAt)),
+                  _buildDetailRow(l10n.created, DateFormat('dd-MMMM, yyyy HH:mm').format(widget.expense.createdAt)),
                   _buildDivider(),
-                  _buildDetailRow("Yangilangan", DateFormat('dd-MMMM, yyyy HH:mm').format(widget.expense.updatedAt)),
+                  _buildDetailRow(l10n.updated, DateFormat('dd-MMMM, yyyy HH:mm').format(widget.expense.updatedAt)),
                 ],
               ),
             ),
@@ -110,20 +112,20 @@ class _ExpenseDetailsPageState extends State<ExpenseDetailsPage> {
                     side: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: const Text("Tahrirlash", style: TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.bold)),
+                  child: Text(l10n.edit, style: const TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.bold)),
                 ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () => _showDeleteConfirmDialog(context),
+                  onPressed: () => _showDeleteConfirmDialog(context, l10n),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFEF4444),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     elevation: 0,
                   ),
-                  child: const Text("O'chirish", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: Text(l10n.delete, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -156,21 +158,21 @@ class _ExpenseDetailsPageState extends State<ExpenseDetailsPage> {
     return const Divider(height: 1, color: Color(0xFFF1F5F9), indent: 20, endIndent: 20);
   }
 
-  void _showDeleteConfirmDialog(BuildContext context) {
+  void _showDeleteConfirmDialog(BuildContext context, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Xarajatni o'chirish"),
-        content: const Text("Haqiqatan ham ushbu xarajatni o'chirmoqchimisiz?"),
+        title: Text(l10n.deleteExpense),
+        content: Text(l10n.confirmDeleteExpense),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Bekor qilish")),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () {
               context.read<ExpenseBloc>().add(DeleteExpense(widget.expense.id));
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: const Text("O'chirish", style: TextStyle(color: Colors.red)),
+            child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),

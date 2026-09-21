@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pockettrack/features/auth/application/auth_cubit.dart';
 import 'package:pockettrack/features/auth/application/auth_state.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class AccountSettingsPage extends StatefulWidget {
   const AccountSettingsPage({super.key});
@@ -40,7 +41,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         setState(() => _imagePath = image.path);
       }
     } catch (e) {
-      debugPrint("Rasm tanlashda xato: $e");
+      debugPrint("${AppLocalizations.of(context)!.errorPickingImage}: $e");
     }
   }
 
@@ -53,11 +54,13 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
+        final l10n = AppLocalizations.of(context)!;
         state.maybeWhen(
           authenticated: (_) {
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Muvaffaqiyatli saqlandi!"), backgroundColor: Colors.green));
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.savedSuccessfully), backgroundColor: Colors.green));
             Navigator.pop(context);
           },
           error: (msg) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red)),
@@ -69,7 +72,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
         return Scaffold(
           backgroundColor: const Color(0xFFF8FAFC),
-          appBar: AppBar(title: const Text("Hisob sozlamalari")),
+          appBar: AppBar(title: Text(l10n.accountSettings)),
           body: SingleChildScrollView(
             child: Column(
               children: [
@@ -99,7 +102,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                           ),
                         ],
                       ),
-                      TextButton(onPressed: _pickImage, child: const Text("Rasm o'zgartirish", style: TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.bold))),
+                      TextButton(onPressed: _pickImage, child: Text(l10n.changePhoto, style: const TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.bold))),
                     ],
                   ),
                 ),
@@ -107,13 +110,13 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     children: [
-                      _buildInputField(label: "To'liq ism", controller: _nameController),
+                      _buildInputField(label: l10n.fullName, controller: _nameController),
                       const SizedBox(height: 20),
-                      _buildInputField(label: "Elektron pochta", controller: _emailController, keyboardType: TextInputType.emailAddress),
+                      _buildInputField(label: l10n.email, controller: _emailController, keyboardType: TextInputType.emailAddress),
                       const SizedBox(height: 20),
-                      _buildInputField(label: "Telefon raqam", controller: _phoneController, keyboardType: TextInputType.phone),
+                      _buildInputField(label: l10n.phoneNumber, controller: _phoneController, keyboardType: TextInputType.phone),
                       const SizedBox(height: 20),
-                      _buildInputField(label: "Valyuta", controller: _currencyController),
+                      _buildInputField(label: l10n.currency, controller: _currencyController),
                     ],
                   ),
                 ),
@@ -139,7 +142,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               ),
               child: isUpdating 
                 ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Text("Saqlash", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                : Text(l10n.save, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ),
           ),
         );

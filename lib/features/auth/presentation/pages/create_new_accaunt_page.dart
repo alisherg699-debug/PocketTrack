@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pockettrack/features/auth/application/auth_cubit.dart';
 import 'package:pockettrack/features/auth/application/auth_state.dart';
 import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class NewAccountPage extends StatefulWidget {
   const NewAccountPage({super.key});
@@ -37,21 +38,21 @@ class _NewAccountPageState extends State<NewAccountPage> {
 
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Barcha maydonlarni to'ldiring"), backgroundColor: Colors.orange),
+        SnackBar(content: Text(AppLocalizations.of(context)!.fillAllFields), backgroundColor: Colors.orange),
       );
       return;
     }
 
     if (password != confirm) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Parollar mos kelmadi"), backgroundColor: Colors.red),
+        SnackBar(content: Text(AppLocalizations.of(context)!.passwordsDoNotMatch), backgroundColor: Colors.red),
       );
       return;
     }
 
     if (password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Parol kamida 6 ta belgidan iborat bo'lishi kerak"), backgroundColor: Colors.orange),
+        SnackBar(content: Text(AppLocalizations.of(context)!.passwordTooShort), backgroundColor: Colors.orange),
       );
       return;
     }
@@ -61,16 +62,18 @@ class _NewAccountPageState extends State<NewAccountPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
+          final l10n = AppLocalizations.of(context)!;
           state.maybeWhen(
             unauthenticated: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text(
-                    "Hisob muvaffaqiyatli yaratildi! Endi kirishingiz mumkin.",
+                    l10n.accountCreatedSuccess,
                   ),
                   backgroundColor: Colors.green,
                 ),
@@ -99,9 +102,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Hisob yaratish",
-                        style: TextStyle(
+                      Text(
+                        l10n.register,
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Geist',
@@ -109,9 +112,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        "Moliyaviy farovonlik sari safaringizni boshlang.",
-                        style: TextStyle(
+                      Text(
+                        l10n.registerSubtitle,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w400,
@@ -119,9 +122,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      const Text(
-                        "To'liq ism",
-                        style: TextStyle(
+                      Text(
+                        l10n.fullName,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
@@ -134,9 +137,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         hint: "Alisher Ganiyev",
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        "Elektron pochta",
-                        style: TextStyle(
+                      Text(
+                        l10n.email,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
@@ -150,9 +153,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        "Parol",
-                        style: TextStyle(
+                      Text(
+                        l10n.password,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
@@ -162,7 +165,7 @@ class _NewAccountPageState extends State<NewAccountPage> {
                       const SizedBox(height: 8),
                       _buildTextField(
                         controller: _passwordController,
-                        hint: "Kuchli parol yarating",
+                        hint: l10n.createStrongPassword,
                         obscureText: !_isPasswordVisible,
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -173,9 +176,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        "Parolni tasdiqlang",
-                        style: TextStyle(
+                      Text(
+                        l10n.confirmPassword,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
@@ -185,7 +188,7 @@ class _NewAccountPageState extends State<NewAccountPage> {
                       const SizedBox(height: 8),
                       _buildTextField(
                         controller: _confirmPasswordController,
-                        hint: "Parolni takrorlang",
+                        hint: l10n.repeatPassword,
                         obscureText: !_isConfirmPasswordVisible,
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -213,9 +216,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
                           loading: () => const CircularProgressIndicator(
                             color: Colors.white,
                           ),
-                          orElse: () => const Text(
-                            "Hisob yaratish",
-                            style: TextStyle(fontSize: 20),
+                          orElse: () => Text(
+                            l10n.register,
+                            style: const TextStyle(fontSize: 20),
                           ),
                         ),
                       ),
@@ -223,9 +226,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            "Hisobingiz bormi?",
-                            style: TextStyle(
+                          Text(
+                            l10n.login,
+                            style: const TextStyle(
                               color: Color(0xFF475569),
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -241,9 +244,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
                                 ),
                               );
                             },
-                            child: const Text(
-                              "Kirish",
-                              style: TextStyle(
+                            child: Text(
+                              l10n.login,
+                              style: const TextStyle(
                                 color: Color(0xFF0D9488),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,

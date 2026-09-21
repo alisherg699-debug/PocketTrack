@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class HelpSupportPage extends StatelessWidget {
   const HelpSupportPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text("Yordam va qo'llab-quvvatlash", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(l10n.helpSupport, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,

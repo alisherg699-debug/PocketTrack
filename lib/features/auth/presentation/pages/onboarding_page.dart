@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -13,20 +14,20 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<Map<String, String>> _onboardingData = [
+  List<Map<String, String>> _getOnboardingData(AppLocalizations l10n) => [
     {
-      "title": "Xarajatlaringizni kuzating",
-      "desc": "Har bir tiyinni nazorat qiling va moliyaviy erkinlikka erishing",
+      "title": l10n.onboarding1Title,
+      "desc": l10n.onboarding1Desc,
       "icon": "wallet"
     },
     {
-      "title": "Byudjet rejalashtiring",
-      "desc": "Oylik byudjet belgilang va xarajatlaringizni kategoriyalar bo'yicha tahlil qiling",
+      "title": l10n.onboarding2Title,
+      "desc": l10n.onboarding2Desc,
       "icon": "chart"
     },
     {
-      "title": "Hisobotlar oling",
-      "desc": "Haftalik va oylik hisobotlar bilan moliyaviy holatingizdan xabardor bo'ling",
+      "title": l10n.onboarding3Title,
+      "desc": l10n.onboarding3Desc,
       "icon": "report"
     },
   ];
@@ -44,6 +45,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final onboardingData = _getOnboardingData(l10n);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -53,20 +56,20 @@ class _OnboardingPageState extends State<OnboardingPage> {
               child: PageView.builder(
                 controller: _pageController,
                 onPageChanged: (value) => setState(() => _currentPage = value),
-                itemCount: _onboardingData.length,
-                itemBuilder: (context, index) => _buildPageContent(index),
+                itemCount: onboardingData.length,
+                itemBuilder: (context, index) => _buildPageContent(index, onboardingData),
               ),
             ),
-            _buildBottomSection(),
+            _buildBottomSection(l10n, onboardingData),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPageContent(int index) {
+  Widget _buildPageContent(int index, List<Map<String, String>> onboardingData) {
     IconData iconData;
-    switch (_onboardingData[index]['icon']) {
+    switch (onboardingData[index]['icon']) {
       case 'wallet': iconData = Icons.account_balance_wallet_outlined; break;
       case 'chart': iconData = Icons.pie_chart_outline_rounded; break;
       case 'report': iconData = Icons.description_outlined; break;
@@ -88,13 +91,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ),
           const SizedBox(height: 60),
           Text(
-            _onboardingData[index]['title']!,
+            onboardingData[index]['title']!,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
           ),
           const SizedBox(height: 16),
           Text(
-            _onboardingData[index]['desc']!,
+            onboardingData[index]['desc']!,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 15, color: Color(0xFF64748B), height: 1.5),
           ),
@@ -103,8 +106,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
     );
   }
 
-  Widget _buildBottomSection() {
-    bool isLastPage = _currentPage == _onboardingData.length - 1;
+  Widget _buildBottomSection(AppLocalizations l10n, List<Map<String, String>> onboardingData) {
+    bool isLastPage = _currentPage == onboardingData.length - 1;
     
     return Padding(
       padding: const EdgeInsets.all(32.0),
@@ -113,7 +116,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
-              _onboardingData.length,
+              onboardingData.length,
               (index) => _buildDot(index),
             ),
           ),
@@ -137,7 +140,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               elevation: 0,
             ),
             child: Text(
-              isLastPage ? "Boshlash" : "Keyingi",
+              isLastPage ? l10n.getStarted : l10n.next,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
@@ -145,9 +148,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           if (!isLastPage)
             TextButton(
               onPressed: _completeOnboarding,
-              child: const Text(
-                "O'tkazib yuborish",
-                style: TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w600),
+              child: Text(
+                l10n.skip,
+                style: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w600),
               ),
             )
           else

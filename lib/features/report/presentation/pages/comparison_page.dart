@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class ComparisonPage extends StatefulWidget {
   const ComparisonPage({super.key});
@@ -31,13 +32,13 @@ class _ComparisonPageState extends State<ComparisonPage> {
   }
 
   // Oylarni tanlash uchun picker
-  Future<void> _pickMonth(bool isFirst) async {
+  Future<void> _pickMonth(bool isFirst, AppLocalizations l10n) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: isFirst ? firstMonth : secondMonth,
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
-      helpText: isFirst ? "Birinchi oyni tanlang" : "Ikkinchi oyni tanlang",
+      helpText: isFirst ? l10n.selectFirstMonth : l10n.selectSecondMonth,
     );
     if (picked != null) {
       setState(() {
@@ -49,10 +50,11 @@ class _ComparisonPageState extends State<ComparisonPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text("Solishtirish", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(l10n.comparisonTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -80,37 +82,37 @@ class _ComparisonPageState extends State<ComparisonPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildMonthHeader(),
+                        _buildMonthHeader(l10n),
                         const SizedBox(height: 24),
-                        _buildComparisonChart(m1Data.total, m2Data.total),
+                        _buildComparisonChart(m1Data.total, m2Data.total, l10n),
                         const SizedBox(height: 32),
-                        const Text("Kategoriyalar tahlili", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                        Text(l10n.categoryAnalysis, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
                         const SizedBox(height: 16),
                         if (m1Data.categories.isEmpty && m2Data.categories.isEmpty)
-                          const Center(child: Padding(padding: EdgeInsets.only(top: 40), child: Text("Ushbu oylar uchun ma'lumot topilmadi")))
+                          Center(child: Padding(padding: const EdgeInsets.only(top: 40), child: Text(l10n.noDataForMonths)))
                         else
-                          ..._buildCategoryComparisonList(m1Data.categories, m2Data.categories),
+                          ..._buildCategoryComparisonList(l10n, m1Data.categories, m2Data.categories),
                       ],
                     ),
                   ),
                 ),
-                _buildSummaryFooter(totalDiffPercent),
+                _buildSummaryFooter(totalDiffPercent, l10n),
               ],
             );
           }
-          return const Center(child: Text("Ma'lumotlar yuklanmadi"));
+          return Center(child: Text(l10n.dataNotLoaded));
         },
       ),
     );
   }
 
-  Widget _buildMonthHeader() {
+  Widget _buildMonthHeader(AppLocalizations l10n) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        GestureDetector(onTap: () => _pickMonth(true), child: _buildMonthButton(DateFormat('MMMM').format(firstMonth))),
-        const Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Text("vs", style: TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.bold))),
-        GestureDetector(onTap: () => _pickMonth(false), child: _buildMonthButton(DateFormat('MMMM').format(secondMonth))),
+        GestureDetector(onTap: () => _pickMonth(true, l10n), child: _buildMonthButton(DateFormat.MMMM(Localizations.localeOf(context).toString()).format(firstMonth))),
+        Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text(l10n.vs, style: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.bold))),
+        GestureDetector(onTap: () => _pickMonth(false, l10n), child: _buildMonthButton(DateFormat.MMMM(Localizations.localeOf(context).toString()).format(secondMonth))),
       ],
     );
   }
@@ -129,7 +131,7 @@ class _ComparisonPageState extends State<ComparisonPage> {
     );
   }
 
-  Widget _buildComparisonChart(double m1Total, double m2Total) {
+  Widget _buildComparisonChart(double m1Total, double m2Total, AppLocalizations l10n) {
     double maxY = (m1Total > m2Total ? m1Total : m2Total) * 1.3;
     if (maxY == 0) maxY = 100;
 
@@ -140,7 +142,7 @@ class _ComparisonPageState extends State<ComparisonPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Umumiy taqqoslash", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          Text(l10n.totalComparison, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
           const SizedBox(height: 32),
           SizedBox(
             height: 150,
@@ -153,8 +155,8 @@ class _ComparisonPageState extends State<ComparisonPage> {
                     sideTitles: SideTitles(
                       showTitles: true,
                       getTitlesWidget: (value, meta) {
-                        if (value == 0) return Padding(padding: const EdgeInsets.only(top: 8), child: Text(DateFormat('MMM').format(firstMonth), style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)));
-                        if (value == 1) return Padding(padding: const EdgeInsets.only(top: 8), child: Text(DateFormat('MMM').format(secondMonth), style: const TextStyle(color: Color(0xFF0D9488), fontSize: 12, fontWeight: FontWeight.bold)));
+                        if (value == 0) return Padding(padding: const EdgeInsets.only(top: 8), child: Text(DateFormat.MMM(Localizations.localeOf(context).toString()).format(firstMonth), style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)));
+                        if (value == 1) return Padding(padding: const EdgeInsets.only(top: 8), child: Text(DateFormat.MMM(Localizations.localeOf(context).toString()).format(secondMonth), style: const TextStyle(color: Color(0xFF0D9488), fontSize: 12, fontWeight: FontWeight.bold)));
                         return const SizedBox();
                       },
                     ),
@@ -177,7 +179,7 @@ class _ComparisonPageState extends State<ComparisonPage> {
     );
   }
 
-  List<Widget> _buildCategoryComparisonList(Map<String, double> m1Cats, Map<String, double> m2Cats) {
+  List<Widget> _buildCategoryComparisonList(AppLocalizations l10n, Map<String, double> m1Cats, Map<String, double> m2Cats) {
     Set<String> allCategories = {...m1Cats.keys, ...m2Cats.keys};
     return allCategories.map((cat) {
       double v1 = m1Cats[cat] ?? 0;
@@ -195,7 +197,7 @@ class _ComparisonPageState extends State<ComparisonPage> {
                 children: [
                   Text(cat, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   const SizedBox(height: 4),
-                  Text("${DateFormat('MMM').format(firstMonth)}: ${_formatK(v1)}  •  ${DateFormat('MMM').format(secondMonth)}: ${_formatK(v2)}", 
+                  Text("${DateFormat.MMM(Localizations.localeOf(context).toString()).format(firstMonth)}: ${_formatK(v1)}  •  ${DateFormat.MMM(Localizations.localeOf(context).toString()).format(secondMonth)}: ${_formatK(v2)}", 
                       style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13)),
                 ],
               ),
@@ -214,7 +216,7 @@ class _ComparisonPageState extends State<ComparisonPage> {
     }).toList();
   }
 
-  Widget _buildSummaryFooter(double percent) {
+  Widget _buildSummaryFooter(double percent, AppLocalizations l10n) {
     bool isSaving = percent <= 0;
     return Container(
       width: double.infinity,
@@ -228,7 +230,10 @@ class _ComparisonPageState extends State<ComparisonPage> {
             const SizedBox(width: 16),
             Expanded(
               child: Text(
-                "Bu oy o'tgan oyga nisbatan ${percent.abs().toStringAsFixed(0)}% ${isSaving ? 'kam' : 'ko\'p'} sarfladingiz",
+                l10n.comparisonSummary(
+                  percent.abs().toStringAsFixed(0),
+                  isSaving ? l10n.less : l10n.more,
+                ),
                 style: const TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.bold, fontSize: 14),
               ),
             ),

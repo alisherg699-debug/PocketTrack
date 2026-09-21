@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class CategoryItem {
   final String title;
@@ -101,10 +102,11 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text("Kategoriyalar", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(l10n.categories, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -173,26 +175,27 @@ class _CategoriesPageState extends State<CategoriesPage> {
   }
 
   void _showCategoryDialog({int? index, String? initialValue}) {
+    final l10n = AppLocalizations.of(context)!;
     _categoryController.text = initialValue ?? "";
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text(index == null ? "Yangi kategoriya" : "Kategoriyani tahrirlash"),
+          title: Text(index == null ? l10n.newCategory : l10n.editCategory),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: _categoryController,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: "Kategoriya nomi",
-                  border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+                decoration: InputDecoration(
+                  hintText: l10n.categoryName,
+                  border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
                 ),
               ),
               const SizedBox(height: 24),
-              const Align(alignment: Alignment.centerLeft, child: Text("Ikonka tanlang:", style: TextStyle(fontWeight: FontWeight.bold))),
+              Align(alignment: Alignment.centerLeft, child: Text(l10n.selectIcon, style: const TextStyle(fontWeight: FontWeight.bold))),
               const SizedBox(height: 12),
               SizedBox(
                 height: 50,
@@ -224,11 +227,11 @@ class _CategoriesPageState extends State<CategoriesPage> {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text("Bekor qilish")),
+            TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D9488), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
               onPressed: () => _addOrUpdateCategory(index: index),
-              child: const Text("Saqlash", style: TextStyle(color: Colors.white)),
+              child: Text(l10n.save, style: const TextStyle(color: Colors.white)),
             ),
           ],
         ),

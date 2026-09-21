@@ -9,8 +9,9 @@ import 'package:pockettrack/features/settings/presentation/pages/notifications_p
 import 'package:pockettrack/features/settings/presentation/pages/categories_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/security_page.dart';
 
-import 'package:pockettrack/features/settings/presentation/pages/help_support_page.dart';
-import 'package:pockettrack/features/settings/presentation/pages/language_page.dart';
+import '../../../../l10n/app_localizations.dart';
+import 'help_support_page.dart';
+import 'language_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -48,6 +49,7 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       },
       builder: (context, state) {
+        final l10n = AppLocalizations.of(context)!;
         final user = state.maybeWhen(
           authenticated: (user) => user,
           orElse: () => null,
@@ -56,9 +58,9 @@ class _ProfilePageState extends State<ProfilePage> {
         return Scaffold(
           backgroundColor: const Color(0xFFF8FAFC),
           appBar: AppBar(
-            title: const Text(
-              "Profil",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+            title: Text(
+              l10n.profile,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
             ),
             centerTitle: true,
             backgroundColor: Colors.white,
@@ -84,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        user?.firstName ?? "Yuklanmoqda...",
+                        user?.firstName ?? l10n.loading,
                         style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
                       ),
                       const SizedBox(height: 4),
@@ -101,16 +103,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.only(left: 4, bottom: 12, top: 12),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 12, top: 12),
                         child: Text(
-                          "HISOB SOZLAMALARI",
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF94A3B8), letterSpacing: 0.5),
+                          l10n.settings.toUpperCase(),
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF94A3B8), letterSpacing: 0.5),
                         ),
                       ),
                       _buildMenuItem(
                         icon: Icons.person_outline,
-                        title: "Hisob sozlamalari",
+                        title: l10n.accountSettings,
                         onTap: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const AccountSettingsPage()));
                         },
@@ -118,7 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 12),
                       _buildMenuItem(
                         icon: Icons.account_balance_wallet_outlined,
-                        title: "Kategoriyalar",
+                        title: l10n.categories,
                         onTap: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const CategoriesPage()));
                         },
@@ -126,7 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 12),
                       _buildMenuItem(
                         icon: Icons.notifications_none,
-                        title: "Bildirishnomalar",
+                        title: l10n.notifications,
                         onTap: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsPage()));
                         },
@@ -134,7 +136,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 12),
                       _buildMenuItem(
                         icon: Icons.lock_outline,
-                        title: "Xavfsizlik",
+                        title: l10n.security,
                         onTap: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const SecurityPage()));
                         },
@@ -142,7 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 12),
                       _buildMenuItem(
                         icon: Icons.language_outlined,
-                        title: "Tilni o'zgartirish",
+                        title: l10n.changeLanguage,
                         onTap: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const LanguagePage()));
                         },
@@ -150,7 +152,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 12),
                       _buildMenuItem(
                         icon: Icons.help_outline,
-                        title: "Yordam va qo'llab-quvvatlash",
+                        title: l10n.helpSupport,
                         onTap: () {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpSupportPage()));
                         },
@@ -161,7 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 40),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _buildLogoutButton(),
+                  child: _buildLogoutButton(l10n),
                 ),
                 const SizedBox(height: 40),
               ],
@@ -188,36 +190,36 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildLogoutButton() {
+  Widget _buildLogoutButton(AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFF1F5F9))),
       child: ListTile(
-        onTap: () => _showLogoutDialog(),
+        onTap: () => _showLogoutDialog(l10n),
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(color: const Color(0xFFFFF1F2), borderRadius: BorderRadius.circular(10)),
           child: const Icon(Icons.logout, color: Colors.red, size: 22),
         ),
-        title: const Text("Chiqish", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.red)),
+        title: Text(l10n.logout, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.red)),
       ),
     );
   }
 
-  void _showLogoutDialog() {
+  void _showLogoutDialog(AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text("Tizimdan chiqish"),
-        content: const Text("Haqiqatan ham hisobingizdan chiqmoqchimisiz?"),
+        title: Text(l10n.logout),
+        content: Text(l10n.confirmLogout),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Bekor qilish")),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () {
               context.read<AuthCubit>().logout();
               Navigator.pop(context);
             },
-            child: const Text("Chiqish", style: TextStyle(color: Colors.red)),
+            child: Text(l10n.logout, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),

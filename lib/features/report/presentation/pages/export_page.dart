@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:pockettrack/core/services/export_service.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class ExportPage extends StatefulWidget {
   const ExportPage({super.key});
@@ -50,7 +51,7 @@ class _ExportPageState extends State<ExportPage> {
 
       if (filteredExpenses.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Ushbu muddat uchun xarajatlar topilmadi")),
+          SnackBar(content: Text(AppLocalizations.of(context)!.noExpensesForPeriod)),
         );
         return;
       }
@@ -67,10 +68,11 @@ class _ExportPageState extends State<ExportPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text("Eksport", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(l10n.export, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -85,23 +87,23 @@ class _ExportPageState extends State<ExportPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Sana orali'gi", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+            Text(l10n.dateRange, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
             const SizedBox(height: 24),
             Row(
               children: [
-                Expanded(child: _buildDateInput("Boshlanish sanasi", startDate, () => _selectDate(context, true))),
+                Expanded(child: _buildDateInput(l10n.startDateLabel, startDate, () => _selectDate(context, true))),
                 const SizedBox(width: 16),
-                Expanded(child: _buildDateInput("Tugash sanasi", endDate, () => _selectDate(context, false))),
+                Expanded(child: _buildDateInput(l10n.endDateLabel, endDate, () => _selectDate(context, false))),
               ],
             ),
             const SizedBox(height: 32),
-            const Text("Fayl formati", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+            Text(l10n.fileFormat, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
             const SizedBox(height: 16),
-            _buildFormatOption("PDF", "Chop etish va bo'lishish uchun qulay hisobot", Icons.picture_as_pdf_outlined),
+            _buildFormatOption("PDF", l10n.pdfDesc, Icons.picture_as_pdf_outlined),
             const SizedBox(height: 12),
-            _buildFormatOption("Excel", "Batafsil tahlil va formulalar uchun jadval", Icons.grid_on_outlined),
+            _buildFormatOption("Excel", l10n.excelDesc, Icons.grid_on_outlined),
             const SizedBox(height: 12),
-            _buildFormatOption("CSV", "Boshqa moliya ilovalariga oson import qilish", Icons.storage_outlined),
+            _buildFormatOption("CSV", l10n.csvDesc, Icons.storage_outlined),
           ],
         ),
       ),
@@ -116,7 +118,7 @@ class _ExportPageState extends State<ExportPage> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               elevation: 0,
             ),
-            child: const Text("Eksport qilish", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            child: Text(l10n.exportBtn, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
           ),
         ),
       ),

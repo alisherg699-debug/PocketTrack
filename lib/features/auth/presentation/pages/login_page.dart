@@ -6,6 +6,7 @@ import 'package:pockettrack/features/auth/application/auth_state.dart';
 import 'package:pockettrack/features/auth/presentation/pages/create_new_accaunt_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/home_page.dart';
 import 'package:pockettrack/features/auth/presentation/pages/password_reset_page.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -55,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocConsumer<AuthCubit, AuthState>(
@@ -104,9 +106,9 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      const Text(
-                        "Xush kelibsiz",
-                        style: TextStyle(
+                      Text(
+                        l10n.welcome,
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Geist',
@@ -124,9 +126,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      const Text(
-                        "Elektron pochta",
-                        style: TextStyle(
+                      Text(
+                        l10n.email,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
@@ -169,9 +171,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        "Parol",
-                        style: TextStyle(
+                      Text(
+                        l10n.password,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
@@ -239,9 +241,9 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               );
                             },
-                            child: const Text(
-                              "Parolni unutdingizmi?",
-                              style: TextStyle(
+                            child: Text(
+                              l10n.forgotPassword,
+                              style: const TextStyle(
                                 color: Color(0xFF0D9488),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -268,9 +270,9 @@ class _LoginPageState extends State<LoginPage> {
                           loading: () => const CircularProgressIndicator(
                             color: Colors.white,
                           ),
-                          orElse: () => const Text(
-                            "Kirish",
-                            style: TextStyle(fontSize: 20),
+                          orElse: () => Text(
+                            l10n.login,
+                            style: const TextStyle(fontSize: 20),
                           ),
                         ),
                       ),
@@ -278,9 +280,9 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            "Hisobingiz yo'qmi?",
-                            style: TextStyle(
+                          Text(
+                            l10n.dontHaveAccount,
+                            style: const TextStyle(
                               color: Color(0xFF475569),
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
@@ -296,9 +298,9 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               );
                             },
-                            child: const Text(
-                              "Ro'yxatdan o'tish",
-                              style: TextStyle(
+                            child: Text(
+                              l10n.register,
+                              style: const TextStyle(
                                 color: Color(0xFF0D9488),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,

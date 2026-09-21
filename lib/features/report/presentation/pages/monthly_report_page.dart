@@ -10,6 +10,7 @@ import 'package:pockettrack/features/income/application/income/income_bloc.dart'
 import 'package:pockettrack/features/income/application/income/income_event.dart';
 import 'package:pockettrack/features/income/application/income/income_state.dart';
 import 'package:pockettrack/features/report/presentation/pages/export_page.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class MonthlyReportPage extends StatefulWidget {
   const MonthlyReportPage({super.key});
@@ -37,6 +38,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -46,9 +48,9 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          "Oylik hisobot",
-          style: TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.bold, fontSize: 18),
+        title: Text(
+          l10n.report,
+          style: const TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,
       ),
@@ -76,34 +78,34 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildMonthSelector(),
+                  _buildMonthSelector(l10n),
                   const SizedBox(height: 24),
-                  _buildIncomeExpenseRow(totalIncome, totalExpense),
+                  _buildIncomeExpenseRow(l10n, totalIncome, totalExpense),
                   const SizedBox(height: 16),
-                  _buildBalanceSection(balance),
+                  _buildBalanceSection(l10n, balance),
                   const SizedBox(height: 32),
-                  _buildPieChartCard(filteredExpenses, totalExpense),
+                  _buildPieChartCard(l10n, filteredExpenses, totalExpense),
                   const SizedBox(height: 32),
-                  const Text(
-                    "Eng ko'p sarflangan kategoriyalar",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                  Text(
+                    l10n.topCategories,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
                   ),
                   const SizedBox(height: 16),
-                  ..._buildSortedCategoryList(filteredExpenses, totalExpense),
+                  ..._buildSortedCategoryList(l10n, filteredExpenses, totalExpense),
                   const SizedBox(height: 32),
-                  _buildDownloadButton(),
+                  _buildDownloadButton(l10n),
                 ],
               ),
             );
           }
-          return const Center(child: Text("Ma'lumot yo'q"));
+          return Center(child: Text(l10n.noData));
         },
       ),
     );
   }
 
-  Widget _buildMonthSelector() {
-    final monthName = DateFormat('MMMM yyyy').format(selectedDate);
+  Widget _buildMonthSelector(AppLocalizations l10n) {
+    final monthName = DateFormat('MMMM yyyy', Localizations.localeOf(context).toString()).format(selectedDate);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -117,17 +119,17 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     );
   }
 
-  Widget _buildIncomeExpenseRow(double income, double expense) {
+  Widget _buildIncomeExpenseRow(AppLocalizations l10n, double income, double expense) {
     return Row(
       children: [
-        Expanded(child: _buildMiniCard("JAMI DAROMAD", income, const Color(0xFF0D9488), const Color(0xFFF0FDFA))),
+        Expanded(child: _buildMiniCard(l10n.totalIncome, l10n.som, income, const Color(0xFF0D9488), const Color(0xFFF0FDFA))),
         const SizedBox(width: 16),
-        Expanded(child: _buildMiniCard("JAMI XARAJAT", expense, const Color(0xFF1E293B), Colors.white)),
+        Expanded(child: _buildMiniCard(l10n.totalExpense, l10n.som, expense, const Color(0xFF1E293B), Colors.white)),
       ],
     );
   }
 
-  Widget _buildMiniCard(String title, double amount, Color color, Color bgColor) {
+  Widget _buildMiniCard(String title, String currency, double amount, Color color, Color bgColor) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -140,25 +142,25 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
         children: [
           Text(title, style: TextStyle(color: color.withValues(alpha: 0.7), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
           const SizedBox(height: 8),
-          Text("${_formatCurrency(amount)} so'm", style: TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.bold)),
+          Text("${_formatCurrency(amount)} $currency", style: TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.bold)),
         ],
       ),
     );
   }
 
-  Widget _buildBalanceSection(double balance) {
+  Widget _buildBalanceSection(AppLocalizations l10n, double balance) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("BALANS", style: TextStyle(color: Color(0xFF0D9488), fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+          Text(l10n.balance, style: const TextStyle(color: Color(0xFF0D9488), fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
           const SizedBox(height: 4),
           Row(
             children: [
               Text(
-                "${balance >= 0 ? '+' : ''}${_formatCurrency(balance)} so'm",
+                "${balance >= 0 ? '+' : ''}${_formatCurrency(balance)} ${l10n.som}",
                 style: const TextStyle(color: Color(0xFF10B981), fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
@@ -170,7 +172,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     );
   }
 
-  Widget _buildPieChartCard(List<Expense> expenses, double total) {
+  Widget _buildPieChartCard(AppLocalizations l10n, List<Expense> expenses, double total) {
     Map<String, double> categorySums = {};
     for (var e in expenses) {
       categorySums[e.category] = (categorySums[e.category] ?? 0) + e.amount;
@@ -200,7 +202,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
       ),
       child: Column(
         children: [
-          const Align(alignment: Alignment.centerLeft, child: Text("Kategoriyalar tahlili", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+          Align(alignment: Alignment.centerLeft, child: Text(l10n.categoryAnalysis, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
           const SizedBox(height: 32),
           SizedBox(
             height: 180,
@@ -211,8 +213,8 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text("Xarajatlar", style: TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
-                    Text("100%", style: TextStyle(color: Color(0xFF1E293B), fontSize: 22, fontWeight: FontWeight.bold)),
+                    Text(l10n.expenses, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
+                    const Text("100%", style: TextStyle(color: Color(0xFF1E293B), fontSize: 22, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ],
@@ -223,7 +225,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     );
   }
 
-  List<Widget> _buildSortedCategoryList(List<Expense> expenses, double total) {
+  List<Widget> _buildSortedCategoryList(AppLocalizations l10n, List<Expense> expenses, double total) {
     Map<String, double> categorySums = {};
     for (var e in expenses) {
       categorySums[e.category] = (categorySums[e.category] ?? 0) + e.amount;
@@ -250,14 +252,14 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                 ],
               ),
             ),
-            Text("${_formatCurrency(entry.value)} so'm", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            Text("${_formatCurrency(entry.value)} ${l10n.som}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
           ],
         ),
       );
     }).toList();
   }
 
-  Widget _buildDownloadButton() {
+  Widget _buildDownloadButton(AppLocalizations l10n) {
     return ElevatedButton(
       onPressed: () {
         Navigator.push(
@@ -271,7 +273,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 0,
       ),
-      child: const Text("Hisobotni yuklab olish", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+      child: Text(l10n.downloadReport, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
     );
   }
 }

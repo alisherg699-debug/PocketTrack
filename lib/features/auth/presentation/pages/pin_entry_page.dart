@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class PinEntryPage extends StatefulWidget {
   final VoidCallback onVerified;
@@ -46,6 +47,7 @@ class _PinEntryPageState extends State<PinEntryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
@@ -61,9 +63,9 @@ class _PinEntryPageState extends State<PinEntryPage> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
               ),
               const SizedBox(height: 8),
-              const Text(
-                "Davom etish uchun PIN-kodni kiriting",
-                style: TextStyle(color: Color(0xFF64748B)),
+              Text(
+                l10n.enterPin,
+                style: const TextStyle(color: Color(0xFF64748B)),
               ),
               const SizedBox(height: 48),
               Row(

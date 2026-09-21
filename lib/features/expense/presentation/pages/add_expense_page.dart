@@ -8,6 +8,7 @@ import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_event.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class AddExpensePage extends StatefulWidget {
   final Expense? expenseToEdit;
@@ -73,13 +74,14 @@ class _AddExpensePageState extends State<AddExpensePage> {
   }
 
   void _saveExpense() {
+    final l10n = AppLocalizations.of(context)!;
     final title = _titleController.text.trim();
     final amountText = _amountController.text.replaceAll(' ', '').trim();
     final amount = double.tryParse(amountText) ?? 0.0;
 
     if (title.isEmpty || amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Iltimos, nomi va miqdorini to'g'ri kiriting")),
+        SnackBar(content: Text(l10n.invalidInput)),
       );
       return;
     }
@@ -107,10 +109,22 @@ class _AddExpensePageState extends State<AddExpensePage> {
       );
       context.read<ExpenseBloc>().add(AddExpense(expense));
       
+      final notificationTitle = l10n.localeName == 'uz'
+          ? "Xarajat qo'shildi"
+          : l10n.localeName == 'ru'
+              ? "Расход добавлен"
+              : "Expense added";
+
+      final notificationBody = l10n.localeName == 'uz'
+          ? "$title uchun ${ThousandsSeparatorInputFormatter.format(amount)} ${l10n.som} sarflandi"
+          : l10n.localeName == 'ru'
+              ? "Потрачено ${ThousandsSeparatorInputFormatter.format(amount)} ${l10n.som} на $title"
+              : "Spent ${ThousandsSeparatorInputFormatter.format(amount)} ${l10n.som} for $title";
+
       NotificationService.showNotification(
         id: DateTime.now().hashCode,
-        title: "Xarajat qo'shildi",
-        body: "$title uchun ${ThousandsSeparatorInputFormatter.format(amount)} so'm sarflandi",
+        title: notificationTitle,
+        body: notificationBody,
       );
 
       Navigator.pop(context);
@@ -119,13 +133,14 @@ class _AddExpensePageState extends State<AddExpensePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final bool isEditing = widget.expenseToEdit != null;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text(
-          isEditing ? "Xarajatni tahrirlash" : "Xarajat qo'shish",
+          isEditing ? l10n.editExpense : l10n.addExpense,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
         ),
         centerTitle: true,
@@ -141,11 +156,11 @@ class _AddExpensePageState extends State<AddExpensePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 32),
-            const Align(
+            Align(
               alignment: Alignment.center,
               child: Text(
-                "MIQDORNI KIRITING",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF94A3B8)),
+                l10n.amount.toUpperCase(),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF94A3B8)),
               ),
             ),
             const SizedBox(height: 12),
@@ -176,19 +191,19 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Text(
-                      "so'm",
-                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.w700, color: Color(0xFF0D9488)),
+                    Text(
+                      l10n.som,
+                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700, color: Color(0xFF0D9488)),
                     ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 48),
-            _buildLabel("Xarajat nomi"),
-            _buildTextField(_titleController, "Masalan: Tushlik"),
+            _buildLabel(l10n.title),
+            _buildTextField(_titleController, l10n.exampleLunch),
             const SizedBox(height: 24),
-            _buildLabel("Kategoriya"),
+            _buildLabel(l10n.category),
             Wrap(
               spacing: 8.0,
               runSpacing: 10.0,
@@ -212,8 +227,8 @@ class _AddExpensePageState extends State<AddExpensePage> {
               }).toList(),
             ),
             const SizedBox(height: 24),
-            _buildLabel("Tavsif"),
-            _buildTextField(_descController, "Qo'shimcha ma'lumot kiriting...", maxLines: 3),
+            _buildLabel(l10n.description),
+            _buildTextField(_descController, l10n.addDescription, maxLines: 3),
             const SizedBox(height: 40),
           ],
         ),
@@ -230,7 +245,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
           ),
           onPressed: _saveExpense,
           child: Text(
-            isEditing ? "Xarajatni yangilash" : "Xarajatni saqlash",
+            isEditing ? l10n.edit : l10n.save,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),

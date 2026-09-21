@@ -10,6 +10,7 @@ import 'package:pockettrack/features/expense/presentation/pages/expense_details_
 import 'package:pockettrack/features/report/presentation/pages/statistics_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/budget_page.dart';
 import 'package:pockettrack/core/utils/currency_formatter.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 class ExpensePage extends StatefulWidget {
   const ExpensePage({super.key});
@@ -65,12 +66,13 @@ class _ExpensePageState extends State<ExpensePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text(
-          "Xarajatlar tarixi",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        title: Text(
+          l10n.expenses,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
@@ -102,8 +104,9 @@ class _ExpensePageState extends State<ExpensePage> {
       ),
       body: BlocBuilder<ExpenseBloc, ExpenseState>(
         builder: (context, state) {
-          if (state is ExpenseLoading)
+          if (state is ExpenseLoading) {
             return const Center(child: CircularProgressIndicator());
+          }
           if (state is ExpenseLoaded) {
             final allExpenses = state.expenses;
             var filteredExpenses = _filterExpenses(allExpenses, selectedFilter);
@@ -130,7 +133,7 @@ class _ExpensePageState extends State<ExpensePage> {
                 children: [
                   _buildLimitCard(totalAmount, monthlyLimit, percent),
                   const SizedBox(height: 24),
-                  _buildSearchBar(),
+                  _buildSearchBar(l10n),
                   const SizedBox(height: 24),
                   _buildFilters(),
                   const SizedBox(height: 28),
@@ -143,8 +146,8 @@ class _ExpensePageState extends State<ExpensePage> {
                             Icon(Icons.search_off,
                                 size: 64, color: Colors.grey.withValues(alpha: 0.5)),
                             const SizedBox(height: 16),
-                            const Text("Ma'lumot topilmadi",
-                                style: TextStyle(color: Colors.grey)),
+                            Text(l10n.noData,
+                                style: const TextStyle(color: Colors.grey)),
                           ],
                         ),
                       ),
@@ -173,7 +176,7 @@ class _ExpensePageState extends State<ExpensePage> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -188,7 +191,7 @@ class _ExpensePageState extends State<ExpensePage> {
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
-          hintText: "Xarajatlarni qidirish...",
+          hintText: l10n.search,
           hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 15),
           prefixIcon: const Icon(Icons.search, color: Color(0xFF0D9488)),
           suffixIcon: _searchQuery.isNotEmpty
@@ -204,8 +207,8 @@ class _ExpensePageState extends State<ExpensePage> {
   }
 
   Widget _buildLimitCard(double total, double limit, double percent) {
-    String labelText =
-        "USHBU ${selectedFilter.toUpperCase()}NING JAMI XARAJATI";
+    final l10n = AppLocalizations.of(context)!;
+    String labelText = l10n.todayExpenses;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -273,6 +276,7 @@ class _ExpensePageState extends State<ExpensePage> {
   }
 
   void _showSetLimitDialog() {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(
       text: monthlyLimit > 0 ? ThousandsSeparatorInputFormatter.format(monthlyLimit) : "",
     );
@@ -356,9 +360,9 @@ class _ExpensePageState extends State<ExpensePage> {
                   flex: 2,
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      "Bekor qilish",
-                      style: TextStyle(
+                    child: Text(
+                      l10n.cancel,
+                      style: const TextStyle(
                         color: Color(0xFF1E293B),
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -388,9 +392,9 @@ class _ExpensePageState extends State<ExpensePage> {
                         if (context.mounted) Navigator.pop(context);
                       }
                     },
-                    child: const Text(
-                      "Saqlash",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    child: Text(
+                      l10n.save,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),

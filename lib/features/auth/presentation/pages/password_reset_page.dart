@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pockettrack/features/auth/application/auth_cubit.dart';
 import 'package:pockettrack/features/auth/application/auth_state.dart';
 import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
+import 'package:pockettrack/l10n/app_localizations.dart';
 
 enum ResetStage { enterEmail, verifyCode, newPassword }
 
@@ -61,8 +62,9 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
 
   @override
   Widget build(BuildContext context) {
-    String title = "Parolni tiklash";
-    if (_currentStage == ResetStage.verifyCode) title = "Tasdiqlash kodi";
+    final l10n = AppLocalizations.of(context)!;
+    String title = l10n.passwordReset;
+    if (_currentStage == ResetStage.verifyCode) title = l10n.verificationCode;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -98,8 +100,8 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
             unauthenticated: () {
               if (_currentStage == ResetStage.newPassword) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Parol muvaffaqiyatli o'zgartirildi!"),
+                  SnackBar(
+                    content: Text(l10n.passwordChangedSuccess),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -122,7 +124,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: _buildStageContent(),
+              child: _buildStageContent(l10n),
             ),
           );
         },
@@ -130,37 +132,37 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
     );
   }
 
-  Widget _buildStageContent() {
+  Widget _buildStageContent(AppLocalizations l10n) {
     switch (_currentStage) {
       case ResetStage.enterEmail:
-        return _buildEmailStage();
+        return _buildEmailStage(l10n);
       case ResetStage.verifyCode:
-        return _buildVerifyStage();
+        return _buildVerifyStage(l10n);
       case ResetStage.newPassword:
-        return _buildNewPasswordStage();
+        return _buildNewPasswordStage(l10n);
     }
   }
 
   // 1-bosqich: Email kiritish
-  Widget _buildEmailStage() {
+  Widget _buildEmailStage(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 24),
-        const Text(
-          "Elektron pochtangizga parolni tiklash kodini yuboramiz.",
-          style: TextStyle(fontSize: 15, color: Color(0xFF475569)),
+        Text(
+          l10n.resetEmailSubtitle,
+          style: const TextStyle(fontSize: 15, color: Color(0xFF475569)),
         ),
         const SizedBox(height: 32),
         _buildInputField(
-          label: "Elektron pochta",
+          label: l10n.email,
           controller: _emailController,
           hint: "pochta@misol.com",
           keyboardType: TextInputType.emailAddress,
         ),
         const SizedBox(height: 40),
         _buildButton(
-          text: "Yuborish",
+          text: l10n.sendCode,
           onPressed: () {
             if (_emailController.text.isNotEmpty) {
               setState(() => _currentStage = ResetStage.verifyCode);
@@ -173,16 +175,16 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   }
 
   // 2-bosqich: Kodni tasdiqlash
-  Widget _buildVerifyStage() {
+  Widget _buildVerifyStage(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 24),
-        const Align(
+        Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            "Elektron pochtangizga yuborilgan 4 raqamli kodni kiriting.",
-            style: TextStyle(fontSize: 15, color: Color(0xFF475569)),
+            l10n.enterOtpSubtitle,
+            style: const TextStyle(fontSize: 15, color: Color(0xFF475569)),
           ),
         ),
         const SizedBox(height: 40),
@@ -192,7 +194,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
         ),
         const SizedBox(height: 48),
         _buildButton(
-          text: "Tasdiqlash",
+          text: l10n.confirm,
           onPressed: () {
             String code = _otpControllers.map((e) => e.text).join();
             if (code.length == 4) {
@@ -204,10 +206,11 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "Kodni qayta yuborish ",
-              style: TextStyle(color: Color(0xFF64748B), fontSize: 14),
+            Text(
+              l10n.resendCode,
+              style: const TextStyle(color: Color(0xFF64748B), fontSize: 14),
             ),
+            const SizedBox(width: 4),
             Text(
               "(${_timerSeconds ~/ 60}:${(_timerSeconds % 60).toString().padLeft(2, '0')})",
               style: const TextStyle(
@@ -223,32 +226,32 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   }
 
   // 3-bosqich: Yangi parol
-  Widget _buildNewPasswordStage() {
+  Widget _buildNewPasswordStage(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 24),
-        const Text(
-          "Endi yangi parolingizni o'rnating.",
-          style: TextStyle(fontSize: 15, color: Color(0xFF475569)),
+        Text(
+          l10n.setNewPasswordSubtitle,
+          style: const TextStyle(fontSize: 15, color: Color(0xFF475569)),
         ),
         const SizedBox(height: 32),
         _buildInputField(
-          label: "Yangi parol",
+          label: l10n.newPassword,
           controller: _passwordController,
           hint: "********",
           obscureText: true,
         ),
         const SizedBox(height: 20),
         _buildInputField(
-          label: "Parolni tasdiqlash",
+          label: l10n.confirmPassword,
           controller: _confirmPasswordController,
           hint: "********",
           obscureText: true,
         ),
         const SizedBox(height: 40),
         _buildButton(
-          text: "Parolni yangilash",
+          text: l10n.updatePassword,
           onPressed: () {
             if (_passwordController.text == _confirmPasswordController.text &&
                 _passwordController.text.length >= 6) {
@@ -258,8 +261,8 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text("Parollar mos emas yoki juda qisqa"),
+                SnackBar(
+                  content: Text(l10n.passwordsInvalid),
                 ),
               );
             }

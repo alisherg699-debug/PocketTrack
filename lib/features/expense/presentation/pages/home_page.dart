@@ -12,6 +12,7 @@ import 'package:pockettrack/features/expense/presentation/pages/add_expense_page
 import 'package:pockettrack/features/settings/presentation/pages/profile_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/expense_details_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/expense_page.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,6 +32,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final List<Widget> pages = [
       _HomeContent(onSeeAllPressed: () => setState(() => _currentIndex = 1)),
       const ExpensePage(),
@@ -79,10 +81,10 @@ class _HomePageState extends State<HomePage> {
         unselectedItemColor: const Color(0xFF94A3B8),
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: "Bosh sahifa"),
-          BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet_outlined), label: "Xarajatlar"),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: "Profil"),
+        items: [
+          BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), label: l10n.home),
+          BottomNavigationBarItem(icon: const Icon(Icons.account_balance_wallet_outlined), label: l10n.expenses),
+          BottomNavigationBarItem(icon: const Icon(Icons.person_outline), label: l10n.profile),
         ],
       ),
     );
@@ -114,23 +116,24 @@ class _HomeContent extends StatelessWidget {
   }
 
   // DINAMIK SALOMLASHISH
-  String _getGreeting() {
+  String _getGreeting(AppLocalizations l10n) {
     final hour = DateTime.now().hour;
-    if (hour >= 5 && hour < 12) return "Xayrli tong,";
-    if (hour >= 12 && hour < 18) return "Xayrli kun,";
-    if (hour >= 18 && hour < 24) return "Xayrli kech,";
-    return "Xayrli tun,";
+    if (hour >= 5 && hour < 12) return l10n.goodMorning;
+    if (hour >= 12 && hour < 18) return l10n.goodAfternoon;
+    if (hour >= 18 && hour < 24) return l10n.goodEvening;
+    return l10n.goodNight;
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, authState) {
         final user = authState.maybeWhen(
           authenticated: (user) => user,
           orElse: () => null,
         );
-        final userName = user?.firstName ?? "Foydalanuvchi";
+        final userName = user?.firstName ?? l10n.user;
 
         return BlocBuilder<ExpenseBloc, ExpenseState>(
           builder: (context, state) {
@@ -160,7 +163,7 @@ class _HomeContent extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(_getGreeting(), style: const TextStyle(color: Color(0xFF64748B), fontSize: 14)),
+                            Text(_getGreeting(l10n), style: const TextStyle(color: Color(0xFF64748B), fontSize: 14)),
                             Text(userName, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 20, fontWeight: FontWeight.bold)),
                           ],
                         ),
@@ -183,10 +186,10 @@ class _HomeContent extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text("BUGUNGI JAMI XARAJAT", style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+                          Text(l10n.todayExpenses, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
                           const SizedBox(height: 8),
                           Text(
-                            isError ? "--.-- so'm" : "${_formatCurrency(todayTotal)} so'm",
+                            isError ? "--.-- ${l10n.som}" : "${_formatCurrency(todayTotal)} ${l10n.som}",
                             style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800),
                           ),
                           const SizedBox(height: 16),
@@ -196,7 +199,7 @@ class _HomeContent extends StatelessWidget {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  todayExpenses.isNotEmpty ? "Bugun uchun ${todayExpenses.length} ta operatsiya" : "Bugun hali xarajat qilinmadi",
+                                  todayExpenses.isNotEmpty ? l10n.todayOperationsCount(todayExpenses.length) : l10n.noExpensesToday,
                                   style: const TextStyle(color: Colors.white70, fontSize: 13),
                                 ),
                               ),
@@ -211,13 +214,13 @@ class _HomeContent extends StatelessWidget {
                     if (state is ExpenseLoading)
                       const Padding(padding: EdgeInsets.only(top: 100), child: Center(child: CircularProgressIndicator()))
                     else if (isError)
-                      _buildErrorState(context)
+                      _buildErrorState(context, l10n)
                     else if (allExpenses.isEmpty)
-                      _buildEmptyState(context, isNewUser: true)
+                      _buildEmptyState(context, l10n, isNewUser: true)
                     else if (todayExpenses.isEmpty)
-                      _buildEmptyState(context, isNewUser: false)
+                      _buildEmptyState(context, l10n, isNewUser: false)
                     else
-                      _buildExpensesList(todayExpenses),
+                      _buildExpensesList(todayExpenses, l10n),
 
                     const SizedBox(height: 100),
                   ],
@@ -230,7 +233,7 @@ class _HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorState(BuildContext context) {
+  Widget _buildErrorState(BuildContext context, AppLocalizations l10n) {
     return Center(
       child: Column(
         children: [
@@ -241,18 +244,18 @@ class _HomeContent extends StatelessWidget {
             child: const Icon(Icons.error_outline, color: Colors.red, size: 40),
           ),
           const SizedBox(height: 24),
-          const Text("Xatolik yuz berdi", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(l10n.errorOccurred, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () => context.read<ExpenseBloc>().add(GetExpenses()),
-            child: const Text("Qaytadan urinish"),
+            child: Text(l10n.retry),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, {required bool isNewUser}) {
+  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n, {required bool isNewUser}) {
     return Center(
       child: Column(
         children: [
@@ -265,13 +268,13 @@ class _HomeContent extends StatelessWidget {
             ),
             padding: const EdgeInsets.all(20),
             child: Container(
-              decoration: BoxDecoration(color: const Color(0xFFF0FDFA), shape: BoxShape.circle),
+              decoration: const BoxDecoration(color: Color(0xFFF0FDFA), shape: BoxShape.circle),
               child: const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF0D9488), size: 40),
             ),
           ),
           const SizedBox(height: 32),
           Text(
-            isNewUser ? "Hali xarajatlar yo'q" : "Bugun xarajatlar yo'q",
+            isNewUser ? l10n.noExpensesYet : l10n.noExpensesToday,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
           ),
           const SizedBox(height: 12),
@@ -279,8 +282,8 @@ class _HomeContent extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Text(
               isNewUser 
-                ? "Birinchi xarajatingizni qo'shib, sarflaringizni kuzatishni boshlang."
-                : "Bugungi birinchi xarajatingizni qo'shib, hisob-kitobni davom ettiring.",
+                ? l10n.addFirstExpense
+                : l10n.addTodayFirstExpense,
               textAlign: TextAlign.center,
               style: const TextStyle(color: Color(0xFF64748B), fontSize: 14, height: 1.5),
             ),
@@ -297,24 +300,24 @@ class _HomeContent extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               elevation: 0,
             ),
-            child: const Text("Xarajat qo'shish", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            child: Text(l10n.addExpense, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildExpensesList(List<Expense> expenses) {
+  Widget _buildExpensesList(List<Expense> expenses, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text("Bugungi operatsiyalar", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+            Text(l10n.todayOperations, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
             TextButton(
               onPressed: onSeeAllPressed,
-              child: const Text("Barchasini ko'rish", style: TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.w600)),
+              child: Text(l10n.seeAll, style: const TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.w600)),
             ),
           ],
         ),
@@ -328,7 +331,7 @@ class _HomeContent extends StatelessWidget {
             final expense = expenses[index];
             return GestureDetector(
               onTap: () { Navigator.push(context, MaterialPageRoute(builder: (context) => ExpenseDetailsPage(expense: expense))); },
-              child: _ExpenseItem(expense: expense, formatCurrency: _formatCurrency),
+              child: _ExpenseItem(expense: expense, formatCurrency: _formatCurrency, l10n: l10n),
             );
           },
         ),
@@ -340,7 +343,8 @@ class _HomeContent extends StatelessWidget {
 class _ExpenseItem extends StatelessWidget {
   final Expense expense;
   final String Function(double) formatCurrency;
-  const _ExpenseItem({required this.expense, required this.formatCurrency});
+  final AppLocalizations l10n;
+  const _ExpenseItem({required this.expense, required this.formatCurrency, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -373,7 +377,7 @@ class _ExpenseItem extends StatelessWidget {
               ],
             ),
           ),
-          Text("- ${formatCurrency(expense.amount)} so'm", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))),
+          Text("- ${formatCurrency(expense.amount)} ${l10n.som}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))),
         ],
       ),
     );
