@@ -6,7 +6,7 @@ import 'package:pockettrack/features/auth/application/auth_state.dart';
 import 'package:pockettrack/features/auth/presentation/pages/create_new_accaunt_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/home_page.dart';
 import 'package:pockettrack/features/auth/presentation/pages/password_reset_page.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -42,9 +42,10 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     if (password.length < 6) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Parol kamida 6 ta belgidan iborat bo'lishi kerak"),
+        SnackBar(
+          content: Text(l10n.passwordTooShort),
           backgroundColor: Colors.orange,
         ),
       );

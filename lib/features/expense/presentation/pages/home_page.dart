@@ -12,7 +12,7 @@ import 'package:pockettrack/features/expense/presentation/pages/add_expense_page
 import 'package:pockettrack/features/settings/presentation/pages/profile_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/expense_details_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/expense_page.dart';
-import '../../../../l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

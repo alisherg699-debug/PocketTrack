@@ -21,6 +21,7 @@
   "changeLanguage": "Сменить язык",
   "email": "Электронная почта",
   "password": "Пароль",
+  "enterPassword": "Введите ваш пароль",
   "forgotPassword": "Забыли пароль?",
   "dontHaveAccount": "Нет аккаунта?",
   "todayExpenses": "ОБЩИЕ РАСХОДЫ ЗА СЕГОДНЯ",
@@ -36,6 +37,7 @@
   "save": "Сохранить",
   "cancel": "Отмена",
   "delete": "Удалить",
+  "edit": "Редактировать",
   "search": "Поиск...",
   "noData": "Данные не найдены",
   "confirmLogout": "Вы уверены, что хотите выйти?",
@@ -89,7 +91,6 @@
   "date": "Дата",
   "created": "Создано",
   "updated": "Обновлено",
-  "edit": "Редактировать",
   "noDescription": "Нет описания",
   "selectFirstMonth": "Выберите первый месяц",
   "selectSecondMonth": "Выберите второй месяц",
@@ -101,12 +102,6 @@
   "less": "меньше",
   "more": "больше",
   "comparisonSummary": "В этом месяце вы потратили на {percent}% {moreOrLess}, чем в прошлом месяце",
-  "@comparisonSummary": {
-    "placeholders": {
-      "percent": { "type": "String" },
-      "moreOrLess": { "type": "String" }
-    }
-  },
   "reportHeader": "PocketTrack: Отчет о расходах",
   "passwordsDoNotMatch": "Пароли не совпадают",
   "passwordsInvalid": "Пароли не совпадают или слишком короткие",
@@ -134,9 +129,6 @@
   "goodNight": "Доброй ночи,",
   "user": "Пользователь",
   "todayOperationsCount": "Сегодня {count} операций",
-  "@todayOperationsCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
   "noExpensesToday": "Сегодня расходов еще не было",
   "errorOccurred": "Произошла ошибка",
   "noExpensesYet": "Расходов пока нет",
@@ -166,16 +158,10 @@
   "systemNotifications": "СИСТЕМНЫЕ УВЕДОМЛЕНИЯ",
   "dailyReminderTitle": "Ежедневное напоминание",
   "dailyReminderDesc": "Напоминать о вводе расходов каждый день в {time}",
-  "@dailyReminderDesc": {
-    "placeholders": { "time": { "type": "String" } }
-  },
   "weeklyReportTitle": "Еженедельный отчет",
   "weeklyReportDesc": "Краткий анализ расходов за прошлую неделю",
   "budgetAlertTitle": "Бюджетное уведомление",
   "budgetAlertDesc": "Уведомлять при превышении месячного лимита на {threshold}%",
-  "@budgetAlertDesc": {
-    "placeholders": { "threshold": { "type": "int" } }
-  },
   "newFeaturesTitle": "Новые возможности",
   "newFeaturesDesc": "Информация об обновлениях приложения и предложениях",
   "thresholdQuestion": "При каком проценте нам следует уведомить вас?",
@@ -184,9 +170,6 @@
   "monthlyBudget": "МЕСЯЧНЫЙ БЮДЖЕТ",
   "budgetEditDesc": "Введите новое значение для редактирования суммы бюджета",
   "spentOfBudget": "Потрачено {percent}% бюджета",
-  "@spentOfBudget": {
-    "placeholders": { "percent": { "type": "String" } }
-  },
   "totalIncome": "ОБЩИЙ ДОХОД",
   "totalExpense": "ОБЩИЙ РАСХОД",
   "balance": "БАЛАНС",
@@ -194,7 +177,33 @@
   "downloadReport": "Скачать отчет",
   "exampleLunch": "Например: Обед",
   "exampleSalary": "Например: Зарплата",
+  "exampleName": "Алишер Ганиев",
   "addDescription": "Введите дополнительную информацию...",
   "invalidInput": "Пожалуйста, введите название и сумму правильно",
-  "loading": "Загрузка..."
+  "loading": "Загрузка...",
+  "incomeAdded": "Доход добавлен",
+  "incomeAddedBody": "Получено {amount} сум для {name}",
+  "expenseAdded": "Расход добавлен",
+  "securityCode": "Код безопасности",
+  "appTagline": "Учитывайте каждую копейку",
+  "failedToLoadData": "Не удалось загрузить данные",
+  "setMonthlyLimit": "Установить месячный лимит",
+  "categoriesTitle": "По категориям",
+  "contactUs": "Связаться с нами",
+  "contactTelegram": "Связаться через Telegram",
+  "contactEmail": "Связаться по Email",
+  "selectLanguage": "Выберите язык",
+  "securityDesc": "Введите 4-значный код для защиты приложения",
+  "securitySystem": "СИСТЕМА БЕЗОПАСНОСТИ",
+  "pinRequiredDesc": "При входе в приложение будет запрашиваться 4-значный код",
+  "salary": "Зарплата",
+  "freelance": "Фриланс",
+  "investment": "Инвестиции",
+  "gift": "Подарок",
+  "faq1Question": "Как я могу экспортировать расходы?",
+  "faq1Answer": "На странице истории расходов нажмите кнопку настроек вверху справа и выберите 'Экспорт'.",
+  "faq2Question": "Как защищены мои данные?",
+  "faq2Answer": "Ваши данные надежно хранятся на облачных серверах Firebase и дополнительно защищены PIN-кодом.",
+  "faq3Question": "Как изменить бюджет?",
+  "faq3Answer": "На странице бюджета вы можете изменить месячный лимит через настройки вверху справа, а лимиты категорий — нажав на карточки."
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pockettrack/core/services/notification_service.dart';
@@ -8,6 +7,7 @@ import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/features/income/application/income/income_bloc.dart';
 import 'package:pockettrack/features/income/application/income/income_event.dart';
 import 'package:pockettrack/features/income/domain/entities/income.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class AddIncomePage extends StatefulWidget {
   const AddIncomePage({super.key});
@@ -18,17 +18,21 @@ class AddIncomePage extends StatefulWidget {
 
 class _AddIncomePageState extends State<AddIncomePage> {
   final _amountController = TextEditingController(text: "");
-  final _nameController = TextEditingController(text: "Oylik maosh");
+  final _nameController = TextEditingController();
   final _descController = TextEditingController();
-  String _selectedCategory = "Oylik maosh";
+  String _selectedCategory = "";
+  bool _isInitialized = false;
 
-  final List<String> _categories = [
-    "Oylik maosh",
-    "Freelance",
-    "Investitsiya",
-    "Sovg'a",
-    "Boshqa"
-  ];
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      final l10n = AppLocalizations.of(context)!;
+      _nameController.text = l10n.salary;
+      _selectedCategory = l10n.salary;
+      _isInitialized = true;
+    }
+  }
 
   @override
   void dispose() {
@@ -38,7 +42,18 @@ class _AddIncomePageState extends State<AddIncomePage> {
     super.dispose();
   }
 
+  List<String> _getCategories(AppLocalizations l10n) {
+    return [
+      l10n.salary,
+      l10n.freelance,
+      l10n.investment,
+      l10n.gift,
+      l10n.other,
+    ];
+  }
+
   void _saveIncome() {
+    final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     final amountText = _amountController.text.replaceAll(' ', '').trim();
     final amount = double.tryParse(amountText) ?? 0.0;
@@ -65,8 +80,8 @@ class _AddIncomePageState extends State<AddIncomePage> {
 
     NotificationService.showNotification(
       id: DateTime.now().hashCode,
-      title: "Daromad qo'shildi",
-      body: "$name uchun ${ThousandsSeparatorInputFormatter.format(amount)} so'm qabul qilindi",
+      title: l10n.incomeAdded,
+      body: l10n.incomeAddedBody(ThousandsSeparatorInputFormatter.format(amount), name),
     );
 
     Navigator.pop(context);
@@ -75,6 +90,8 @@ class _AddIncomePageState extends State<AddIncomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final categories = _getCategories(l10n);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -119,7 +136,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
                           hintText: "0",
                           hintStyle: TextStyle(color: Colors.black.withValues(alpha: 0.1)),
                           border: InputBorder.none, 
-                          isDense: true
+                          isDense: true,
                         ),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9. ]')),
@@ -144,7 +161,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
             Wrap(
               spacing: 12,
               runSpacing: 12,
-              children: _categories.map((cat) => _buildCategoryChip(cat)).toList(),
+              children: categories.map((cat) => _buildCategoryChip(cat)).toList(),
             ),
             const SizedBox(height: 24),
             _buildLabel(l10n.description),

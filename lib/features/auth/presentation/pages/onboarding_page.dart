@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});

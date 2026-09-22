@@ -16,7 +16,7 @@ import 'package:pockettrack/features/income/application/income/income_bloc.dart'
 import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 
 import 'package:pockettrack/injection_container.dart' as di;
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             locale: settingsState.locale,
-            localizationsDelegates: const [
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,

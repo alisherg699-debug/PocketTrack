@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pockettrack/core/services/notification_service.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});

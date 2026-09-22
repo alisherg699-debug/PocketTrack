@@ -5,7 +5,7 @@ import 'package:pockettrack/features/expense/application/expense/expense_bloc.da
 import 'package:pockettrack/features/expense/application/expense/expense_event.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/expense/presentation/pages/add_expense_page.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class ExpenseDetailsPage extends StatefulWidget {
   final Expense expense;

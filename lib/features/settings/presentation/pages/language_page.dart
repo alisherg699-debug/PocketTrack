@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pockettrack/features/settings/application/settings_cubit.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class LanguagePage extends StatelessWidget {
   const LanguagePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text("Tilni tanlang", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(l10n.selectLanguage, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pockettrack/features/auth/application/auth_cubit.dart';
 import 'package:pockettrack/features/auth/application/auth_state.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -51,6 +51,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   void _handleChange() {
+    final l10n = AppLocalizations.of(context)!;
     if (has8Chars && hasUppercase && hasDigits && hasSpecial) {
       if (_newPasswordController.text == _confirmPasswordController.text) {
         context.read<AuthCubit>().changePassword(
@@ -58,10 +59,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               _newPasswordController.text.trim(),
             );
       } else {
-        _showSnack("Yangi parollar mos kelmadi", Colors.red);
+        _showSnack(l10n.passwordsDoNotMatch, Colors.red);
       }
     } else {
-      _showSnack("Parol talablarga javob bermaydi", Colors.orange);
+      _showSnack(l10n.passwordsInvalid, Colors.orange);
     }
   }
 

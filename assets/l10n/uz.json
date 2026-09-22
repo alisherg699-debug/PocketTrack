@@ -21,6 +21,7 @@
   "changeLanguage": "Tilni o'zgartirish",
   "email": "Elektron pochta",
   "password": "Parol",
+  "enterPassword": "Parolingizni kiriting",
   "forgotPassword": "Parolni unutdingizmi?",
   "dontHaveAccount": "Hisobingiz yo'qmi?",
   "todayExpenses": "BUGUNGI JAMI XARAJAT",
@@ -101,12 +102,6 @@
   "less": "kam",
   "more": "ko'p",
   "comparisonSummary": "Bu oy o'tgan oyga nisbatan {percent}% {moreOrLess} sarfladingiz",
-  "@comparisonSummary": {
-    "placeholders": {
-      "percent": { "type": "String" },
-      "moreOrLess": { "type": "String" }
-    }
-  },
   "reportHeader": "PocketTrack: Xarajatlar Hisoboti",
   "passwordsDoNotMatch": "Parollar mos kelmadi",
   "passwordsInvalid": "Parollar mos emas yoki juda qisqa",
@@ -134,9 +129,6 @@
   "goodNight": "Xayrli tun,",
   "user": "Foydalanuvchi",
   "todayOperationsCount": "Bugun uchun {count} ta operatsiya",
-  "@todayOperationsCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
   "noExpensesToday": "Bugun hali xarajat qilinmadi",
   "errorOccurred": "Xatolik yuz berdi",
   "noExpensesYet": "Hali xarajatlar yo'q",
@@ -166,16 +158,10 @@
   "systemNotifications": "TIZIM BILDIRISHNOMALARI",
   "dailyReminderTitle": "Kundalik eslatma",
   "dailyReminderDesc": "Har kuni {time} da xarajatlarni kiritishni eslatish",
-  "@dailyReminderDesc": {
-    "placeholders": { "time": { "type": "String" } }
-  },
   "weeklyReportTitle": "Haftalik hisobot",
   "weeklyReportDesc": "O'tgan hafta xarajatlarining qisqacha tahlili",
   "budgetAlertTitle": "Byudjet ogohlantirishi",
   "budgetAlertDesc": "Oy limiti {threshold}% dan oshganda xabar berish",
-  "@budgetAlertDesc": {
-    "placeholders": { "threshold": { "type": "int" } }
-  },
   "newFeaturesTitle": "Yangi xususiyatlar",
   "newFeaturesDesc": "Ilovadagi yangilanishlar va takliflar haqida ma'lumot",
   "thresholdQuestion": "Qaysi foizdan oshganda sizga xabar beraylik?",
@@ -184,9 +170,6 @@
   "monthlyBudget": "OYLIK BYUDJET",
   "budgetEditDesc": "Byudjet miqdorini tahrirlash uchun yangi qiymat kiriting",
   "spentOfBudget": "Byudjetning {percent}% sarflandi",
-  "@spentOfBudget": {
-    "placeholders": { "percent": { "type": "String" } }
-  },
   "totalIncome": "JAMI DAROMAD",
   "totalExpense": "JAMI XARAJAT",
   "balance": "BALANS",
@@ -194,8 +177,33 @@
   "downloadReport": "Hisobotni yuklab olish",
   "exampleLunch": "Masalan: Tushlik",
   "exampleSalary": "Masalan: Oylik maosh",
+  "exampleName": "Alisher Ganiyev",
   "addDescription": "Qo'shimcha ma'lumot kiriting...",
   "invalidInput": "Iltimos, nomi va miqdorini to'g'ri kiriting",
-  "som": "so'm",
-  "loading": "Yuklanmoqda..."
+  "loading": "Yuklanmoqda...",
+  "incomeAdded": "Daromad qo'shildi",
+  "incomeAddedBody": "{name} uchun {amount} so'm qabul qilindi",
+  "expenseAdded": "Xarajat qo'shildi",
+  "securityCode": "Xavfsizlik kodi",
+  "appTagline": "Har bir tiyinni hisobga oling",
+  "failedToLoadData": "Ma'lumotlarni yuklab bo'lmadi",
+  "setMonthlyLimit": "Oylik limit o'rnatish",
+  "categoriesTitle": "Kategoriyalar bo'yicha",
+  "contactUs": "Biz bilan bog'lanish",
+  "contactTelegram": "Telegram orqali bog'lanish",
+  "contactEmail": "Email orqali bog'lanish",
+  "selectLanguage": "Tilni tanlang",
+  "securityDesc": "Ilovani himoya qilish uchun 4 xonali kod kiriting",
+  "securitySystem": "HIMOYA TIZIMI",
+  "pinRequiredDesc": "Ilovaga kirishda 4 xonali kod so'raladi",
+  "salary": "Oylik maosh",
+  "freelance": "Freelance",
+  "investment": "Investitsiya",
+  "gift": "Sovg'a",
+  "faq1Question": "Xarajatlarni qanday eksport qilsam bo'ladi?",
+  "faq1Answer": "Xarajatlar tarixi sahifasida o'ng tepadagi sozlamalar tugmasini bosing va 'Eksport' bo'limini tanlang.",
+  "faq2Question": "Ma'lumotlarim xavfsizligi qanday ta'minlangan?",
+  "faq2Answer": "Ma'lumotlaringiz Firebase bulutli serverlarida xavfsiz saqlanadi va PIN-kod orqali qo'shimcha himoyalangan.",
+  "faq3Question": "Byudjetni qanday o'zgartirsa bo'ladi?",
+  "faq3Answer": "Byudjet sahifasida o'ng tepadagi sozlamalar tugmasi orqali oylik limitni, kartalar ustiga bosish orqali kategoriya limitlarini o'zgartirishingiz mumkin."
 }

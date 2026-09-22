@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pockettrack/features/auth/presentation/pages/pin_entry_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/home_page.dart';
 import 'package:pockettrack/features/auth/presentation/pages/onboarding_page.dart';
-import 'package:pockettrack/features/auth/presentation/pages/pin_entry_page.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -97,9 +98,9 @@ class _SplashPageState extends State<SplashPage> {
             ),
             const SizedBox(height: 8),
             // SHIOR
-            const Text(
-              "Har bir tiyinni hisobga oling",
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)?.appTagline ?? "Har bir tiyinni hisobga oling",
+              style: const TextStyle(
                 fontSize: 14,
                 color: Color(0xFF64748B),
                 fontFamily: 'Geist',

@@ -10,7 +10,7 @@ import 'package:pockettrack/features/income/application/income/income_bloc.dart'
 import 'package:pockettrack/features/income/application/income/income_event.dart';
 import 'package:pockettrack/features/income/application/income/income_state.dart';
 import 'package:pockettrack/features/report/presentation/pages/export_page.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class MonthlyReportPage extends StatefulWidget {
   const MonthlyReportPage({super.key});

@@ -21,6 +21,7 @@
   "changeLanguage": "Change Language",
   "email": "Email",
   "password": "Password",
+  "enterPassword": "Enter your password",
   "forgotPassword": "Forgot password?",
   "dontHaveAccount": "Don't have an account?",
   "todayExpenses": "TOTAL EXPENSES TODAY",
@@ -36,6 +37,7 @@
   "save": "Save",
   "cancel": "Cancel",
   "delete": "Delete",
+  "edit": "Edit",
   "search": "Search...",
   "noData": "No data found",
   "confirmLogout": "Are you sure you want to logout?",
@@ -89,7 +91,6 @@
   "date": "Date",
   "created": "Created",
   "updated": "Updated",
-  "edit": "Edit",
   "noDescription": "No description",
   "selectFirstMonth": "Select first month",
   "selectSecondMonth": "Select second month",
@@ -101,12 +102,6 @@
   "less": "less",
   "more": "more",
   "comparisonSummary": "You spent {percent}% {moreOrLess} this month compared to last month",
-  "@comparisonSummary": {
-    "placeholders": {
-      "percent": { "type": "String" },
-      "moreOrLess": { "type": "String" }
-    }
-  },
   "reportHeader": "PocketTrack: Expense Report",
   "passwordsDoNotMatch": "Passwords do not match",
   "passwordsInvalid": "Passwords do not match or are too short",
@@ -134,9 +129,6 @@
   "goodNight": "Good night,",
   "user": "User",
   "todayOperationsCount": "Today {count} operations",
-  "@todayOperationsCount": {
-    "placeholders": { "count": { "type": "int" } }
-  },
   "noExpensesToday": "No expenses today yet",
   "errorOccurred": "An error occurred",
   "noExpensesYet": "No expenses yet",
@@ -166,16 +158,10 @@
   "systemNotifications": "SYSTEM NOTIFICATIONS",
   "dailyReminderTitle": "Daily reminder",
   "dailyReminderDesc": "Remind to enter expenses every day at {time}",
-  "@dailyReminderDesc": {
-    "placeholders": { "time": { "type": "String" } }
-  },
   "weeklyReportTitle": "Weekly report",
   "weeklyReportDesc": "Summary analysis of last week's expenses",
   "budgetAlertTitle": "Budget alert",
   "budgetAlertDesc": "Notify when monthly limit exceeds {threshold}%",
-  "@budgetAlertDesc": {
-    "placeholders": { "threshold": { "type": "int" } }
-  },
   "newFeaturesTitle": "New features",
   "newFeaturesDesc": "Information about app updates and offers",
   "thresholdQuestion": "At what percentage should we notify you?",
@@ -184,9 +170,6 @@
   "monthlyBudget": "MONTHLY BUDGET",
   "budgetEditDesc": "Enter new value to edit budget amount",
   "spentOfBudget": "{percent}% of budget spent",
-  "@spentOfBudget": {
-    "placeholders": { "percent": { "type": "String" } }
-  },
   "totalIncome": "TOTAL INCOME",
   "totalExpense": "TOTAL EXPENSE",
   "balance": "BALANCE",
@@ -194,7 +177,33 @@
   "downloadReport": "Download report",
   "exampleLunch": "Example: Lunch",
   "exampleSalary": "Example: Salary",
+  "exampleName": "John Doe",
   "addDescription": "Enter additional information...",
   "invalidInput": "Please enter title and amount correctly",
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "incomeAdded": "Income added",
+  "incomeAddedBody": "Received {amount} sum for {name}",
+  "expenseAdded": "Expense added",
+  "securityCode": "Security code",
+  "appTagline": "Count every penny",
+  "failedToLoadData": "Failed to load data",
+  "setMonthlyLimit": "Set monthly limit",
+  "categoriesTitle": "By categories",
+  "contactUs": "Contact us",
+  "contactTelegram": "Contact via Telegram",
+  "contactEmail": "Contact via Email",
+  "selectLanguage": "Select language",
+  "securityDesc": "Enter a 4-digit code to protect the app",
+  "securitySystem": "SECURITY SYSTEM",
+  "pinRequiredDesc": "A 4-digit code will be required on enter",
+  "salary": "Salary",
+  "freelance": "Freelance",
+  "investment": "Investment",
+  "gift": "Gift",
+  "faq1Question": "How can I export expenses?",
+  "faq1Answer": "In the expenses history page, tap the top right settings button and select 'Export'.",
+  "faq2Question": "How is my data secured?",
+  "faq2Answer": "Your data is safely stored in Firebase cloud servers and additionally protected with a PIN code.",
+  "faq3Question": "How can I change the budget?",
+  "faq3Answer": "In the budget page, you can change the monthly limit via top right settings, or category limits by tapping cards."
 }

@@ -6,7 +6,7 @@ import 'package:pockettrack/features/expense/application/expense/expense_state.d
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/report/presentation/pages/monthly_report_page.dart';
 import 'package:pockettrack/features/report/presentation/pages/comparison_page.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({super.key});
@@ -100,9 +100,9 @@ class StatisticsPage extends StatelessWidget {
                 children: [
                   _buildWeeklyChartCard(weeklyData, totalAmount),
                   const SizedBox(height: 32),
-                  const Text(
-                    "Kategoriyalar bo'yicha",
-                    style: TextStyle(
+                  Text(
+                    l10n.categoriesTitle,
+                    style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1E293B)),
@@ -113,7 +113,7 @@ class StatisticsPage extends StatelessWidget {
               ),
             );
           }
-          return const Center(child: Text("Ma'lumotlar yo'q"));
+          return Center(child: Text(l10n.noData));
         },
       ),
     );

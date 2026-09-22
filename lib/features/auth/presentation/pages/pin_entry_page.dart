@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class PinEntryPage extends StatefulWidget {
   final VoidCallback onVerified;
@@ -58,9 +58,9 @@ class _PinEntryPageState extends State<PinEntryPage> {
             children: [
               const Icon(Icons.lock_outline, size: 64, color: Color(0xFF0D9488)),
               const SizedBox(height: 24),
-              const Text(
-                "Xavfsizlik kodi",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+              Text(
+                l10n.securityCode,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
               ),
               const SizedBox(height: 8),
               Text(

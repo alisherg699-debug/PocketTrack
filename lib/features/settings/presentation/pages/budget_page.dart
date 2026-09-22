@@ -8,7 +8,7 @@ import 'package:pockettrack/features/expense/application/expense/expense_state.d
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/income/presentation/pages/add_income_page.dart';
 
-import '../../../../l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class BudgetPage extends StatefulWidget {
   const BudgetPage({super.key});

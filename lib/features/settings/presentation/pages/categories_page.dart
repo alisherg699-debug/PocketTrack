@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class CategoryItem {
   final String title;
@@ -56,22 +56,28 @@ class _CategoriesPageState extends State<CategoriesPage> {
           categories = savedData.map((s) => CategoryItem.fromMap(jsonDecode(s))).toList();
         });
       } else {
-        _setInitialCategories();
+        if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
+          _setInitialCategories(l10n);
+        }
       }
     } catch (e) {
-      _setInitialCategories();
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        _setInitialCategories(l10n);
+      }
     }
   }
 
-  void _setInitialCategories() {
+  void _setInitialCategories(AppLocalizations l10n) {
     setState(() {
       categories = [
-        CategoryItem(title: "Oziq-ovqat", icon: Icons.restaurant),
-        CategoryItem(title: "Transport", icon: Icons.directions_car),
-        CategoryItem(title: "Xaridlar", icon: Icons.shopping_bag_outlined),
-        CategoryItem(title: "To'lovlar", icon: Icons.credit_card),
-        CategoryItem(title: "Salomatlik", icon: Icons.favorite_border),
-        CategoryItem(title: "Boshqa", icon: Icons.label_outline),
+        CategoryItem(title: l10n.food, icon: Icons.restaurant),
+        CategoryItem(title: l10n.transport, icon: Icons.directions_car),
+        CategoryItem(title: l10n.shopping, icon: Icons.shopping_bag_outlined),
+        CategoryItem(title: l10n.payments, icon: Icons.credit_card),
+        CategoryItem(title: l10n.health, icon: Icons.favorite_border),
+        CategoryItem(title: l10n.other, icon: Icons.label_outline),
       ];
     });
     _saveCategories();

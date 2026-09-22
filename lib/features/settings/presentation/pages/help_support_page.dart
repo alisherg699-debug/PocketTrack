@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class HelpSupportPage extends StatelessWidget {
   const HelpSupportPage({super.key});
@@ -34,21 +34,21 @@ class HelpSupportPage extends StatelessWidget {
             _buildFaqItem("Ma'lumotlarim xavfsizligi qanday ta'minlangan?", "Ma'lumotlaringiz Firebase bulutli serverlarida xavfsiz saqlanadi va PIN-kod orqali qo'shimcha himoyalangan."),
             _buildFaqItem("Byudjetni qanday o'zgartirsa bo'ladi?", "Byudjet sahifasida o'ng tepadagi sozlamalar tugmasi orqali oylik limitni, kartalar ustiga bosish orqali kategoriya limitlarini o'zgartirishingiz mumkin."),
             const SizedBox(height: 32),
-            const Text(
-              "Biz bilan bog'lanish",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+            Text(
+              l10n.contactUs,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
             ),
             const SizedBox(height: 16),
             _buildSupportButton(
               icon: Icons.send_rounded,
-              title: "Telegram orqali bog'lanish",
+              title: l10n.contactTelegram,
               color: const Color(0xFF0088CC),
               onTap: () {},
             ),
             const SizedBox(height: 12),
             _buildSupportButton(
               icon: Icons.email_outlined,
-              title: "Email orqali bog'lanish",
+              title: l10n.contactEmail,
               color: const Color(0xFF0D9488),
               onTap: () {},
             ),

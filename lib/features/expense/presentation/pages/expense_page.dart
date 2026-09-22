@@ -10,7 +10,7 @@ import 'package:pockettrack/features/expense/presentation/pages/expense_details_
 import 'package:pockettrack/features/report/presentation/pages/statistics_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/budget_page.dart';
 import 'package:pockettrack/core/utils/currency_formatter.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class ExpensePage extends StatefulWidget {
   const ExpensePage({super.key});
@@ -124,7 +124,7 @@ class _ExpensePageState extends State<ExpensePage> {
               (sum, item) => sum + item.amount,
             );
             final double percent = (totalAmount / monthlyLimit).clamp(0, 1);
-            final groupedExpenses = _groupExpensesByDate(filteredExpenses);
+            final groupedExpenses = _groupExpensesByDate(filteredExpenses, l10n);
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
@@ -135,7 +135,7 @@ class _ExpensePageState extends State<ExpensePage> {
                   const SizedBox(height: 24),
                   _buildSearchBar(l10n),
                   const SizedBox(height: 24),
-                  _buildFilters(),
+                  _buildFilters(l10n),
                   const SizedBox(height: 28),
                   if (filteredExpenses.isEmpty)
                     Center(
@@ -170,7 +170,7 @@ class _ExpensePageState extends State<ExpensePage> {
               ),
             );
           }
-          return const Center(child: Text("Ma'lumotlarni yuklab bo'lmadi"));
+          return Center(child: Text(l10n.failedToLoadData));
         },
       ),
     );
@@ -309,9 +309,9 @@ class _ExpensePageState extends State<ExpensePage> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              "Oylik limit o'rnatish",
-              style: TextStyle(
+            Text(
+              l10n.setMonthlyLimit,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: Color(0xFF1E293B),
@@ -423,7 +423,7 @@ class _ExpensePageState extends State<ExpensePage> {
     }).toList();
   }
 
-  Map<String, List<Expense>> _groupExpensesByDate(List<Expense> expenses) {
+  Map<String, List<Expense>> _groupExpensesByDate(List<Expense> expenses, AppLocalizations l10n) {
     Map<String, List<Expense>> grouped = {};
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -432,17 +432,24 @@ class _ExpensePageState extends State<ExpensePage> {
     for (var expense in expenses) {
       final expDate = DateTime(expense.date.year, expense.date.month, expense.date.day);
       String label;
-      if (expDate == today) label = "Bugun";
-      else if (expDate == yesterday) label = "Kecha";
-      else label = DateFormat('dd-MMMM, yyyy').format(expDate);
-      if (grouped.containsKey(label)) grouped[label]!.add(expense);
-      else grouped[label] = [expense];
+      if (expDate == today) {
+        label = l10n.today;
+      } else if (expDate == yesterday) {
+        label = l10n.yesterday;
+      } else {
+        label = DateFormat('dd-MMMM, yyyy').format(expDate);
+      }
+      if (grouped.containsKey(label)) {
+        grouped[label]!.add(expense);
+      } else {
+        grouped[label] = [expense];
+      }
     }
     return grouped;
   }
 
-  Widget _buildFilters() {
-    final List<String> filters = ['Bugun', 'Hafta', 'Oy', 'Yil'];
+  Widget _buildFilters(AppLocalizations l10n) {
+    final List<String> filters = [l10n.today, l10n.week, l10n.month, l10n.year];
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: filters.map((f) {

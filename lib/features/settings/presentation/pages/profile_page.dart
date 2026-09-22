@@ -9,7 +9,7 @@ import 'package:pockettrack/features/settings/presentation/pages/notifications_p
 import 'package:pockettrack/features/settings/presentation/pages/categories_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/security_page.dart';
 
-import '../../../../l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'help_support_page.dart';
 import 'language_page.dart';
 

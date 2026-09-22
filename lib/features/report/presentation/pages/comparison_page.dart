@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class ComparisonPage extends StatefulWidget {
   const ComparisonPage({super.key});

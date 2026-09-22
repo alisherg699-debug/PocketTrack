@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pockettrack/features/auth/presentation/pages/change_password_page.dart';
 
-import '../../../../l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class SecurityPage extends StatefulWidget {
   const SecurityPage({super.key});
@@ -46,6 +46,7 @@ class _SecurityPageState extends State<SecurityPage> {
   }
 
   void _showSetPinDialog() {
+    final l10n = AppLocalizations.of(context)!;
     final List<TextEditingController> controllers = List.generate(4, (_) => TextEditingController());
     final List<FocusNode> focusNodes = List.generate(4, (_) => FocusNode());
 
@@ -87,10 +88,10 @@ class _SecurityPageState extends State<SecurityPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                "Ilovani himoya qilish uchun 4 xonali kod kiriting",
+              Text(
+                l10n.securityDesc,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Color(0xFF94A3B8),
                   fontSize: 14,
                   height: 1.4,
@@ -240,11 +241,11 @@ class _SecurityPageState extends State<SecurityPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(24, 24, 24, 12),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
               child: Text(
-                "HIMOYA TIZIMI",
-                style: TextStyle(
+                l10n.securitySystem,
+                style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF94A3B8),
@@ -263,22 +264,22 @@ class _SecurityPageState extends State<SecurityPage> {
                 ),
                 child: Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "PIN-kod orqali kirish",
-                            style: TextStyle(
+                            l10n.enterPin,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFF1E293B),
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
-                            "Ilovaga kirishda 4 xonali kod so'raladi",
-                            style: TextStyle(
+                            l10n.pinRequiredDesc,
+                            style: const TextStyle(
                               fontSize: 13,
                               color: Color(0xFF64748B),
                             ),

@@ -8,7 +8,7 @@ import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_event.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
-import 'package:pockettrack/l10n/app_localizations.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class AddExpensePage extends StatefulWidget {
   final Expense? expenseToEdit;
@@ -109,11 +109,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
       );
       context.read<ExpenseBloc>().add(AddExpense(expense));
       
-      final notificationTitle = l10n.localeName == 'uz'
-          ? "Xarajat qo'shildi"
-          : l10n.localeName == 'ru'
-              ? "Расход добавлен"
-              : "Expense added";
+      final notificationTitle = l10n.expenseAdded;
 
       final notificationBody = l10n.localeName == 'uz'
           ? "$title uchun ${ThousandsSeparatorInputFormatter.format(amount)} ${l10n.som} sarflandi"
