@@ -292,6 +292,7 @@ class AppLocalizations {
   String get freelance => translate('freelance');
   String get investment => translate('investment');
   String get gift => translate('gift');
+  String get faqTitle => translate('faqTitle');
   String get faq1Question => translate('faq1Question');
   String get faq1Answer => translate('faq1Answer');
   String get faq2Question => translate('faq2Question');

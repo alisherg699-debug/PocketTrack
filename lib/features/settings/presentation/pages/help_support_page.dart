@@ -25,14 +25,14 @@ class HelpSupportPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Tez-tez beriladigan savollar",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+            Text(
+              l10n.faqTitle,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
             ),
             const SizedBox(height: 16),
-            _buildFaqItem("Xarajatlarni qanday eksport qilsam bo'ladi?", "Xarajatlar tarixi sahifasida o'ng tepadagi sozlamalar tugmasini bosing va 'Eksport' bo'limini tanlang."),
-            _buildFaqItem("Ma'lumotlarim xavfsizligi qanday ta'minlangan?", "Ma'lumotlaringiz Firebase bulutli serverlarida xavfsiz saqlanadi va PIN-kod orqali qo'shimcha himoyalangan."),
-            _buildFaqItem("Byudjetni qanday o'zgartirsa bo'ladi?", "Byudjet sahifasida o'ng tepadagi sozlamalar tugmasi orqali oylik limitni, kartalar ustiga bosish orqali kategoriya limitlarini o'zgartirishingiz mumkin."),
+            _buildFaqItem(l10n.faq1Question, l10n.faq1Answer),
+            _buildFaqItem(l10n.faq2Question, l10n.faq2Answer),
+            _buildFaqItem(l10n.faq3Question, l10n.faq3Answer),
             const SizedBox(height: 32),
             Text(
               l10n.contactUs,
@@ -92,7 +92,7 @@ class HelpSupportPage extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
               child: Icon(icon, color: color, size: 22),
             ),
             const SizedBox(width: 16),
