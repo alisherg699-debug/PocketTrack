@@ -2,6 +2,8 @@
   "appTitle": "PocketTrack",
   "welcome": "Welcome",
   "login": "Login",
+  "loginSubtitle": "Log in to easily track your finances.",
+  "emailHint": "email@example.com",
   "register": "Register",
   "home": "Home",
   "expenses": "Expenses",

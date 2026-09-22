@@ -20,6 +20,48 @@ class AppLocalizations {
     Locale('ru'),
   ];
 
+  static const Map<String, Map<String, String>> _defaultValues = {
+    'uz': {
+      'welcome': "Xush kelibsiz",
+      'loginSubtitle': "Moliyangizni oson kuzatish uchun tizimga kiring.",
+      'emailHint': "pochta@misol.com",
+      'enterPassword': "Parolingizni kiriting",
+      'fillAllFields': "Barcha maydonlarni to'ldiring",
+      'email': "Elektron pochta",
+      'password': "Parol",
+      'forgotPassword': "Parolni unutdingizmi?",
+      'login': "Kirish",
+      'register': "Ro'yxatdan o'tish",
+      'dontHaveAccount': "Hisobingiz yo'qmi?",
+    },
+    'ru': {
+      'welcome': "Добро пожаловать",
+      'loginSubtitle': "Войдите, чтобы легко отслеживать свои финансы.",
+      'emailHint': "почта@пример.com",
+      'enterPassword': "Введите ваш пароль",
+      'fillAllFields': "Пожалуйста, заполните все поля",
+      'email': "Электронная почта",
+      'password': "Пароль",
+      'forgotPassword': "Забыли пароль?",
+      'login': "Вход",
+      'register': "Регистрация",
+      'dontHaveAccount': "Нет аккаунта?",
+    },
+    'en': {
+      'welcome': "Welcome",
+      'loginSubtitle': "Log in to easily track your finances.",
+      'emailHint': "email@example.com",
+      'enterPassword': "Enter your password",
+      'fillAllFields': "Please fill all fields",
+      'email': "Email",
+      'password': "Password",
+      'forgotPassword': "Forgot password?",
+      'login': "Login",
+      'register': "Register",
+      'dontHaveAccount': "Don't have an account?",
+    },
+  };
+
   Future<bool> load() async {
     try {
       String jsonString = await rootBundle.loadString('assets/l10n/${locale.languageCode}.json');
@@ -37,7 +79,17 @@ class AppLocalizations {
   }
 
   String translate(String key) {
-    return _localizedStrings[key] ?? key;
+    if (_localizedStrings.containsKey(key) && _localizedStrings[key]!.isNotEmpty) {
+      return _localizedStrings[key]!;
+    }
+    final lang = locale.languageCode;
+    if (_defaultValues.containsKey(lang) && _defaultValues[lang]!.containsKey(key)) {
+      return _defaultValues[lang]![key]!;
+    }
+    if (_defaultValues['uz']!.containsKey(key)) {
+      return _defaultValues['uz']![key]!;
+    }
+    return key;
   }
 
   String get localeName => locale.languageCode;
@@ -46,6 +98,8 @@ class AppLocalizations {
   String get appTitle => translate('appTitle');
   String get welcome => translate('welcome');
   String get login => translate('login');
+  String get loginSubtitle => translate('loginSubtitle');
+  String get emailHint => translate('emailHint');
   String get register => translate('register');
   String get home => translate('home');
   String get expenses => translate('expenses');

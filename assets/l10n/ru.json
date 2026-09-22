@@ -2,6 +2,8 @@
   "appTitle": "PocketTrack",
   "welcome": "Добро пожаловать",
   "login": "Вход",
+  "loginSubtitle": "Войдите, чтобы легко отслеживать свои финансы.",
+  "emailHint": "почта@пример.com",
   "register": "Регистрация",
   "home": "Главная",
   "expenses": "Расходы",

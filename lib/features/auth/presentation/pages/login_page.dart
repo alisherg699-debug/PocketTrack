@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'package:pockettrack/features/auth/application/auth_cubit.dart';
 import 'package:pockettrack/features/auth/application/auth_state.dart';
 import 'package:pockettrack/features/auth/presentation/pages/create_new_accaunt_page.dart';
-import 'package:pockettrack/features/expense/presentation/pages/home_page.dart';
 import 'package:pockettrack/features/auth/presentation/pages/password_reset_page.dart';
-import 'package:pockettrack/core/l10n/app_localizations.dart';
+import 'package:pockettrack/features/expense/presentation/pages/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,13 +28,14 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _handleLogin() {
+    final l10n = AppLocalizations.of(context)!;
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
     if (username.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Iltimos, barcha maydonlarni to'ldiring"),
+        SnackBar(
+          content: Text(l10n.fillAllFields),
           backgroundColor: Colors.orange,
         ),
       );
@@ -42,7 +43,6 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     if (password.length < 6) {
-      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.passwordTooShort),
@@ -117,9 +117,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
-                        "Moliyangizni oson kuzatish uchun tizimga kiring.",
-                        style: TextStyle(
+                      Text(
+                        l10n.loginSubtitle,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w400,
@@ -143,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: TextField(
                           controller: _usernameController,
                           decoration: InputDecoration(
-                            hintText: "pochta@misol.com",
+                            hintText: l10n.emailHint,
                             filled: true,
                             fillColor: const Color(0xFFFFFFFF),
                             border: OutlineInputBorder(
@@ -189,7 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _passwordController,
                           obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
-                            hintText: "Parolingizni kiriting",
+                            hintText: l10n.enterPassword,
                             filled: true,
                             fillColor: const Color(0xFFFFFFFF),
                             suffixIcon: IconButton(

@@ -2,6 +2,8 @@
   "appTitle": "PocketTrack",
   "welcome": "Xush kelibsiz",
   "login": "Kirish",
+  "loginSubtitle": "Moliyangizni oson kuzatish uchun tizimga kiring.",
+  "emailHint": "pochta@misol.com",
   "register": "Ro'yxatdan o'tish",
   "home": "Bosh sahifa",
   "expenses": "Xarajatlar",
