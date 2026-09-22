@@ -6,9 +6,10 @@ import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
-import 'package:pockettrack/features/income/presentation/pages/add_income_page.dart';
 
 import 'package:pockettrack/core/l10n/app_localizations.dart';
+
+import '../../../report/pages/add_income_page.dart';
 
 class BudgetPage extends StatefulWidget {
   const BudgetPage({super.key});
@@ -23,26 +24,30 @@ class _BudgetPageState extends State<BudgetPage> {
   Map<String, double> categoryBudgetLimits = {};
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _loadBudgetData();
   }
 
   Future<void> _loadBudgetData() async {
     final prefs = await SharedPreferences.getInstance();
-    final List<String> cats = prefs.getStringList('custom_categories') ?? 
-        ['Oziq-ovqat', 'Transport', 'Xaridlar', 'To\'lovlar', 'Salomatlik', 'Boshqa'];
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    final List<String> defaultCats = [l10n.food, l10n.transport, l10n.shopping, l10n.payments, l10n.health, l10n.other];
+    final List<String> cats = prefs.getStringList('custom_categories') ?? defaultCats;
     
     Map<String, double> tempBudgets = {};
     for (var cat in cats) {
       tempBudgets[cat] = prefs.getDouble('budget_$cat') ?? 0.0;
     }
 
-    setState(() {
-      totalMonthlyBudget = prefs.getDouble('total_budget') ?? 2000000;
-      categories = cats;
-      categoryBudgetLimits = tempBudgets;
-    });
+    if (mounted) {
+      setState(() {
+        totalMonthlyBudget = prefs.getDouble('total_budget') ?? 2000000;
+        categories = cats;
+        categoryBudgetLimits = tempBudgets;
+      });
+    }
   }
 
   Future<void> _saveTotalBudget(double value) async {
@@ -158,23 +163,42 @@ class _BudgetPageState extends State<BudgetPage> {
     );
   }
 
+  String _getLocalizedCategoryName(String cat, AppLocalizations l10n) {
+    final lower = cat.toLowerCase();
+    if (lower == 'oziq-ovqat' || lower == 'food' || lower == 'продукты' || lower == l10n.food.toLowerCase()) return l10n.food;
+    if (lower == 'transport' || lower == 'транспорт' || lower == l10n.transport.toLowerCase()) return l10n.transport;
+    if (lower == 'xaridlar' || lower == 'shopping' || lower == 'покупки' || lower == l10n.shopping.toLowerCase()) return l10n.shopping;
+    if (lower == 'to\'lovlar' || lower == 'tolovlar' || lower == 'payments' || lower == 'платежи' || lower == l10n.payments.toLowerCase()) return l10n.payments;
+    if (lower == 'salomatlik' || lower == 'health' || lower == 'здоровье' || lower == l10n.health.toLowerCase()) return l10n.health;
+    if (lower == 'boshqa' || lower == 'other' || lower == 'другое' || lower == l10n.other.toLowerCase()) return l10n.other;
+    return cat;
+  }
+
   Widget _buildCategoryBudgetCard(AppLocalizations l10n, String title, double spent, double limit) {
+    final String localizedTitle = _getLocalizedCategoryName(title, l10n);
     final double displayLimit = limit > 0 ? limit : 1.0; 
     final double percent = (spent / displayLimit).clamp(0, 1);
     final bool isOverBudget = spent > limit && limit > 0;
     
     Color barColor;
-    switch (title.toLowerCase()) {
-      case 'oziq-ovqat': barColor = const Color(0xFF0D9488); break;
-      case 'transport': barColor = Colors.blue; break;
-      case 'xaridlar': barColor = Colors.purple; break;
-      case 'to\'lovlar': barColor = Colors.orange; break;
-      default: barColor = Colors.blueGrey;
+    final titleLower = title.toLowerCase();
+    if (titleLower == 'oziq-ovqat' || titleLower == 'food' || titleLower == 'продукты' || titleLower == l10n.food.toLowerCase()) {
+      barColor = const Color(0xFF0D9488);
+    } else if (titleLower == 'transport' || titleLower == 'транспорт' || titleLower == l10n.transport.toLowerCase()) {
+      barColor = Colors.blue;
+    } else if (titleLower == 'xaridlar' || titleLower == 'shopping' || titleLower == 'покупки' || titleLower == l10n.shopping.toLowerCase()) {
+      barColor = Colors.purple;
+    } else if (titleLower == 'to\'lovlar' || titleLower == 'tolovlar' || titleLower == 'payments' || titleLower == 'платежи' || titleLower == l10n.payments.toLowerCase()) {
+      barColor = Colors.orange;
+    } else if (titleLower == 'salomatlik' || titleLower == 'health' || titleLower == 'здоровье' || titleLower == l10n.health.toLowerCase()) {
+      barColor = Colors.pink;
+    } else {
+      barColor = Colors.blueGrey;
     }
     if (isOverBudget) barColor = Colors.red;
 
     return GestureDetector(
-      onTap: () => _showEditDialog("$title uchun ajratilgan byudjet", limit, (val) => _saveCategoryLimit(title, val), l10n),
+      onTap: () => _showEditDialog(l10n.categoryBudgetAllocated(localizedTitle), limit, (val) => _saveCategoryLimit(title, val), l10n),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
@@ -189,7 +213,7 @@ class _BudgetPageState extends State<BudgetPage> {
               children: [
                 Container(width: 8, height: 8, decoration: BoxDecoration(color: barColor, shape: BoxShape.circle)),
                 const SizedBox(width: 12),
-                Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B)))),
+                Expanded(child: Text(localizedTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B)))),
                 Text(
                   "${spent.toInt()} / ${limit.toInt()}",
                   style: TextStyle(color: isOverBudget ? Colors.red : const Color(0xFF64748B), fontSize: 14, fontWeight: FontWeight.w500),

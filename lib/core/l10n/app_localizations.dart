@@ -328,6 +328,10 @@ class AppLocalizations {
         .replaceAll('{amount}', amount)
         .replaceAll('{name}', name);
   }
+
+  String categoryBudgetAllocated(String title) {
+    return translate('categoryBudgetAllocated').replaceAll('{title}', title);
+  }
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

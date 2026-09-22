@@ -170,6 +170,7 @@
   "notificationTitle": "Xarajatlarni kiritish vaqti keldi!",
   "notificationBody": "Bugungi barcha sarf-xarajatlaringizni PocketTrack-ga yozib qo'ydingizmi?",
   "monthlyBudget": "OYLIK BYUDJET",
+  "categoryBudgetAllocated": "{title} uchun ajratilgan byudjet",
   "budgetEditDesc": "Byudjet miqdorini tahrirlash uchun yangi qiymat kiriting",
   "spentOfBudget": "Byudjetning {percent}% sarflandi",
   "totalIncome": "JAMI DAROMAD",

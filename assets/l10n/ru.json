@@ -170,6 +170,7 @@
   "notificationTitle": "Пришло время записать расходы!",
   "notificationBody": "Записали ли вы все сегодняшние расходы в PocketTrack?",
   "monthlyBudget": "МЕСЯЧНЫЙ БЮДЖЕТ",
+  "categoryBudgetAllocated": "Бюджет, выделенный на {title}",
   "budgetEditDesc": "Введите новое значение для редактирования суммы бюджета",
   "spentOfBudget": "Потрачено {percent}% бюджета",
   "totalIncome": "ОБЩИЙ ДОХОД",

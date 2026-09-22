@@ -170,6 +170,7 @@
   "notificationTitle": "It's time to enter your expenses!",
   "notificationBody": "Have you recorded all today's expenses in PocketTrack?",
   "monthlyBudget": "MONTHLY BUDGET",
+  "categoryBudgetAllocated": "Budget allocated for {title}",
   "budgetEditDesc": "Enter new value to edit budget amount",
   "spentOfBudget": "{percent}% of budget spent",
   "totalIncome": "TOTAL INCOME",
