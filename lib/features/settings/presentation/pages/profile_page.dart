@@ -1,15 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'package:pockettrack/features/auth/application/auth_cubit.dart';
 import 'package:pockettrack/features/auth/application/auth_state.dart';
 import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/account_settings_page.dart';
-import 'package:pockettrack/features/settings/presentation/pages/notifications_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/categories_page.dart';
+import 'package:pockettrack/features/settings/presentation/pages/notifications_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/security_page.dart';
 
-import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'help_support_page.dart';
 import 'language_page.dart';
 
@@ -21,17 +21,100 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  ImageProvider _buildImage(String? path) {
-    if (path == null || path.isEmpty) {
-      return const AssetImage('assets/iconspng/avatar.png');
+  Widget _buildAvatarWidget(String? imagePath) {
+    Widget fallbackIcon = Container(
+      width: 104,
+      height: 104,
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6F4F1),
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: const Color(0xFF0D9488).withValues(alpha: 0.2),
+          width: 3,
+        ),
+      ),
+      child: const Icon(
+        Icons.person_rounded,
+        size: 56,
+        color: Color(0xFF0D9488),
+      ),
+    );
+
+    if (imagePath == null || imagePath.trim().isEmpty) {
+      return fallbackIcon;
     }
-    if (path.startsWith('http')) {
-      return NetworkImage(path);
+
+    if (imagePath.startsWith('http')) {
+      return Container(
+        width: 104,
+        height: 104,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: const Color(0xFFE2E8F0),
+            width: 3,
+          ),
+        ),
+        child: ClipOval(
+          child: Image.network(
+            imagePath,
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => fallbackIcon,
+          ),
+        ),
+      );
     }
-    if (path.startsWith('assets')) {
-      return AssetImage(path);
+
+    if (imagePath.startsWith('assets')) {
+      return Container(
+        width: 104,
+        height: 104,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: const Color(0xFFE2E8F0),
+            width: 3,
+          ),
+        ),
+        child: ClipOval(
+          child: Image.asset(
+            imagePath,
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => fallbackIcon,
+          ),
+        ),
+      );
     }
-    return FileImage(File(path));
+
+    final file = File(imagePath);
+    if (!file.existsSync()) {
+      return fallbackIcon;
+    }
+
+    return Container(
+      width: 104,
+      height: 104,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+          width: 3,
+        ),
+      ),
+      child: ClipOval(
+        child: Image.file(
+          file,
+          width: 100,
+          height: 100,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => fallbackIcon,
+        ),
+      ),
+    );
   }
 
   @override
@@ -60,7 +143,11 @@ class _ProfilePageState extends State<ProfilePage> {
           appBar: AppBar(
             title: Text(
               l10n.profile,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E293B),
+              ),
             ),
             centerTitle: true,
             backgroundColor: Colors.white,
@@ -76,23 +163,23 @@ class _ProfilePageState extends State<ProfilePage> {
                   padding: const EdgeInsets.symmetric(vertical: 32),
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 54,
-                        backgroundColor: const Color(0xFFE2E8F0),
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage: _buildImage(user?.image),
-                        ),
-                      ),
+                      _buildAvatarWidget(user?.image),
                       const SizedBox(height: 16),
                       Text(
                         user?.firstName ?? l10n.loading,
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1E293B),
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         user?.email ?? "",
-                        style: const TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF94A3B8),
+                        ),
                       ),
                     ],
                   ),
@@ -104,17 +191,32 @@ class _ProfilePageState extends State<ProfilePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 4, bottom: 12, top: 12),
+                        padding: const EdgeInsets.only(
+                          left: 4,
+                          bottom: 12,
+                          top: 12,
+                        ),
                         child: Text(
                           l10n.settings.toUpperCase(),
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF94A3B8), letterSpacing: 0.5),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF94A3B8),
+                            letterSpacing: 0.5,
+                          ),
                         ),
                       ),
                       _buildMenuItem(
                         icon: Icons.person_outline,
                         title: l10n.accountSettings,
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const AccountSettingsPage()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => const AccountSettingsPage(),
+                            ),
+                          );
                         },
                       ),
                       const SizedBox(height: 12),
@@ -122,7 +224,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         icon: Icons.account_balance_wallet_outlined,
                         title: l10n.categories,
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const CategoriesPage()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CategoriesPage(),
+                            ),
+                          );
                         },
                       ),
                       const SizedBox(height: 12),
@@ -130,7 +237,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         icon: Icons.notifications_none,
                         title: l10n.notifications,
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationsPage()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NotificationsPage(),
+                            ),
+                          );
                         },
                       ),
                       const SizedBox(height: 12),
@@ -138,7 +250,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         icon: Icons.lock_outline,
                         title: l10n.security,
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const SecurityPage()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SecurityPage(),
+                            ),
+                          );
                         },
                       ),
                       const SizedBox(height: 12),
@@ -146,7 +263,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         icon: Icons.language_outlined,
                         title: l10n.changeLanguage,
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const LanguagePage()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LanguagePage(),
+                            ),
+                          );
                         },
                       ),
                       const SizedBox(height: 12),
@@ -154,7 +276,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         icon: Icons.help_outline,
                         title: l10n.helpSupport,
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const HelpSupportPage()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HelpSupportPage(),
+                            ),
+                          );
                         },
                       ),
                     ],
@@ -174,33 +301,69 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildMenuItem({required IconData icon, required String title, required VoidCallback onTap}) {
+  Widget _buildMenuItem({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
     return Container(
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFF1F5F9))),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFF1F5F9)),
+      ),
       child: ListTile(
         onTap: onTap,
         leading: Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Icon(icon, color: const Color(0xFF1E293B), size: 22),
         ),
-        title: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF1E293B))),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Color(0xFF94A3B8)),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1E293B),
+          ),
+        ),
+        trailing: const Icon(
+          Icons.arrow_forward_ios,
+          size: 14,
+          color: Color(0xFF94A3B8),
+        ),
       ),
     );
   }
 
   Widget _buildLogoutButton(AppLocalizations l10n) {
     return Container(
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFF1F5F9))),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFF1F5F9)),
+      ),
       child: ListTile(
         onTap: () => _showLogoutDialog(l10n),
         leading: Container(
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(color: const Color(0xFFFFF1F2), borderRadius: BorderRadius.circular(10)),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF1F2),
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: const Icon(Icons.logout, color: Colors.red, size: 22),
         ),
-        title: Text(l10n.logout, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.red)),
+        title: Text(
+          l10n.logout,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: Colors.red,
+          ),
+        ),
       ),
     );
   }
@@ -208,21 +371,30 @@ class _ProfilePageState extends State<ProfilePage> {
   void _showLogoutDialog(AppLocalizations l10n) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(l10n.logout),
-        content: Text(l10n.confirmLogout),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-          TextButton(
-            onPressed: () {
-              context.read<AuthCubit>().logout();
-              Navigator.pop(context);
-            },
-            child: Text(l10n.logout, style: const TextStyle(color: Colors.red)),
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            title: Text(l10n.logout),
+            content: Text(l10n.confirmLogout),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<AuthCubit>().logout();
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  l10n.logout,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

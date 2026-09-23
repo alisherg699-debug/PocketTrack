@@ -45,11 +45,91 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     }
   }
 
-  ImageProvider _buildImageProvider(String? path) {
-    if (path == null || path.isEmpty) return const AssetImage('assets/iconspng/avatar.png');
-    if (path.startsWith('http')) return NetworkImage(path);
-    if (path.startsWith('assets')) return AssetImage(path);
-    return FileImage(File(path));
+  Widget _buildAvatarWidget(String? path) {
+    Widget fallbackIcon = Container(
+      width: 100,
+      height: 100,
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6F4F1),
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: const Color(0xFF0D9488).withValues(alpha: 0.2),
+          width: 3,
+        ),
+      ),
+      child: const Icon(
+        Icons.person_rounded,
+        size: 52,
+        color: Color(0xFF0D9488),
+      ),
+    );
+
+    if (path == null || path.trim().isEmpty) {
+      return fallbackIcon;
+    }
+
+    if (path.startsWith('http')) {
+      return Container(
+        width: 100,
+        height: 100,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+        ),
+        child: ClipOval(
+          child: Image.network(
+            path,
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => fallbackIcon,
+          ),
+        ),
+      );
+    }
+
+    if (path.startsWith('assets')) {
+      return Container(
+        width: 100,
+        height: 100,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+        ),
+        child: ClipOval(
+          child: Image.asset(
+            path,
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => fallbackIcon,
+          ),
+        ),
+      );
+    }
+
+    final file = File(path);
+    if (!file.existsSync()) {
+      return fallbackIcon;
+    }
+
+    return Container(
+      width: 100,
+      height: 100,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+      ),
+      child: ClipOval(
+        child: Image.file(
+          file,
+          width: 100,
+          height: 100,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => fallbackIcon,
+        ),
+      ),
+    );
   }
 
   @override
@@ -84,11 +164,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                     children: [
                       Stack(
                         children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundColor: const Color(0xFFE2E8F0),
-                            backgroundImage: _buildImageProvider(_imagePath),
-                          ),
+                          _buildAvatarWidget(_imagePath),
                           Positioned(
                             bottom: 0, right: 0,
                             child: GestureDetector(

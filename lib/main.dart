@@ -64,6 +64,13 @@ class _MyAppState extends State<MyApp> {
               colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0D9488)),
               fontFamily: 'Geist',
             ),
+            builder: (context, child) {
+              return GestureDetector(
+                onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                behavior: HitTestBehavior.opaque,
+                child: child,
+              );
+            },
             home: BlocBuilder<AuthCubit, AuthState>(
               builder: (context, state) {
                 return state.maybeWhen(

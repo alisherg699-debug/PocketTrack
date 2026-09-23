@@ -28,6 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _handleLogin() {
+    FocusScope.of(context).unfocus();
     final l10n = AppLocalizations.of(context)!;
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
@@ -60,33 +61,34 @@ class _LoginPageState extends State<LoginPage> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
-      body: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) {
-          state.maybeWhen(
-            authenticated: (user) {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const HomePage()),
-                (route) => false,
-              );
-            },
-            error: (message) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(message), backgroundColor: Colors.red),
-              );
-            },
-            orElse: () {},
-          );
-        },
-        builder: (context, state) {
-          return SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 192.5),
-                  Column(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.opaque,
+        child: BlocConsumer<AuthCubit, AuthState>(
+          listener: (context, state) {
+            state.maybeWhen(
+              authenticated: (user) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const HomePage()),
+                  (route) => false,
+                );
+              },
+              error: (message) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(message), backgroundColor: Colors.red),
+                );
+              },
+              orElse: () {},
+            );
+          },
+          builder: (context, state) {
+            return SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Stack(
                         alignment: Alignment.center,
@@ -126,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                           color: Color(0xFF475569),
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 28),
                       Text(
                         l10n.email,
                         style: const TextStyle(
@@ -138,10 +140,12 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 8),
                       SizedBox(
-                        height: 64,
+                        height: 60,
                         width: double.infinity,
                         child: TextField(
                           controller: _usernameController,
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             hintText: l10n.emailHint,
                             filled: true,
@@ -160,13 +164,13 @@ class _LoginPageState extends State<LoginPage> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide: const BorderSide(
-                                color: Color(0xFF94A3B8),
+                                color: Color(0xFF0D9488),
                                 width: 1.5,
                               ),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
-                              vertical: 20,
+                              vertical: 18,
                             ),
                           ),
                         ),
@@ -183,11 +187,13 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       const SizedBox(height: 8),
                       SizedBox(
-                        height: 64,
+                        height: 60,
                         width: double.infinity,
                         child: TextField(
                           controller: _passwordController,
                           obscureText: !_isPasswordVisible,
+                          textInputAction: TextInputAction.done,
+                          onSubmitted: (_) => _handleLogin(),
                           decoration: InputDecoration(
                             hintText: l10n.enterPassword,
                             filled: true,
@@ -217,24 +223,25 @@ class _LoginPageState extends State<LoginPage> {
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide: const BorderSide(
-                                color: Color(0xFF94A3B8),
+                                color: Color(0xFF0D9488),
                                 width: 1.5,
                               ),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
-                              vertical: 20,
+                              vertical: 18,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       SizedBox(
                         width: double.infinity,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
+                              FocusScope.of(context).unfocus();
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -253,15 +260,16 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 24),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF0D9488),
                           foregroundColor: Colors.white,
-                          minimumSize: const Size(double.infinity, 67),
+                          minimumSize: const Size(double.infinity, 60),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
+                          elevation: 0,
                         ),
                         onPressed: state.maybeWhen(
                           loading: () => null,
@@ -273,7 +281,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           orElse: () => Text(
                             l10n.login,
-                            style: const TextStyle(fontSize: 20),
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
@@ -292,6 +300,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           TextButton(
                             onPressed: () {
+                              FocusScope.of(context).unfocus();
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -312,11 +321,11 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

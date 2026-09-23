@@ -143,7 +143,20 @@ class _CategoriesPageState extends State<CategoriesPage> {
     );
   }
 
+  String _getLocalizedCategoryName(String cat, AppLocalizations l10n) {
+    final lower = cat.toLowerCase();
+    if (lower == 'oziq-ovqat' || lower == 'food' || lower == 'продукты' || lower == l10n.food.toLowerCase()) return l10n.food;
+    if (lower == 'transport' || lower == 'транспорт' || lower == l10n.transport.toLowerCase()) return l10n.transport;
+    if (lower == 'xaridlar' || lower == 'shopping' || lower == 'покупки' || lower == l10n.shopping.toLowerCase()) return l10n.shopping;
+    if (lower == 'to\'lovlar' || lower == 'tolovlar' || lower == 'payments' || lower == 'платежи' || lower == l10n.payments.toLowerCase()) return l10n.payments;
+    if (lower == 'salomatlik' || lower == 'health' || lower == 'здоровье' || lower == l10n.health.toLowerCase()) return l10n.health;
+    if (lower == 'boshqa' || lower == 'other' || lower == 'другое' || lower == l10n.other.toLowerCase()) return l10n.other;
+    return cat;
+  }
+
   Widget _buildCategoryCard(CategoryItem item, int index) {
+    final l10n = AppLocalizations.of(context)!;
+    final displayTitle = _getLocalizedCategoryName(item.title, l10n);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -156,7 +169,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
           decoration: BoxDecoration(color: const Color(0xFF0D9488).withOpacity(0.05), borderRadius: BorderRadius.circular(12)),
           child: Icon(item.icon, color: const Color(0xFF0D9488), size: 22),
         ),
-        title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        title: Text(displayTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
