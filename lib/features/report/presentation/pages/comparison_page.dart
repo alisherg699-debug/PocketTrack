@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
+import 'package:pockettrack/core/utils/category_helper.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class ComparisonPage extends StatefulWidget {
@@ -195,7 +196,7 @@ class _ComparisonPageState extends State<ComparisonPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(cat, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  Text(CategoryHelper.getLocalizedName(cat, l10n), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   const SizedBox(height: 4),
                   Text("${DateFormat.MMM(Localizations.localeOf(context).toString()).format(firstMonth)}: ${_formatK(v1)}  •  ${DateFormat.MMM(Localizations.localeOf(context).toString()).format(secondMonth)}: ${_formatK(v2)}", 
                       style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13)),

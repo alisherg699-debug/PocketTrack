@@ -10,6 +10,7 @@ import 'package:pockettrack/features/income/application/income/income_bloc.dart'
 import 'package:pockettrack/features/income/application/income/income_event.dart';
 import 'package:pockettrack/features/income/application/income/income_state.dart';
 import 'package:pockettrack/features/report/presentation/pages/export_page.dart';
+import 'package:pockettrack/core/utils/category_helper.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class MonthlyReportPage extends StatefulWidget {
@@ -105,17 +106,112 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
   }
 
   Widget _buildMonthSelector(AppLocalizations l10n) {
-    final monthName = DateFormat('MMMM yyyy', Localizations.localeOf(context).toString()).format(selectedDate);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(onPressed: () => setState(() => selectedDate = DateTime(selectedDate.year, selectedDate.month - 1)), icon: const Icon(Icons.chevron_left)),
-        Text(
-          monthName,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
-        ),
-        IconButton(onPressed: () => setState(() => selectedDate = DateTime(selectedDate.year, selectedDate.month + 1)), icon: const Icon(Icons.chevron_right)),
-      ],
+    final rawMonth = DateFormat('MMMM yyyy', Localizations.localeOf(context).toString()).format(selectedDate);
+    final monthName = rawMonth.isNotEmpty 
+        ? rawMonth[0].toUpperCase() + rawMonth.substring(1) 
+        : rawMonth;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // PREVIOUS MONTH BUTTON
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => setState(() => selectedDate = DateTime(selectedDate.year, selectedDate.month - 1)),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.chevron_left_rounded, color: Color(0xFF0D9488), size: 22),
+              ),
+            ),
+          ),
+
+          // CENTER MONTH PICKER BUTTON
+          GestureDetector(
+            onTap: () async {
+              final DateTime? picked = await showDatePicker(
+                context: context,
+                initialDate: selectedDate,
+                firstDate: DateTime(2020),
+                lastDate: DateTime(2030),
+                helpText: l10n.selectFirstMonth,
+                builder: (context, child) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: const ColorScheme.light(primary: Color(0xFF0D9488)),
+                    ),
+                    child: child!,
+                  );
+                },
+              );
+              if (picked != null) {
+                setState(() => selectedDate = DateTime(picked.year, picked.month));
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0FDFA),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFF0D9488).withValues(alpha: 0.2)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.calendar_month_rounded, size: 18, color: Color(0xFF0D9488)),
+                  const SizedBox(width: 8),
+                  Text(
+                    monthName,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E293B),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.keyboard_arrow_down_rounded, size: 20, color: Color(0xFF0D9488)),
+                ],
+              ),
+            ),
+          ),
+
+          // NEXT MONTH BUTTON
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => setState(() => selectedDate = DateTime(selectedDate.year, selectedDate.month + 1)),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.chevron_right_rounded, color: Color(0xFF0D9488), size: 22),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -247,8 +343,8 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(entry.key, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                  Text("${((entry.value / total) * 100).toInt()}% ulush", style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
+                  Text(CategoryHelper.getLocalizedName(entry.key, l10n), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(l10n.sharePercent(((entry.value / total) * 100).toInt()), style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
                 ],
               ),
             ),

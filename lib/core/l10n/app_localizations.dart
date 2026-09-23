@@ -122,6 +122,7 @@ class AppLocalizations {
   String get enterPassword => translate('enterPassword');
   String get forgotPassword => translate('forgotPassword');
   String get dontHaveAccount => translate('dontHaveAccount');
+  String get alreadyHaveAccount => translate('alreadyHaveAccount');
   String get todayExpenses => translate('todayExpenses');
   String get todayOperations => translate('todayOperations');
   String get seeAll => translate('seeAll');
@@ -321,6 +322,10 @@ class AppLocalizations {
 
   String spentOfBudget(String percent) {
     return translate('spentOfBudget').replaceAll('{percent}', percent);
+  }
+
+  String sharePercent(int percent) {
+    return translate('sharePercent').replaceAll('{percent}', percent.toString());
   }
 
   String incomeAddedBody(String amount, String name) {

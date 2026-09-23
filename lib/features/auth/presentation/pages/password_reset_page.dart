@@ -157,7 +157,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
         _buildInputField(
           label: l10n.email,
           controller: _emailController,
-          hint: "pochta@misol.com",
+          hint: l10n.emailHint,
           keyboardType: TextInputType.emailAddress,
         ),
         const SizedBox(height: 40),

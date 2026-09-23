@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +13,7 @@ import 'package:pockettrack/features/report/presentation/pages/statistics_page.d
 import 'package:pockettrack/features/settings/presentation/pages/budget_page.dart';
 import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
+import 'package:pockettrack/core/utils/category_helper.dart';
 
 class ExpensePage extends StatefulWidget {
   const ExpensePage({super.key});
@@ -160,7 +163,7 @@ class _ExpensePageState extends State<ExpensePage> {
                           _buildSectionTitle(entry.key),
                           const SizedBox(height: 12),
                           ...entry.value
-                              .map((e) => _buildExpenseItem(e))
+                              .map((e) => _buildExpenseItem(e, l10n))
                               .toList(),
                           const SizedBox(height: 16),
                         ],
@@ -234,7 +237,7 @@ class _ExpensePageState extends State<ExpensePage> {
                 children: [
                   Text(labelText, style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
                   const SizedBox(height: 8),
-                  Text("${_formatCurrency(total)} so'm", style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800)),
+                  Text("${_formatCurrency(total)} ${l10n.som}", style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800)),
                   const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: Divider(color: Colors.white24, height: 1)),
                 ],
               ),
@@ -475,15 +478,11 @@ class _ExpensePageState extends State<ExpensePage> {
     return Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)));
   }
 
-  Widget _buildExpenseItem(Expense expense) {
-    IconData icon;
-    Color iconColor;
-    switch (expense.category.toLowerCase()) {
-      case 'oziq-ovqat': icon = Icons.restaurant; iconColor = Colors.orange; break;
-      case 'transport': icon = Icons.directions_car; iconColor = Colors.teal; break;
-      case 'xaridlar': icon = Icons.shopping_bag_outlined; iconColor = Colors.purple; break;
-      default: icon = Icons.payments_outlined; iconColor = const Color(0xFF0D9488);
-    }
+  Widget _buildExpenseItem(Expense expense, AppLocalizations l10n) {
+    final icon = CategoryHelper.getIconForCategory(expense.category);
+    final iconColor = CategoryHelper.getColorForCategory(expense.category);
+    final localizedCategory = CategoryHelper.getLocalizedName(expense.category, l10n);
+
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ExpenseDetailsPage(expense: expense))),
       child: Container(
@@ -494,8 +493,8 @@ class _ExpensePageState extends State<ExpensePage> {
           children: [
             Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(16)), child: Icon(icon, color: iconColor, size: 22)),
             const SizedBox(width: 16),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(expense.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))), Text("${expense.category}  •  ${DateFormat('HH:mm').format(expense.date)}", style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13))])),
-            Text("- ${_formatCurrency(expense.amount)} so'm", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E293B))),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(expense.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))), Text("$localizedCategory  •  ${DateFormat('HH:mm').format(expense.date)}", style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13))])),
+            Text("- ${_formatCurrency(expense.amount)} ${l10n.som}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E293B))),
           ],
         ),
       ),

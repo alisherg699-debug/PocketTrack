@@ -134,7 +134,7 @@ class _NewAccountPageState extends State<NewAccountPage> {
                       const SizedBox(height: 8),
                       _buildTextField(
                         controller: _nameController,
-                        hint: "Alisher Ganiyev",
+                        hint: l10n.exampleName,
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -149,7 +149,7 @@ class _NewAccountPageState extends State<NewAccountPage> {
                       const SizedBox(height: 8),
                       _buildTextField(
                         controller: _emailController,
-                        hint: "alisher@email.com",
+                        hint: l10n.emailHint,
                         keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 16),
@@ -227,7 +227,7 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            l10n.login,
+                            l10n.alreadyHaveAccount,
                             style: const TextStyle(
                               color: Color(0xFF475569),
                               fontSize: 14,
