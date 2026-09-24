@@ -50,7 +50,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
     if (dailyReminder) {
       _scheduleDaily();
     } else {
-      NotificationService.cancelAllNotifications();
+      NotificationService.cancelNotification(100);
+    }
+
+    if (weeklyReport) {
+      _scheduleWeekly();
+    } else {
+      NotificationService.cancelNotification(101);
     }
   }
 
@@ -60,6 +66,18 @@ class _NotificationsPageState extends State<NotificationsPage> {
       id: 100,
       title: l10n.notificationTitle,
       body: l10n.notificationBody,
+      hour: reminderHour,
+      minute: reminderMinute,
+    );
+  }
+
+  void _scheduleWeekly() {
+    final l10n = AppLocalizations.of(context)!;
+    NotificationService.scheduleWeeklyNotification(
+      id: 101,
+      title: l10n.weeklyReportTitle,
+      body: l10n.weeklyReportDesc,
+      dayOfWeek: DateTime.sunday,
       hour: reminderHour,
       minute: reminderMinute,
     );
