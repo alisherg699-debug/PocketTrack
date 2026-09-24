@@ -16,7 +16,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   bool weeklyReport = true;
   bool budgetAlert = true;
   bool newFeatures = false;
-  int alertThreshold = 80; 
+  int alertThreshold = 80;
   int reminderHour = 20;
   int reminderMinute = 0;
 
@@ -46,7 +46,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     } else if (value is int) {
       await prefs.setInt(key, value);
     }
-    
+
     if (dailyReminder) {
       _scheduleDaily();
     } else {
@@ -85,12 +85,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    String timeLabel = "${reminderHour.toString().padLeft(2, '0')}:${reminderMinute.toString().padLeft(2, '0')}";
+    String timeLabel =
+        "${reminderHour.toString().padLeft(2, '0')}:${reminderMinute.toString().padLeft(2, '0')}";
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: Text(l10n.notifications, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(
+          l10n.notifications,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -108,7 +112,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
               child: Text(
                 l10n.systemNotifications,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF94A3B8), letterSpacing: 0.5),
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF94A3B8),
+                  letterSpacing: 0.5,
+                ),
               ),
             ),
             Padding(
@@ -187,13 +196,32 @@ class _NotificationsPageState extends State<NotificationsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E293B),
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(description, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4)),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF64748B),
+                      height: 1.4,
+                    ),
+                  ),
                 ],
               ),
             ),
-            if (onTap != null) const Icon(Icons.access_time_rounded, size: 18, color: Color(0xFF94A3B8)),
+            if (onTap != null)
+              const Icon(
+                Icons.access_time_rounded,
+                size: 18,
+                color: Color(0xFF94A3B8),
+              ),
             const SizedBox(width: 8),
             Switch.adaptive(
               value: value,
@@ -216,7 +244,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(l10n.thresholdQuestion, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+            Text(
+              l10n.thresholdQuestion,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: controller,
@@ -225,15 +256,25 @@ class _NotificationsPageState extends State<NotificationsPage> {
               autofocus: true,
               decoration: const InputDecoration(
                 suffixText: "%",
-                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                ),
               ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D9488), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0D9488),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             onPressed: () {
               final val = int.tryParse(controller.text);
               if (val != null && val > 0 && val <= 100) {

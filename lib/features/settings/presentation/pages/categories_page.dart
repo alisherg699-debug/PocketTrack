@@ -9,10 +9,7 @@ class CategoryItem {
 
   CategoryItem({required this.title, required this.icon});
 
-  Map<String, dynamic> toMap() => {
-    'title': title,
-    'iconCode': icon.codePoint,
-  };
+  Map<String, dynamic> toMap() => {'title': title, 'iconCode': icon.codePoint};
 
   factory CategoryItem.fromMap(Map<String, dynamic> map) => CategoryItem(
     title: map['title'],
@@ -30,14 +27,24 @@ class CategoriesPage extends StatefulWidget {
 class _CategoriesPageState extends State<CategoriesPage> {
   List<CategoryItem> categories = [];
   final TextEditingController _categoryController = TextEditingController();
-  
+
   IconData selectedIcon = Icons.label_outline;
   final List<IconData> iconOptions = [
-    Icons.restaurant, Icons.directions_car, Icons.shopping_bag_outlined,
-    Icons.credit_card, Icons.favorite_border, Icons.home_outlined,
-    Icons.movie_outlined, Icons.fitness_center, Icons.work_outline,
-    Icons.school_outlined, Icons.local_gas_station, Icons.flight_takeoff,
-    Icons.medical_services_outlined, Icons.build_outlined, Icons.card_giftcard,
+    Icons.restaurant,
+    Icons.directions_car,
+    Icons.shopping_bag_outlined,
+    Icons.credit_card,
+    Icons.favorite_border,
+    Icons.home_outlined,
+    Icons.movie_outlined,
+    Icons.fitness_center,
+    Icons.work_outline,
+    Icons.school_outlined,
+    Icons.local_gas_station,
+    Icons.flight_takeoff,
+    Icons.medical_services_outlined,
+    Icons.build_outlined,
+    Icons.card_giftcard,
   ];
 
   @override
@@ -49,11 +56,13 @@ class _CategoriesPageState extends State<CategoriesPage> {
   Future<void> _loadCategories() async {
     final prefs = await SharedPreferences.getInstance();
     final List<String>? savedData = prefs.getStringList('custom_categories_v2');
-    
+
     try {
       if (savedData != null && savedData.isNotEmpty) {
         setState(() {
-          categories = savedData.map((s) => CategoryItem.fromMap(jsonDecode(s))).toList();
+          categories = savedData
+              .map((s) => CategoryItem.fromMap(jsonDecode(s)))
+              .toList();
         });
       } else {
         if (mounted) {
@@ -85,15 +94,23 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
   Future<void> _saveCategories() async {
     final prefs = await SharedPreferences.getInstance();
-    final List<String> dataToSave = categories.map((c) => jsonEncode(c.toMap())).toList();
+    final List<String> dataToSave = categories
+        .map((c) => jsonEncode(c.toMap()))
+        .toList();
     await prefs.setStringList('custom_categories_v2', dataToSave);
-    await prefs.setStringList('custom_categories', categories.map((c) => c.title).toList());
+    await prefs.setStringList(
+      'custom_categories',
+      categories.map((c) => c.title).toList(),
+    );
   }
 
   void _addOrUpdateCategory({int? index}) {
     if (_categoryController.text.isNotEmpty) {
       setState(() {
-        final newItem = CategoryItem(title: _categoryController.text.trim(), icon: selectedIcon);
+        final newItem = CategoryItem(
+          title: _categoryController.text.trim(),
+          icon: selectedIcon,
+        );
         if (index != null) {
           categories[index] = newItem;
         } else {
@@ -112,7 +129,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: Text(l10n.categories, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(
+          l10n.categories,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -145,12 +165,36 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
   String _getLocalizedCategoryName(String cat, AppLocalizations l10n) {
     final lower = cat.toLowerCase();
-    if (lower == 'oziq-ovqat' || lower == 'food' || lower == 'продукты' || lower == l10n.food.toLowerCase()) return l10n.food;
-    if (lower == 'transport' || lower == 'транспорт' || lower == l10n.transport.toLowerCase()) return l10n.transport;
-    if (lower == 'xaridlar' || lower == 'shopping' || lower == 'покупки' || lower == l10n.shopping.toLowerCase()) return l10n.shopping;
-    if (lower == 'to\'lovlar' || lower == 'tolovlar' || lower == 'payments' || lower == 'платежи' || lower == l10n.payments.toLowerCase()) return l10n.payments;
-    if (lower == 'salomatlik' || lower == 'health' || lower == 'здоровье' || lower == l10n.health.toLowerCase()) return l10n.health;
-    if (lower == 'boshqa' || lower == 'other' || lower == 'другое' || lower == l10n.other.toLowerCase()) return l10n.other;
+    if (lower == 'oziq-ovqat' ||
+        lower == 'food' ||
+        lower == 'продукты' ||
+        lower == l10n.food.toLowerCase())
+      return l10n.food;
+    if (lower == 'transport' ||
+        lower == 'транспорт' ||
+        lower == l10n.transport.toLowerCase())
+      return l10n.transport;
+    if (lower == 'xaridlar' ||
+        lower == 'shopping' ||
+        lower == 'покупки' ||
+        lower == l10n.shopping.toLowerCase())
+      return l10n.shopping;
+    if (lower == 'to\'lovlar' ||
+        lower == 'tolovlar' ||
+        lower == 'payments' ||
+        lower == 'платежи' ||
+        lower == l10n.payments.toLowerCase())
+      return l10n.payments;
+    if (lower == 'salomatlik' ||
+        lower == 'health' ||
+        lower == 'здоровье' ||
+        lower == l10n.health.toLowerCase())
+      return l10n.health;
+    if (lower == 'boshqa' ||
+        lower == 'other' ||
+        lower == 'другое' ||
+        lower == l10n.other.toLowerCase())
+      return l10n.other;
     return cat;
   }
 
@@ -166,10 +210,16 @@ class _CategoriesPageState extends State<CategoriesPage> {
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(color: const Color(0xFF0D9488).withOpacity(0.05), borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0D9488).withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Icon(item.icon, color: const Color(0xFF0D9488), size: 22),
         ),
-        title: Text(displayTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        title: Text(
+          displayTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -183,7 +233,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
             IconButton(
               icon: const Icon(Icons.delete_outline, color: Color(0xFFEF4444)),
               onPressed: () {
-                setState(() { categories.removeAt(index); });
+                setState(() {
+                  categories.removeAt(index);
+                });
                 _saveCategories();
               },
             ),
@@ -200,7 +252,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: Text(index == null ? l10n.newCategory : l10n.editCategory),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -210,11 +264,19 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 autofocus: true,
                 decoration: InputDecoration(
                   hintText: l10n.categoryName,
-                  border: const OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+                  border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
-              Align(alignment: Alignment.centerLeft, child: Text(l10n.selectIcon, style: const TextStyle(fontWeight: FontWeight.bold))),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  l10n.selectIcon,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
               const SizedBox(height: 12),
               SizedBox(
                 height: 50,
@@ -226,18 +288,27 @@ class _CategoriesPageState extends State<CategoriesPage> {
                     bool isSel = selectedIcon == iconOptions[i];
                     return GestureDetector(
                       onTap: () {
-                        setDialogState(() { selectedIcon = iconOptions[i]; });
-                        setState(() { selectedIcon = iconOptions[i]; });
+                        setDialogState(() {
+                          selectedIcon = iconOptions[i];
+                        });
+                        setState(() {
+                          selectedIcon = iconOptions[i];
+                        });
                       },
                       child: Container(
                         margin: const EdgeInsets.only(right: 8),
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: isSel ? const Color(0xFF0D9488) : Colors.transparent,
+                          color: isSel
+                              ? const Color(0xFF0D9488)
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: const Color(0xFFE2E8F0)),
                         ),
-                        child: Icon(iconOptions[i], color: isSel ? Colors.white : Colors.black54),
+                        child: Icon(
+                          iconOptions[i],
+                          color: isSel ? Colors.white : Colors.black54,
+                        ),
                       ),
                     );
                   },
@@ -246,11 +317,22 @@ class _CategoriesPageState extends State<CategoriesPage> {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(l10n.cancel),
+            ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D9488), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0D9488),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               onPressed: () => _addOrUpdateCategory(index: index),
-              child: Text(l10n.save, style: const TextStyle(color: Colors.white)),
+              child: Text(
+                l10n.save,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),

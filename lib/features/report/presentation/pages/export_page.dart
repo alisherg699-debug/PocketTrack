@@ -35,8 +35,10 @@ class _ExportPageState extends State<ExportPage> {
     );
     if (picked != null) {
       setState(() {
-        if (isStart) startDate = picked;
-        else endDate = picked;
+        if (isStart)
+          startDate = picked;
+        else
+          endDate = picked;
       });
     }
   }
@@ -45,13 +47,15 @@ class _ExportPageState extends State<ExportPage> {
     final state = context.read<ExpenseBloc>().state;
     if (state is ExpenseLoaded) {
       final filteredExpenses = state.expenses.where((e) {
-        return e.date.isAfter(startDate.subtract(const Duration(days: 1))) && 
-               e.date.isBefore(endDate.add(const Duration(days: 1)));
+        return e.date.isAfter(startDate.subtract(const Duration(days: 1))) &&
+            e.date.isBefore(endDate.add(const Duration(days: 1)));
       }).toList();
 
       if (filteredExpenses.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.noExpensesForPeriod)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.noExpensesForPeriod),
+          ),
         );
         return;
       }
@@ -72,7 +76,10 @@ class _ExportPageState extends State<ExportPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: Text(l10n.export, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(
+          l10n.export,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -87,19 +94,49 @@ class _ExportPageState extends State<ExportPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.dateRange, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+            Text(
+              l10n.dateRange,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E293B),
+              ),
+            ),
             const SizedBox(height: 24),
             Row(
               children: [
-                Expanded(child: _buildDateInput(l10n.startDateLabel, startDate, () => _selectDate(context, true))),
+                Expanded(
+                  child: _buildDateInput(
+                    l10n.startDateLabel,
+                    startDate,
+                    () => _selectDate(context, true),
+                  ),
+                ),
                 const SizedBox(width: 16),
-                Expanded(child: _buildDateInput(l10n.endDateLabel, endDate, () => _selectDate(context, false))),
+                Expanded(
+                  child: _buildDateInput(
+                    l10n.endDateLabel,
+                    endDate,
+                    () => _selectDate(context, false),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 32),
-            Text(l10n.fileFormat, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+            Text(
+              l10n.fileFormat,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E293B),
+              ),
+            ),
             const SizedBox(height: 16),
-            _buildFormatOption("PDF", l10n.pdfDesc, Icons.picture_as_pdf_outlined),
+            _buildFormatOption(
+              "PDF",
+              l10n.pdfDesc,
+              Icons.picture_as_pdf_outlined,
+            ),
             const SizedBox(height: 12),
             _buildFormatOption("Excel", l10n.excelDesc, Icons.grid_on_outlined),
             const SizedBox(height: 12),
@@ -115,10 +152,19 @@ class _ExportPageState extends State<ExportPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0D9488),
               minimumSize: const Size(double.infinity, 64),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
               elevation: 0,
             ),
-            child: Text(l10n.exportBtn, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            child: Text(
+              l10n.exportBtn,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
       ),
@@ -129,7 +175,14 @@ class _ExportPageState extends State<ExportPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Color(0xFF64748B),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
         const SizedBox(height: 12),
         GestureDetector(
           onTap: onTap,
@@ -143,8 +196,12 @@ class _ExportPageState extends State<ExportPage> {
               border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
             ),
             child: Text(
-              DateFormat('dd.MM.yyyy').format(date), 
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1E293B)),
+              DateFormat('dd.MM.yyyy').format(date),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1E293B),
+              ),
             ),
           ),
         ),
@@ -161,13 +218,21 @@ class _ExportPageState extends State<ExportPage> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isSelected ? const Color(0xFF0D9488) : const Color(0xFFF1F5F9), width: 1.5),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF0D9488)
+                : const Color(0xFFF1F5F9),
+            width: 1.5,
+          ),
         ),
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: const Color(0xFFF0FDFA), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0FDFA),
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Icon(icon, color: const Color(0xFF0D9488), size: 22),
             ),
             const SizedBox(width: 16),
@@ -175,16 +240,37 @@ class _ExportPageState extends State<ExportPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Color(0xFF1E293B),
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(desc, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.3)),
+                  Text(
+                    desc,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF64748B),
+                      height: 1.3,
+                    ),
+                  ),
                 ],
               ),
             ),
-            if (isSelected) 
+            if (isSelected)
               const Icon(Icons.check_circle, color: Color(0xFF0D9488), size: 24)
-            else 
-              Container(width: 24, height: 24, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: const Color(0xFFE2E8F0), width: 2))),
+            else
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+                ),
+              ),
           ],
         ),
       ),

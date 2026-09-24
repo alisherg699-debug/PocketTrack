@@ -31,7 +31,9 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
   }
 
   String _formatCurrency(double amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
+    return amount
+        .toStringAsFixed(0)
+        .replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]},',
         );
@@ -46,12 +48,20 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           l10n.report,
-          style: const TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.bold, fontSize: 18),
+          style: const TextStyle(
+            color: Color(0xFF1E293B),
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
         ),
         centerTitle: true,
       ),
@@ -62,16 +72,30 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
           }
 
           if (expenseState is ExpenseLoaded && incomeState is IncomeLoaded) {
-            final filteredExpenses = expenseState.expenses.where((e) =>
-                e.date.year == selectedDate.year &&
-                e.date.month == selectedDate.month).toList();
-            
-            final filteredIncomes = incomeState.incomes.where((i) =>
-                i.date.year == selectedDate.year &&
-                i.date.month == selectedDate.month).toList();
+            final filteredExpenses = expenseState.expenses
+                .where(
+                  (e) =>
+                      e.date.year == selectedDate.year &&
+                      e.date.month == selectedDate.month,
+                )
+                .toList();
 
-            final totalExpense = filteredExpenses.fold(0.0, (sum, item) => sum + item.amount);
-            final totalIncome = filteredIncomes.fold(0.0, (sum, item) => sum + item.amount);
+            final filteredIncomes = incomeState.incomes
+                .where(
+                  (i) =>
+                      i.date.year == selectedDate.year &&
+                      i.date.month == selectedDate.month,
+                )
+                .toList();
+
+            final totalExpense = filteredExpenses.fold(
+              0.0,
+              (sum, item) => sum + item.amount,
+            );
+            final totalIncome = filteredIncomes.fold(
+              0.0,
+              (sum, item) => sum + item.amount,
+            );
             final balance = totalIncome - totalExpense;
 
             return SingleChildScrollView(
@@ -89,10 +113,18 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                   const SizedBox(height: 32),
                   Text(
                     l10n.topCategories,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E293B),
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  ..._buildSortedCategoryList(l10n, filteredExpenses, totalExpense),
+                  ..._buildSortedCategoryList(
+                    l10n,
+                    filteredExpenses,
+                    totalExpense,
+                  ),
                   const SizedBox(height: 32),
                   _buildDownloadButton(l10n),
                 ],
@@ -106,9 +138,12 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
   }
 
   Widget _buildMonthSelector(AppLocalizations l10n) {
-    final rawMonth = DateFormat('MMMM yyyy', Localizations.localeOf(context).toString()).format(selectedDate);
-    final monthName = rawMonth.isNotEmpty 
-        ? rawMonth[0].toUpperCase() + rawMonth.substring(1) 
+    final rawMonth = DateFormat(
+      'MMMM yyyy',
+      Localizations.localeOf(context).toString(),
+    ).format(selectedDate);
+    final monthName = rawMonth.isNotEmpty
+        ? rawMonth[0].toUpperCase() + rawMonth.substring(1)
         : rawMonth;
 
     return Container(
@@ -133,14 +168,23 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(12),
-              onTap: () => setState(() => selectedDate = DateTime(selectedDate.year, selectedDate.month - 1)),
+              onTap: () => setState(
+                () => selectedDate = DateTime(
+                  selectedDate.year,
+                  selectedDate.month - 1,
+                ),
+              ),
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.chevron_left_rounded, color: Color(0xFF0D9488), size: 22),
+                child: const Icon(
+                  Icons.chevron_left_rounded,
+                  color: Color(0xFF0D9488),
+                  size: 22,
+                ),
               ),
             ),
           ),
@@ -157,14 +201,18 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                 builder: (context, child) {
                   return Theme(
                     data: Theme.of(context).copyWith(
-                      colorScheme: const ColorScheme.light(primary: Color(0xFF0D9488)),
+                      colorScheme: const ColorScheme.light(
+                        primary: Color(0xFF0D9488),
+                      ),
                     ),
                     child: child!,
                   );
                 },
               );
               if (picked != null) {
-                setState(() => selectedDate = DateTime(picked.year, picked.month));
+                setState(
+                  () => selectedDate = DateTime(picked.year, picked.month),
+                );
               }
             },
             child: Container(
@@ -172,12 +220,18 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
               decoration: BoxDecoration(
                 color: const Color(0xFFF0FDFA),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFF0D9488).withValues(alpha: 0.2)),
+                border: Border.all(
+                  color: const Color(0xFF0D9488).withValues(alpha: 0.2),
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.calendar_month_rounded, size: 18, color: Color(0xFF0D9488)),
+                  const Icon(
+                    Icons.calendar_month_rounded,
+                    size: 18,
+                    color: Color(0xFF0D9488),
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     monthName,
@@ -188,7 +242,11 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  const Icon(Icons.keyboard_arrow_down_rounded, size: 20, color: Color(0xFF0D9488)),
+                  const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 20,
+                    color: Color(0xFF0D9488),
+                  ),
                 ],
               ),
             ),
@@ -199,14 +257,23 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(12),
-              onTap: () => setState(() => selectedDate = DateTime(selectedDate.year, selectedDate.month + 1)),
+              onTap: () => setState(
+                () => selectedDate = DateTime(
+                  selectedDate.year,
+                  selectedDate.month + 1,
+                ),
+              ),
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.chevron_right_rounded, color: Color(0xFF0D9488), size: 22),
+                child: const Icon(
+                  Icons.chevron_right_rounded,
+                  color: Color(0xFF0D9488),
+                  size: 22,
+                ),
               ),
             ),
           ),
@@ -215,17 +282,43 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     );
   }
 
-  Widget _buildIncomeExpenseRow(AppLocalizations l10n, double income, double expense) {
+  Widget _buildIncomeExpenseRow(
+    AppLocalizations l10n,
+    double income,
+    double expense,
+  ) {
     return Row(
       children: [
-        Expanded(child: _buildMiniCard(l10n.totalIncome, l10n.som, income, const Color(0xFF0D9488), const Color(0xFFF0FDFA))),
+        Expanded(
+          child: _buildMiniCard(
+            l10n.totalIncome,
+            l10n.som,
+            income,
+            const Color(0xFF0D9488),
+            const Color(0xFFF0FDFA),
+          ),
+        ),
         const SizedBox(width: 16),
-        Expanded(child: _buildMiniCard(l10n.totalExpense, l10n.som, expense, const Color(0xFF1E293B), Colors.white)),
+        Expanded(
+          child: _buildMiniCard(
+            l10n.totalExpense,
+            l10n.som,
+            expense,
+            const Color(0xFF1E293B),
+            Colors.white,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildMiniCard(String title, String currency, double amount, Color color, Color bgColor) {
+  Widget _buildMiniCard(
+    String title,
+    String currency,
+    double amount,
+    Color color,
+    Color bgColor,
+  ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -236,9 +329,24 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: TextStyle(color: color.withValues(alpha: 0.7), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+          Text(
+            title,
+            style: TextStyle(
+              color: color.withValues(alpha: 0.7),
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
+          ),
           const SizedBox(height: 8),
-          Text("${_formatCurrency(amount)} $currency", style: TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.bold)),
+          Text(
+            "${_formatCurrency(amount)} $currency",
+            style: TextStyle(
+              color: color,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
@@ -251,13 +359,25 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.balance, style: const TextStyle(color: Color(0xFF0D9488), fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+          Text(
+            l10n.balance,
+            style: const TextStyle(
+              color: Color(0xFF0D9488),
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+            ),
+          ),
           const SizedBox(height: 4),
           Row(
             children: [
               Text(
                 "${balance >= 0 ? '+' : ''}${_formatCurrency(balance)} ${l10n.som}",
-                style: const TextStyle(color: Color(0xFF10B981), fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Color(0xFF10B981),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const Spacer(),
               const Icon(Icons.trending_up, color: Color(0xFF10B981), size: 24),
@@ -268,13 +388,23 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     );
   }
 
-  Widget _buildPieChartCard(AppLocalizations l10n, List<Expense> expenses, double total) {
+  Widget _buildPieChartCard(
+    AppLocalizations l10n,
+    List<Expense> expenses,
+    double total,
+  ) {
     Map<String, double> categorySums = {};
     for (var e in expenses) {
       categorySums[e.category] = (categorySums[e.category] ?? 0) + e.amount;
     }
 
-    final colors = [const Color(0xFF0D9488), const Color(0xFFF59E0B), const Color(0xFF10B981), const Color(0xFF3B82F6), const Color(0xFFEF4444)];
+    final colors = [
+      const Color(0xFF0D9488),
+      const Color(0xFFF59E0B),
+      const Color(0xFF10B981),
+      const Color(0xFF3B82F6),
+      const Color(0xFFEF4444),
+    ];
     int colorIndex = 0;
 
     List<PieChartSectionData> sections = categorySums.entries.map((entry) {
@@ -298,19 +428,44 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
       ),
       child: Column(
         children: [
-          Align(alignment: Alignment.centerLeft, child: Text(l10n.categoryAnalysis, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              l10n.categoryAnalysis,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
           const SizedBox(height: 32),
           SizedBox(
             height: 180,
             child: Stack(
               alignment: Alignment.center,
               children: [
-                PieChart(PieChartData(sectionsSpace: 2, centerSpaceRadius: 60, sections: sections)),
+                PieChart(
+                  PieChartData(
+                    sectionsSpace: 2,
+                    centerSpaceRadius: 60,
+                    sections: sections,
+                  ),
+                ),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(l10n.expenses, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
-                    const Text("100%", style: TextStyle(color: Color(0xFF1E293B), fontSize: 22, fontWeight: FontWeight.bold)),
+                    Text(
+                      l10n.expenses,
+                      style: const TextStyle(
+                        color: Color(0xFF94A3B8),
+                        fontSize: 12,
+                      ),
+                    ),
+                    const Text(
+                      "100%",
+                      style: TextStyle(
+                        color: Color(0xFF1E293B),
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -321,34 +476,69 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     );
   }
 
-  List<Widget> _buildSortedCategoryList(AppLocalizations l10n, List<Expense> expenses, double total) {
+  List<Widget> _buildSortedCategoryList(
+    AppLocalizations l10n,
+    List<Expense> expenses,
+    double total,
+  ) {
     Map<String, double> categorySums = {};
     for (var e in expenses) {
       categorySums[e.category] = (categorySums[e.category] ?? 0) + e.amount;
     }
-    var sorted = categorySums.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-    final colors = [const Color(0xFF10B981), const Color(0xFF0D9488), const Color(0xFFF59E0B)];
+    var sorted = categorySums.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final colors = [
+      const Color(0xFF10B981),
+      const Color(0xFF0D9488),
+      const Color(0xFFF59E0B),
+    ];
 
     return sorted.take(3).map((entry) {
       int idx = sorted.indexOf(entry);
       return Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xFFF1F5F9))),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFF1F5F9)),
+        ),
         child: Row(
           children: [
-            Container(width: 12, height: 12, decoration: BoxDecoration(color: colors[idx % colors.length], shape: BoxShape.circle)),
+            Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: colors[idx % colors.length],
+                shape: BoxShape.circle,
+              ),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(CategoryHelper.getLocalizedName(entry.key, l10n), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                  Text(l10n.sharePercent(((entry.value / total) * 100).toInt()), style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
+                  Text(
+                    CategoryHelper.getLocalizedName(entry.key, l10n),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                  Text(
+                    l10n.sharePercent(((entry.value / total) * 100).toInt()),
+                    style: const TextStyle(
+                      color: Color(0xFF94A3B8),
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
             ),
-            Text("${_formatCurrency(entry.value)} ${l10n.som}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            Text(
+              "${_formatCurrency(entry.value)} ${l10n.som}",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
           ],
         ),
       );
@@ -369,16 +559,34 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 0,
       ),
-      child: Text(l10n.downloadReport, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+      child: Text(
+        l10n.downloadReport,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
+      ),
     );
   }
 }
 
 class MultiBlocBuilder extends StatelessWidget {
-  final Widget Function(BuildContext context, ExpenseState expenseState, IncomeState incomeState) builder;
+  final Widget Function(
+    BuildContext context,
+    ExpenseState expenseState,
+    IncomeState incomeState,
+  )
+  builder;
+
   const MultiBlocBuilder({super.key, required this.builder});
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ExpenseBloc, ExpenseState>(builder: (context, exp) => BlocBuilder<IncomeBloc, IncomeState>(builder: (context, inc) => builder(context, exp, inc)));
+    return BlocBuilder<ExpenseBloc, ExpenseState>(
+      builder: (context, exp) => BlocBuilder<IncomeBloc, IncomeState>(
+        builder: (context, inc) => builder(context, exp, inc),
+      ),
+    );
   }
 }

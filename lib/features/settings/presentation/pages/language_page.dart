@@ -12,7 +12,10 @@ class LanguagePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: Text(l10n.selectLanguage, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(
+          l10n.selectLanguage,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -28,11 +31,26 @@ class LanguagePage extends StatelessWidget {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                _buildLanguageItem(context, "O'zbekcha", "uz", state.locale.languageCode == "uz"),
+                _buildLanguageItem(
+                  context,
+                  "O'zbekcha",
+                  "uz",
+                  state.locale.languageCode == "uz",
+                ),
                 const SizedBox(height: 12),
-                _buildLanguageItem(context, "Русский", "ru", state.locale.languageCode == "ru"),
+                _buildLanguageItem(
+                  context,
+                  "Русский",
+                  "ru",
+                  state.locale.languageCode == "ru",
+                ),
                 const SizedBox(height: 12),
-                _buildLanguageItem(context, "English", "en", state.locale.languageCode == "en"),
+                _buildLanguageItem(
+                  context,
+                  "English",
+                  "en",
+                  state.locale.languageCode == "en",
+                ),
               ],
             ),
           );
@@ -41,7 +59,12 @@ class LanguagePage extends StatelessWidget {
     );
   }
 
-  Widget _buildLanguageItem(BuildContext context, String title, String code, bool isSelected) {
+  Widget _buildLanguageItem(
+    BuildContext context,
+    String title,
+    String code,
+    bool isSelected,
+  ) {
     return GestureDetector(
       onTap: () {
         context.read<SettingsCubit>().changeLanguage(code);
@@ -52,13 +75,26 @@ class LanguagePage extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isSelected ? const Color(0xFF0D9488) : const Color(0xFFF1F5F9), width: 1.5),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF0D9488)
+                : const Color(0xFFF1F5F9),
+            width: 1.5,
+          ),
         ),
         child: Row(
           children: [
-            Text(title, style: TextStyle(fontSize: 16, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: const Color(0xFF1E293B))),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: const Color(0xFF1E293B),
+              ),
+            ),
             const Spacer(),
-            if (isSelected) const Icon(Icons.check_circle, color: Color(0xFF0D9488)),
+            if (isSelected)
+              const Icon(Icons.check_circle, color: Color(0xFF0D9488)),
           ],
         ),
       ),

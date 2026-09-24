@@ -16,8 +16,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
@@ -38,21 +39,30 @@ class _NewAccountPageState extends State<NewAccountPage> {
 
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.fillAllFields), backgroundColor: Colors.orange),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.fillAllFields),
+          backgroundColor: Colors.orange,
+        ),
       );
       return;
     }
 
     if (password != confirm) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.passwordsDoNotMatch), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.passwordsDoNotMatch),
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
 
     if (password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.passwordTooShort), backgroundColor: Colors.orange),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.passwordTooShort),
+          backgroundColor: Colors.orange,
+        ),
       );
       return;
     }
@@ -72,9 +82,7 @@ class _NewAccountPageState extends State<NewAccountPage> {
             unauthenticated: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(
-                    l10n.accountCreatedSuccess,
-                  ),
+                  content: Text(l10n.accountCreatedSuccess),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -169,10 +177,14 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         obscureText: !_isPasswordVisible,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            _isPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                             color: const Color(0xFF94A3B8),
                           ),
-                          onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                          onPressed: () => setState(
+                            () => _isPasswordVisible = !_isPasswordVisible,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -192,10 +204,15 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         obscureText: !_isConfirmPasswordVisible,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            _isConfirmPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                             color: const Color(0xFF94A3B8),
                           ),
-                          onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                          onPressed: () => setState(
+                            () => _isConfirmPasswordVisible =
+                                !_isConfirmPasswordVisible,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -291,17 +308,11 @@ class _NewAccountPageState extends State<NewAccountPage> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(
-              color: Color(0xFFE2E8F0),
-              width: 1,
-            ),
+            borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(
-              color: Color(0xFF94A3B8),
-              width: 1.5,
-            ),
+            borderSide: const BorderSide(color: Color(0xFF94A3B8), width: 1.5),
           ),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,

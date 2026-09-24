@@ -24,19 +24,27 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   void initState() {
     super.initState();
     final authState = context.read<AuthCubit>().state;
-    final user = authState.maybeWhen(authenticated: (user) => user, orElse: () => null);
+    final user = authState.maybeWhen(
+      authenticated: (user) => user,
+      orElse: () => null,
+    );
 
     _nameController = TextEditingController(text: user?.firstName ?? '');
     _emailController = TextEditingController(text: user?.email ?? '');
     _phoneController = TextEditingController(text: user?.phone ?? '');
-    _currencyController = TextEditingController(text: user?.currency ?? 'so\'m');
+    _currencyController = TextEditingController(
+      text: user?.currency ?? 'so\'m',
+    );
     _imagePath = user?.image;
   }
 
   Future<void> _pickImage() async {
     try {
       final picker = ImagePicker();
-      final image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+      final image = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 70,
+      );
       if (image != null) {
         setState(() => _imagePath = image.path);
       }
@@ -140,15 +148,25 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         final l10n = AppLocalizations.of(context)!;
         state.maybeWhen(
           authenticated: (_) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.savedSuccessfully), backgroundColor: Colors.green));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.savedSuccessfully),
+                backgroundColor: Colors.green,
+              ),
+            );
             Navigator.pop(context);
           },
-          error: (msg) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red)),
+          error: (msg) => ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(msg), backgroundColor: Colors.red),
+          ),
           orElse: () {},
         );
       },
       builder: (context, state) {
-        final bool isUpdating = state.maybeWhen(loading: () => true, orElse: () => false);
+        final bool isUpdating = state.maybeWhen(
+          loading: () => true,
+          orElse: () => false,
+        );
 
         return Scaffold(
           backgroundColor: const Color(0xFFF8FAFC),
@@ -166,19 +184,36 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                         children: [
                           _buildAvatarWidget(_imagePath),
                           Positioned(
-                            bottom: 0, right: 0,
+                            bottom: 0,
+                            right: 0,
                             child: GestureDetector(
                               onTap: _pickImage,
                               child: Container(
                                 padding: const EdgeInsets.all(4),
-                                decoration: const BoxDecoration(color: Color(0xFF0D9488), shape: BoxShape.circle),
-                                child: const Icon(Icons.camera_alt, color: Colors.white, size: 18),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF0D9488),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      TextButton(onPressed: _pickImage, child: Text(l10n.changePhoto, style: const TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.bold))),
+                      TextButton(
+                        onPressed: _pickImage,
+                        child: Text(
+                          l10n.changePhoto,
+                          style: const TextStyle(
+                            color: Color(0xFF0D9488),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -186,13 +221,27 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     children: [
-                      _buildInputField(label: l10n.fullName, controller: _nameController),
+                      _buildInputField(
+                        label: l10n.fullName,
+                        controller: _nameController,
+                      ),
                       const SizedBox(height: 20),
-                      _buildInputField(label: l10n.email, controller: _emailController, keyboardType: TextInputType.emailAddress),
+                      _buildInputField(
+                        label: l10n.email,
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
                       const SizedBox(height: 20),
-                      _buildInputField(label: l10n.phoneNumber, controller: _phoneController, keyboardType: TextInputType.phone),
+                      _buildInputField(
+                        label: l10n.phoneNumber,
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                      ),
                       const SizedBox(height: 20),
-                      _buildInputField(label: l10n.currency, controller: _currencyController),
+                      _buildInputField(
+                        label: l10n.currency,
+                        controller: _currencyController,
+                      ),
                     ],
                   ),
                 ),
@@ -202,23 +251,40 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           bottomNavigationBar: Padding(
             padding: const EdgeInsets.all(24.0),
             child: ElevatedButton(
-              onPressed: isUpdating ? null : () {
-                context.read<AuthCubit>().updateProfile(
-                  _nameController.text.trim(),
-                  _emailController.text.trim(),
-                  phone: _phoneController.text.trim(),
-                  currency: _currencyController.text.trim(),
-                  imagePath: _imagePath,
-                );
-              },
+              onPressed: isUpdating
+                  ? null
+                  : () {
+                      context.read<AuthCubit>().updateProfile(
+                        _nameController.text.trim(),
+                        _emailController.text.trim(),
+                        phone: _phoneController.text.trim(),
+                        currency: _currencyController.text.trim(),
+                        imagePath: _imagePath,
+                      );
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0D9488),
                 minimumSize: const Size(double.infinity, 60),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
-              child: isUpdating 
-                ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : Text(l10n.save, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              child: isUpdating
+                  ? const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text(
+                      l10n.save,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
           ),
         );
@@ -226,16 +292,35 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     );
   }
 
-  Widget _buildInputField({required String label, required TextEditingController controller, TextInputType keyboardType = TextInputType.text}) {
+  Widget _buildInputField({
+    required String label,
+    required TextEditingController controller,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF1E293B),
+          ),
+        ),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE2E8F0))),
-          child: TextField(controller: controller, keyboardType: keyboardType, decoration: const InputDecoration(border: InputBorder.none)),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+          ),
+          child: TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            decoration: const InputDecoration(border: InputBorder.none),
+          ),
         ),
       ],
     );

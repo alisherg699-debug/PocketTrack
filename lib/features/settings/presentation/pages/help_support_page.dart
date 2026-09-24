@@ -10,7 +10,10 @@ class HelpSupportPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: Text(l10n.helpSupport, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(
+          l10n.helpSupport,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -27,7 +30,11 @@ class HelpSupportPage extends StatelessWidget {
           children: [
             Text(
               l10n.faqTitle,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E293B),
+              ),
             ),
             const SizedBox(height: 16),
             _buildFaqItem(l10n.faq1Question, l10n.faq1Answer),
@@ -36,7 +43,11 @@ class HelpSupportPage extends StatelessWidget {
             const SizedBox(height: 32),
             Text(
               l10n.contactUs,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E293B),
+              ),
             ),
             const SizedBox(height: 16),
             _buildSupportButton(
@@ -67,18 +78,37 @@ class HelpSupportPage extends StatelessWidget {
         border: Border.all(color: const Color(0xFFF1F5F9)),
       ),
       child: ExpansionTile(
-        title: Text(question, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: Color(0xFF1E293B))),
+        title: Text(
+          question,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            color: Color(0xFF1E293B),
+          ),
+        ),
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: Text(answer, style: const TextStyle(color: Color(0xFF64748B), fontSize: 14, height: 1.5)),
+            child: Text(
+              answer,
+              style: const TextStyle(
+                color: Color(0xFF64748B),
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSupportButton({required IconData icon, required String title, required Color color, required VoidCallback onTap}) {
+  Widget _buildSupportButton({
+    required IconData icon,
+    required String title,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -92,11 +122,21 @@ class HelpSupportPage extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Icon(icon, color: color, size: 22),
             ),
             const SizedBox(width: 16),
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E293B))),
+            Text(
+              title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: Color(0xFF1E293B),
+              ),
+            ),
           ],
         ),
       ),
