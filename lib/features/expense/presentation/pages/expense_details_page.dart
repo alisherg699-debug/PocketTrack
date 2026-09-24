@@ -52,7 +52,7 @@ class _ExpenseDetailsPageState extends State<ExpenseDetailsPage> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: const Color(0xFF0D9488).withOpacity(0.05),
+                color: const Color(0xFF0D9488).withValues(alpha: 0.05),
                 shape: BoxShape.circle,
               ),
               child: Icon(categoryIcon, color: const Color(0xFF0D9488), size: 48),

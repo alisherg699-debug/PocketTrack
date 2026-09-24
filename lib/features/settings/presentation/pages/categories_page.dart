@@ -211,7 +211,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF0D9488).withOpacity(0.05),
+            color: const Color(0xFF0D9488).withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(item.icon, color: const Color(0xFF0D9488), size: 22),

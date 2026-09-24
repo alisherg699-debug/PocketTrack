@@ -66,6 +66,10 @@
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Profil rasmini tanlash uchun rasmlar galereyasiga ruxsat kerak.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>Profil rasmini tushirish uchun kameraga ruxsat kerak.</string>
 		<key>UIStatusBarHidden</key>
 		<true/>
 		<key>UIViewControllerBasedStatusBarAppearance</key>

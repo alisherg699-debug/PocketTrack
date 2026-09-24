@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
 import 'package:pockettrack/core/services/notification_service.dart';
 import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_event.dart';
+import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
+import 'package:pockettrack/features/settings/presentation/pages/categories_page.dart';
+import 'package:pockettrack/core/utils/category_helper.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class AddExpensePage extends StatefulWidget {
@@ -73,7 +75,41 @@ class _AddExpensePageState extends State<AddExpensePage> {
     super.dispose();
   }
 
-  void _saveExpense() {
+  Future<void> _checkBudgetAlert(double newExpenseAmount, AppLocalizations l10n) async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool budgetAlertEnabled = prefs.getBool('budget_alert') ?? true;
+    if (!budgetAlertEnabled) return;
+
+    final double totalBudget = prefs.getDouble('total_budget') ?? 2000000.0;
+    final int alertThreshold = prefs.getInt('alert_threshold') ?? 80;
+
+    if (totalBudget <= 0) return;
+    if (!mounted) return;
+
+    final expenseState = context.read<ExpenseBloc>().state;
+    double currentMonthlyTotal = 0.0;
+
+    if (expenseState is ExpenseLoaded) {
+      final now = DateTime.now();
+      currentMonthlyTotal = expenseState.expenses
+          .where((e) => e.date.year == now.year && e.date.month == now.month)
+          .fold(0.0, (sum, e) => sum + e.amount);
+    }
+
+    final double totalSpentWithNew = currentMonthlyTotal + newExpenseAmount;
+    final int newPercent = ((totalSpentWithNew / totalBudget) * 100).toInt();
+
+    if (newPercent >= alertThreshold) {
+      await Future.delayed(const Duration(milliseconds: 600));
+      await NotificationService.showNotification(
+        id: DateTime.now().hashCode + 1,
+        title: l10n.budgetAlertTitle,
+        body: l10n.spentOfBudget(newPercent.toString()),
+      );
+    }
+  }
+
+  void _saveExpense() async {
     final l10n = AppLocalizations.of(context)!;
     final title = _titleController.text.trim();
     final amountText = _amountController.text.replaceAll(' ', '').trim();
@@ -123,7 +159,11 @@ class _AddExpensePageState extends State<AddExpensePage> {
         body: notificationBody,
       );
 
-      Navigator.pop(context);
+      await _checkBudgetAlert(amount, l10n);
+
+      if (mounted) {
+        Navigator.pop(context);
+      }
     }
   }
 
@@ -178,7 +218,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                           border: InputBorder.none,
                           isDense: true,
                           contentPadding: EdgeInsets.zero,
-                          hintStyle: TextStyle(color: Colors.black.withOpacity(0.1)),
+                          hintStyle: TextStyle(color: Colors.black.withValues(alpha: 0.1)),
                         ),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9. ]')),
@@ -199,12 +239,27 @@ class _AddExpensePageState extends State<AddExpensePage> {
             _buildLabel(l10n.title),
             _buildTextField(_titleController, l10n.exampleLunch),
             const SizedBox(height: 24),
-            _buildLabel(l10n.category),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildLabel(l10n.category),
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline, color: Color(0xFF0D9488), size: 22),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CategoriesPage()),
+                    ).then((_) => _loadCategories());
+                  },
+                ),
+              ],
+            ),
             Wrap(
               spacing: 8.0,
               runSpacing: 10.0,
               children: categories.map((category) {
                 bool isSelected = selectedCategory == category;
+                final displayTitle = CategoryHelper.getLocalizedName(category, l10n);
                 return GestureDetector(
                   onTap: () => setState(() => selectedCategory = category),
                   child: Container(
@@ -215,7 +270,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       border: Border.all(color: isSelected ? const Color(0xFF0D9488) : const Color(0xFFE2E8F0), width: 1.5),
                     ),
                     child: Text(
-                      category,
+                      displayTitle,
                       style: TextStyle(color: isSelected ? Colors.white : const Color(0xFF475569), fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                   ),

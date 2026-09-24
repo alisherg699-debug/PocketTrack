@@ -7,6 +7,7 @@ import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/features/income/application/income/income_bloc.dart';
 import 'package:pockettrack/features/income/application/income/income_event.dart';
 import 'package:pockettrack/features/income/domain/entities/income.dart';
+import 'package:pockettrack/core/utils/category_helper.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class AddIncomePage extends StatefulWidget {
@@ -238,6 +239,8 @@ class _AddIncomePageState extends State<AddIncomePage> {
   }
 
   Widget _buildCategoryChip(String label) {
+    final l10n = AppLocalizations.of(context)!;
+    final displayTitle = CategoryHelper.getLocalizedName(label, l10n);
     bool isSelected = _selectedCategory == label;
     return GestureDetector(
       onTap: () => setState(() => _selectedCategory = label),
@@ -249,7 +252,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
           border: Border.all(color: isSelected ? const Color(0xFF0D9488) : const Color(0xFFE2E8F0)),
         ),
         child: Text(
-          label,
+          displayTitle,
           style: TextStyle(
             color: isSelected ? Colors.white : const Color(0xFF64748B),
             fontWeight: FontWeight.bold,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pockettrack/features/auth/presentation/pages/change_password_page.dart';
 
@@ -289,7 +288,7 @@ class _SecurityPageState extends State<SecurityPage> {
                     ),
                     Switch.adaptive(
                       value: _isPinEnabled,
-                      activeColor: const Color(0xFF0D9488),
+                      activeTrackColor: const Color(0xFF0D9488),
                       onChanged: _togglePin,
                     ),
                   ],

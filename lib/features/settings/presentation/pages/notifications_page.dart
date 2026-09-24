@@ -225,7 +225,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
             const SizedBox(width: 8),
             Switch.adaptive(
               value: value,
-              activeColor: const Color(0xFF0D9488),
+              activeTrackColor: const Color(0xFF0D9488),
               onChanged: onChanged,
             ),
           ],
