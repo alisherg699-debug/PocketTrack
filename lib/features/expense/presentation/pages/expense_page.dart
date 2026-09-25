@@ -12,6 +12,7 @@ import 'package:pockettrack/features/settings/presentation/pages/budget_page.dar
 import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'package:pockettrack/core/utils/category_helper.dart';
+import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 
 class ExpensePage extends StatefulWidget {
   const ExpensePage({super.key});
@@ -68,6 +69,7 @@ class _ExpensePageState extends State<ExpensePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currencySymbol = context.watch<SettingsCubit>().state.currency;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -132,7 +134,7 @@ class _ExpensePageState extends State<ExpensePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildLimitCard(totalAmount, monthlyLimit, percent),
+                  _buildLimitCard(totalAmount, monthlyLimit, percent, currencySymbol),
                   const SizedBox(height: 24),
                   _buildSearchBar(l10n),
                   const SizedBox(height: 24),
@@ -161,7 +163,7 @@ class _ExpensePageState extends State<ExpensePage> {
                           _buildSectionTitle(entry.key),
                           const SizedBox(height: 12),
                           ...entry.value
-                              .map((e) => _buildExpenseItem(e, l10n))
+                              .map((e) => _buildExpenseItem(e, l10n, currencySymbol))
                               .toList(),
                           const SizedBox(height: 16),
                         ],
@@ -207,7 +209,7 @@ class _ExpensePageState extends State<ExpensePage> {
     );
   }
 
-  Widget _buildLimitCard(double total, double limit, double percent) {
+  Widget _buildLimitCard(double total, double limit, double percent, String currencySymbol) {
     final l10n = AppLocalizations.of(context)!;
     String labelText = l10n.todayExpenses;
     return Container(
@@ -235,7 +237,7 @@ class _ExpensePageState extends State<ExpensePage> {
                 children: [
                   Text(labelText, style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
                   const SizedBox(height: 8),
-                  Text("${_formatCurrency(total)} ${l10n.som}", style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800)),
+                  Text("${_formatCurrency(total)} $currencySymbol", style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800)),
                   const Padding(padding: EdgeInsets.symmetric(vertical: 16), child: Divider(color: Colors.white24, height: 1)),
                 ],
               ),
@@ -243,7 +245,7 @@ class _ExpensePageState extends State<ExpensePage> {
           ),
           // 2. PASTI: LIMITNI O'ZGARTIRADI
           GestureDetector(
-            onTap: _showSetLimitDialog,
+            onTap: () => _showSetLimitDialog(currencySymbol),
             child: Container(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
               color: Colors.transparent,
@@ -255,7 +257,7 @@ class _ExpensePageState extends State<ExpensePage> {
                       Text("${selectedFilter == 'Oy' ? 'Oy' : 'Davr'} limitining ${(percent * 100).toInt()}% sarflandi", style: const TextStyle(color: Colors.white70, fontSize: 13)),
                       Row(
                         children: [
-                          Text("${_formatCurrency(limit)} so'm", style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                          Text("${_formatCurrency(limit)} $currencySymbol", style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
                           const SizedBox(width: 4),
                           const Icon(Icons.edit_outlined, color: Colors.white70, size: 14),
                         ],
@@ -276,7 +278,7 @@ class _ExpensePageState extends State<ExpensePage> {
     );
   }
 
-  void _showSetLimitDialog() {
+  void _showSetLimitDialog(String currencySymbol) {
     final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(
       text: monthlyLimit > 0 ? ThousandsSeparatorInputFormatter.format(monthlyLimit) : "",
@@ -345,11 +347,11 @@ class _ExpensePageState extends State<ExpensePage> {
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9. ]')),
                   ThousandsSeparatorInputFormatter(),
                 ],
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Masalan: 2 000 000",
-                  suffixText: "so'm ",
+                  suffixText: "$currencySymbol ",
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 18),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 18),
                 ),
               ),
             ),
@@ -476,7 +478,7 @@ class _ExpensePageState extends State<ExpensePage> {
     return Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)));
   }
 
-  Widget _buildExpenseItem(Expense expense, AppLocalizations l10n) {
+  Widget _buildExpenseItem(Expense expense, AppLocalizations l10n, String currencySymbol) {
     final icon = CategoryHelper.getIconForCategory(expense.category);
     final iconColor = CategoryHelper.getColorForCategory(expense.category);
     final localizedCategory = CategoryHelper.getLocalizedName(expense.category, l10n);
@@ -492,7 +494,7 @@ class _ExpensePageState extends State<ExpensePage> {
             Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(16)), child: Icon(icon, color: iconColor, size: 22)),
             const SizedBox(width: 16),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(expense.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))), Text("$localizedCategory  •  ${DateFormat('HH:mm').format(expense.date)}", style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13))])),
-            Text("- ${_formatCurrency(expense.amount)} ${l10n.som}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E293B))),
+            Text("- ${_formatCurrency(expense.amount)} $currencySymbol", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E293B))),
           ],
         ),
       ),

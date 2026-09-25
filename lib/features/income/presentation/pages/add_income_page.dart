@@ -7,6 +7,7 @@ import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/features/income/application/income/income_bloc.dart';
 import 'package:pockettrack/features/income/application/income/income_event.dart';
 import 'package:pockettrack/features/income/domain/entities/income.dart';
+import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 import 'package:pockettrack/core/utils/category_helper.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
@@ -91,6 +92,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currencySymbol = context.watch<SettingsCubit>().state.currency;
     final categories = _getCategories(l10n);
 
     return Scaffold(
@@ -147,7 +149,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      l10n.som,
+                      currencySymbol,
                       style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF0D9488)),
                     ),
                   ],

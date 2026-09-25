@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pockettrack/features/auth/application/auth_cubit.dart';
 import 'package:pockettrack/features/auth/application/auth_state.dart';
+import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class AccountSettingsPage extends StatefulWidget {
@@ -254,11 +255,15 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
               onPressed: isUpdating
                   ? null
                   : () {
+                      final newCurrency = _currencyController.text.trim();
+                      if (newCurrency.isNotEmpty) {
+                        context.read<SettingsCubit>().changeCurrency(newCurrency);
+                      }
                       context.read<AuthCubit>().updateProfile(
                         _nameController.text.trim(),
                         _emailController.text.trim(),
                         phone: _phoneController.text.trim(),
-                        currency: _currencyController.text.trim(),
+                        currency: newCurrency.isNotEmpty ? newCurrency : 'so\'m',
                         imagePath: _imagePath,
                       );
                     },

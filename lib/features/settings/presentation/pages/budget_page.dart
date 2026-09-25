@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
+import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'package:pockettrack/features/income/presentation/pages/add_income_page.dart';
 
@@ -77,6 +78,7 @@ class _BudgetPageState extends State<BudgetPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currencySymbol = context.watch<SettingsCubit>().state.currency;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -133,6 +135,7 @@ class _BudgetPageState extends State<BudgetPage> {
                 children: [
                   _buildTotalCard(
                     l10n,
+                    currencySymbol,
                     totalSpent,
                     totalMonthlyBudget,
                     totalPercent,
@@ -187,6 +190,7 @@ class _BudgetPageState extends State<BudgetPage> {
 
   Widget _buildTotalCard(
     AppLocalizations l10n,
+    String currencySymbol,
     double spent,
     double budget,
     double percent,
@@ -222,7 +226,7 @@ class _BudgetPageState extends State<BudgetPage> {
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerLeft,
             child: Text(
-              "${_format(budget)} ${l10n.som}",
+              "${_format(budget)} $currencySymbol",
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 32,
@@ -246,7 +250,7 @@ class _BudgetPageState extends State<BudgetPage> {
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
-                  "${_format(spent)} ${l10n.som}",
+                  "${_format(spent)} $currencySymbol",
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -431,6 +435,7 @@ class _BudgetPageState extends State<BudgetPage> {
     Function(double) onSave,
     AppLocalizations l10n,
   ) {
+    final currencySymbol = context.read<SettingsCubit>().state.currency;
     final controller = TextEditingController(
       text: currentValue > 0
           ? ThousandsSeparatorInputFormatter.format(currentValue)
@@ -510,7 +515,7 @@ class _BudgetPageState extends State<BudgetPage> {
                   ],
                   decoration: InputDecoration(
                     hintText: "${l10n.exampleLunch.split(':')[0]}: 2 000 000",
-                    suffixText: "${l10n.som} ",
+                    suffixText: "$currencySymbol ",
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(vertical: 16),
                   ),

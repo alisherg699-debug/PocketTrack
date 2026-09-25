@@ -10,6 +10,7 @@ import 'package:pockettrack/features/income/application/income/income_bloc.dart'
 import 'package:pockettrack/features/income/application/income/income_event.dart';
 import 'package:pockettrack/features/income/application/income/income_state.dart';
 import 'package:pockettrack/features/report/presentation/pages/export_page.dart';
+import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 import 'package:pockettrack/core/utils/category_helper.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
@@ -98,6 +99,8 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
             );
             final balance = totalIncome - totalExpense;
 
+            final currencySymbol = context.watch<SettingsCubit>().state.currency;
+
             return SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -105,9 +108,9 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                 children: [
                   _buildMonthSelector(l10n),
                   const SizedBox(height: 24),
-                  _buildIncomeExpenseRow(l10n, totalIncome, totalExpense),
+                  _buildIncomeExpenseRow(l10n, currencySymbol, totalIncome, totalExpense),
                   const SizedBox(height: 16),
-                  _buildBalanceSection(l10n, balance),
+                  _buildBalanceSection(l10n, currencySymbol, balance),
                   const SizedBox(height: 32),
                   _buildPieChartCard(l10n, filteredExpenses, totalExpense),
                   const SizedBox(height: 32),
@@ -122,6 +125,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                   const SizedBox(height: 16),
                   ..._buildSortedCategoryList(
                     l10n,
+                    currencySymbol,
                     filteredExpenses,
                     totalExpense,
                   ),
@@ -284,6 +288,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
 
   Widget _buildIncomeExpenseRow(
     AppLocalizations l10n,
+    String currencySymbol,
     double income,
     double expense,
   ) {
@@ -292,7 +297,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
         Expanded(
           child: _buildMiniCard(
             l10n.totalIncome,
-            l10n.som,
+            currencySymbol,
             income,
             const Color(0xFF0D9488),
             const Color(0xFFF0FDFA),
@@ -302,7 +307,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
         Expanded(
           child: _buildMiniCard(
             l10n.totalExpense,
-            l10n.som,
+            currencySymbol,
             expense,
             const Color(0xFF1E293B),
             Colors.white,
@@ -352,7 +357,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     );
   }
 
-  Widget _buildBalanceSection(AppLocalizations l10n, double balance) {
+  Widget _buildBalanceSection(AppLocalizations l10n, String currencySymbol, double balance) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
@@ -372,7 +377,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
           Row(
             children: [
               Text(
-                "${balance >= 0 ? '+' : ''}${_formatCurrency(balance)} ${l10n.som}",
+                "${balance >= 0 ? '+' : ''}${_formatCurrency(balance)} $currencySymbol",
                 style: const TextStyle(
                   color: Color(0xFF10B981),
                   fontSize: 24,
@@ -478,6 +483,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
 
   List<Widget> _buildSortedCategoryList(
     AppLocalizations l10n,
+    String currencySymbol,
     List<Expense> expenses,
     double total,
   ) {
@@ -536,7 +542,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
               ),
             ),
             Text(
-              "${_formatCurrency(entry.value)} ${l10n.som}",
+              "${_formatCurrency(entry.value)} $currencySymbol",
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
           ],

@@ -14,6 +14,7 @@ import 'package:pockettrack/features/expense/presentation/pages/add_expense_page
 import 'package:pockettrack/features/expense/presentation/pages/expense_details_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/expense_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/profile_page.dart';
+import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -193,6 +194,7 @@ class _HomeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currencySymbol = context.watch<SettingsCubit>().state.currency;
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, authState) {
         final user = authState.maybeWhen(
@@ -260,7 +262,7 @@ class _HomeContent extends StatelessWidget {
                                 Text(l10n.todayExpenses, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
                                 const SizedBox(height: 8),
                                 Text(
-                                  isError ? "--.-- ${l10n.som}" : "${_formatCurrency(todayTotal)} ${l10n.som}",
+                                  isError ? "--.-- $currencySymbol" : "${_formatCurrency(todayTotal)} $currencySymbol",
                                   style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w800),
                                 ),
                                 const SizedBox(height: 16),
@@ -422,6 +424,7 @@ class _ExpenseItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currencySymbol = context.watch<SettingsCubit>().state.currency;
     final icon = CategoryHelper.getIconForCategory(expense.category);
     final iconColor = CategoryHelper.getColorForCategory(expense.category);
     final localizedCategory = CategoryHelper.getLocalizedName(expense.category, l10n);
@@ -447,7 +450,7 @@ class _ExpenseItem extends StatelessWidget {
               ],
             ),
           ),
-          Text("- ${formatCurrency(expense.amount)} ${l10n.som}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))),
+          Text("- ${formatCurrency(expense.amount)} $currencySymbol", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))),
         ],
       ),
     );

@@ -10,6 +10,7 @@ import 'package:pockettrack/features/expense/application/expense/expense_state.d
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/settings/presentation/pages/categories_page.dart';
 import 'package:pockettrack/core/utils/category_helper.dart';
+import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class AddExpensePage extends StatefulWidget {
@@ -170,6 +171,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final currencySymbol = context.watch<SettingsCubit>().state.currency;
     final bool isEditing = widget.expenseToEdit != null;
 
     return Scaffold(
@@ -228,7 +230,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      l10n.som,
+                      currencySymbol,
                       style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700, color: Color(0xFF0D9488)),
                     ),
                   ],

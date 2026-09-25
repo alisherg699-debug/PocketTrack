@@ -102,7 +102,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         listener: (context, state) {
           state.maybeWhen(
             authenticated: (_) {
-              _showSnack("Parol muvaffaqiyatli o'zgartirildi!", Colors.green);
+              _showSnack(l10n.passwordChangedSuccess, Colors.green);
               Navigator.pop(context);
             },
             error: (msg) => _showSnack(msg, Colors.red),
