@@ -5,15 +5,15 @@ import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class CategoryItem {
   final String title;
-  final IconData icon;
+  final String emoji;
 
-  CategoryItem({required this.title, required this.icon});
+  CategoryItem({required this.title, required this.emoji});
 
-  Map<String, dynamic> toMap() => {'title': title, 'iconCode': icon.codePoint};
+  Map<String, dynamic> toMap() => {'title': title, 'emoji': emoji};
 
   factory CategoryItem.fromMap(Map<String, dynamic> map) => CategoryItem(
-    title: map['title'],
-    icon: IconData(map['iconCode'], fontFamily: 'MaterialIcons'),
+    title: map['title'] ?? '',
+    emoji: map['emoji'] ?? (map['iconCode'] != null ? '📁' : '📁'),
   );
 }
 
@@ -27,24 +27,12 @@ class CategoriesPage extends StatefulWidget {
 class _CategoriesPageState extends State<CategoriesPage> {
   List<CategoryItem> categories = [];
   final TextEditingController _categoryController = TextEditingController();
+  final TextEditingController _emojiController = TextEditingController(text: '🍕');
 
-  IconData selectedIcon = Icons.label_outline;
-  final List<IconData> iconOptions = [
-    Icons.restaurant,
-    Icons.directions_car,
-    Icons.shopping_bag_outlined,
-    Icons.credit_card,
-    Icons.favorite_border,
-    Icons.home_outlined,
-    Icons.movie_outlined,
-    Icons.fitness_center,
-    Icons.work_outline,
-    Icons.school_outlined,
-    Icons.local_gas_station,
-    Icons.flight_takeoff,
-    Icons.medical_services_outlined,
-    Icons.build_outlined,
-    Icons.card_giftcard,
+  String selectedEmoji = '🍕';
+  final List<String> emojiOptions = [
+    '🍕', '🚗', '🛍️', '💳', '❤️', '🏠', '🎬', '🏋️', '💼', '📚',
+    '⛽', '✈️', '💊', '🔧', '🎁', '🍔', '☕', '💡', '📱', '💰',
   ];
 
   @override
@@ -81,12 +69,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
   void _setInitialCategories(AppLocalizations l10n) {
     setState(() {
       categories = [
-        CategoryItem(title: l10n.food, icon: Icons.restaurant),
-        CategoryItem(title: l10n.transport, icon: Icons.directions_car),
-        CategoryItem(title: l10n.shopping, icon: Icons.shopping_bag_outlined),
-        CategoryItem(title: l10n.payments, icon: Icons.credit_card),
-        CategoryItem(title: l10n.health, icon: Icons.favorite_border),
-        CategoryItem(title: l10n.other, icon: Icons.label_outline),
+        CategoryItem(title: l10n.food, emoji: '🍕'),
+        CategoryItem(title: l10n.transport, emoji: '🚗'),
+        CategoryItem(title: l10n.shopping, emoji: '🛍️'),
+        CategoryItem(title: l10n.payments, emoji: '💳'),
+        CategoryItem(title: l10n.health, emoji: '❤️'),
+        CategoryItem(title: l10n.other, emoji: '📁'),
       ];
     });
     _saveCategories();
@@ -109,7 +97,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
       setState(() {
         final newItem = CategoryItem(
           title: _categoryController.text.trim(),
-          icon: selectedIcon,
+          emoji: _emojiController.text.trim().isNotEmpty ? _emojiController.text.trim() : selectedEmoji,
         );
         if (index != null) {
           categories[index] = newItem;
@@ -117,6 +105,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
           categories.add(newItem);
         }
         _categoryController.clear();
+        _emojiController.text = '🍕';
+        selectedEmoji = '🍕';
       });
       _saveCategories();
       Navigator.pop(context);
@@ -153,7 +143,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          selectedIcon = Icons.label_outline;
+          selectedEmoji = '🍕';
+          _emojiController.text = '🍕';
           _showCategoryDialog();
         },
         backgroundColor: const Color(0xFF064E3B),
@@ -168,33 +159,39 @@ class _CategoriesPageState extends State<CategoriesPage> {
     if (lower == 'oziq-ovqat' ||
         lower == 'food' ||
         lower == 'продукты' ||
-        lower == l10n.food.toLowerCase())
+        lower == l10n.food.toLowerCase()) {
       return l10n.food;
+    }
     if (lower == 'transport' ||
         lower == 'транспорт' ||
-        lower == l10n.transport.toLowerCase())
+        lower == l10n.transport.toLowerCase()) {
       return l10n.transport;
+    }
     if (lower == 'xaridlar' ||
         lower == 'shopping' ||
         lower == 'покупки' ||
-        lower == l10n.shopping.toLowerCase())
+        lower == l10n.shopping.toLowerCase()) {
       return l10n.shopping;
+    }
     if (lower == 'to\'lovlar' ||
         lower == 'tolovlar' ||
         lower == 'payments' ||
         lower == 'платежи' ||
-        lower == l10n.payments.toLowerCase())
+        lower == l10n.payments.toLowerCase()) {
       return l10n.payments;
+    }
     if (lower == 'salomatlik' ||
         lower == 'health' ||
         lower == 'здоровье' ||
-        lower == l10n.health.toLowerCase())
+        lower == l10n.health.toLowerCase()) {
       return l10n.health;
+    }
     if (lower == 'boshqa' ||
         lower == 'other' ||
         lower == 'другое' ||
-        lower == l10n.other.toLowerCase())
+        lower == l10n.health.toLowerCase()) {
       return l10n.other;
+    }
     return cat;
   }
 
@@ -209,12 +206,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
       ),
       child: ListTile(
         leading: Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: const Color(0xFF0D9488).withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(item.icon, color: const Color(0xFF0D9488), size: 22),
+          child: Text(item.emoji, style: const TextStyle(fontSize: 22)),
         ),
         title: Text(
           displayTitle,
@@ -226,8 +223,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
             IconButton(
               icon: const Icon(Icons.edit_note, color: Color(0xFF94A3B8)),
               onPressed: () {
-                selectedIcon = item.icon;
-                _showCategoryDialog(index: index, initialValue: item.title);
+                selectedEmoji = item.emoji;
+                _emojiController.text = item.emoji;
+                _showCategoryDialog(index: index, initialValue: item.title, initialEmoji: item.emoji);
               },
             ),
             IconButton(
@@ -245,94 +243,190 @@ class _CategoriesPageState extends State<CategoriesPage> {
     );
   }
 
-  void _showCategoryDialog({int? index, String? initialValue}) {
+  void _showCategoryDialog({int? index, String? initialValue, String? initialEmoji}) {
     final l10n = AppLocalizations.of(context)!;
     _categoryController.text = initialValue ?? "";
+    _emojiController.text = initialEmoji ?? selectedEmoji;
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(24),
           ),
-          title: Text(index == null ? l10n.newCategory : l10n.editCategory),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+          titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+          contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+          actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          title: Row(
             children: [
-              TextField(
-                controller: _categoryController,
-                autofocus: true,
-                decoration: InputDecoration(
-                  hintText: l10n.categoryName,
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                  ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDFA),
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                child: const Icon(Icons.category_outlined, color: Color(0xFF0D9488), size: 22),
               ),
-              const SizedBox(height: 24),
-              Align(
-                alignment: Alignment.centerLeft,
+              const SizedBox(width: 12),
+              Expanded(
                 child: Text(
-                  l10n.selectIcon,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                height: 50,
-                width: double.maxFinite,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: iconOptions.length,
-                  itemBuilder: (context, i) {
-                    bool isSel = selectedIcon == iconOptions[i];
-                    return GestureDetector(
-                      onTap: () {
-                        setDialogState(() {
-                          selectedIcon = iconOptions[i];
-                        });
-                        setState(() {
-                          selectedIcon = iconOptions[i];
-                        });
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 8),
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: isSel
-                              ? const Color(0xFF0D9488)
-                              : Colors.transparent,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: Icon(
-                          iconOptions[i],
-                          color: isSel ? Colors.white : Colors.black54,
-                        ),
-                      ),
-                    );
-                  },
+                  index == null ? l10n.newCategory : l10n.editCategory,
+                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l10n.cancel),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0D9488),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF0FDFA),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFF0D9488), width: 1.5),
+                      ),
+                      child: Center(
+                        child: TextField(
+                          controller: _emojiController,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 26),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          onChanged: (val) {
+                            setDialogState(() {
+                              selectedEmoji = val;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextField(
+                        controller: _categoryController,
+                        autofocus: true,
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1E293B)),
+                        decoration: InputDecoration(
+                          hintText: l10n.categoryName,
+                          hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+                          filled: true,
+                          fillColor: const Color(0xFFF8FAFC),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              onPressed: () => _addOrUpdateCategory(index: index),
-              child: Text(
-                l10n.save,
-                style: const TextStyle(color: Colors.white),
-              ),
+                const SizedBox(height: 24),
+                Text(
+                  l10n.selectIcon,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF475569)),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 5,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                    ),
+                    itemCount: emojiOptions.length,
+                    itemBuilder: (context, i) {
+                      bool isSel = selectedEmoji == emojiOptions[i];
+                      return GestureDetector(
+                        onTap: () {
+                          setDialogState(() {
+                            selectedEmoji = emojiOptions[i];
+                            _emojiController.text = emojiOptions[i];
+                          });
+                          setState(() {
+                            selectedEmoji = emojiOptions[i];
+                            _emojiController.text = emojiOptions[i];
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isSel ? const Color(0xFF0D9488).withValues(alpha: 0.15) : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSel ? const Color(0xFF0D9488) : const Color(0xFFE2E8F0),
+                              width: isSel ? 2 : 1,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              emojiOptions[i],
+                              style: const TextStyle(fontSize: 22),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    ),
+                    child: Text(l10n.cancel, style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.bold, fontSize: 16)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0D9488),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      elevation: 0,
+                    ),
+                    onPressed: () => _addOrUpdateCategory(index: index),
+                    child: Text(l10n.save, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

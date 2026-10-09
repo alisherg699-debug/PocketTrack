@@ -162,19 +162,112 @@ class _ExpenseDetailsPageState extends State<ExpenseDetailsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.deleteExpense),
-        content: Text(l10n.confirmDeleteExpense),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-          TextButton(
-            onPressed: () {
-              context.read<ExpenseBloc>().add(DeleteExpense(widget.expense.id));
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        backgroundColor: Colors.white,
+        contentPadding: const EdgeInsets.all(24),
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.85,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header: Icon + Title
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFEF2F2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.delete_outline, color: Color(0xFFEF4444), size: 28),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      l10n.deleteExpense,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Expense Preview Card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFF1F5F9)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "${widget.expense.title} • ${widget.expense.amount.toStringAsFixed(2)} so'm",
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "${widget.expense.category} • ${DateFormat('dd-MMMM, yyyy').format(widget.expense.date)}",
+                      style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Confirmation message
+              Text(
+                l10n.confirmDeleteExpense,
+                style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.4),
+              ),
+              const SizedBox(height: 24),
+
+              // Action Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                      child: Text(
+                        l10n.cancel,
+                        style: const TextStyle(color: Color(0xFF475569), fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.read<ExpenseBloc>().add(DeleteExpense(widget.expense.id));
+                        Navigator.pop(context); // close dialog
+                        Navigator.pop(context); // pop details page
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFEF4444),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        l10n.delete,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

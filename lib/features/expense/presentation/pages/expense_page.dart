@@ -26,6 +26,7 @@ class _ExpensePageState extends State<ExpensePage> {
   double monthlyLimit = 2000000;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
+  bool _isLoadingFilter = false;
 
   @override
   void initState() {
@@ -140,7 +141,16 @@ class _ExpensePageState extends State<ExpensePage> {
                   const SizedBox(height: 24),
                   _buildFilters(l10n),
                   const SizedBox(height: 28),
-                  if (filteredExpenses.isEmpty)
+                  if (_isLoadingFilter)
+                    const SizedBox(
+                      height: 200,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0D9488)),
+                        ),
+                      ),
+                    )
+                  else if (filteredExpenses.isEmpty)
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 40),
@@ -254,8 +264,17 @@ class _ExpensePageState extends State<ExpensePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("${selectedFilter == 'Oy' ? 'Oy' : 'Davr'} limitining ${(percent * 100).toInt()}% sarflandi", style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                      Expanded(
+                        child: Text(
+                          "${selectedFilter == 'Oy' ? 'Oy' : 'Davr'} limitining ${(percent * 100).toInt()}% sarflandi",
+                          style: const TextStyle(color: Colors.white70, fontSize: 13),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Text("${_formatCurrency(limit)} $currencySymbol", style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
                           const SizedBox(width: 4),
@@ -321,10 +340,10 @@ class _ExpensePageState extends State<ExpensePage> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              "Oylik sarf-xarajatlaringiz uchun limit belgilang",
+            Text(
+              l10n.budgetEditDesc,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Color(0xFF94A3B8),
                 fontSize: 14,
                 height: 1.4,
@@ -458,7 +477,19 @@ class _ExpensePageState extends State<ExpensePage> {
       children: filters.map((f) {
         bool isSelected = selectedFilter == f;
         return GestureDetector(
-          onTap: () => setState(() => selectedFilter = f),
+          onTap: () {
+            if (selectedFilter != f) {
+              setState(() {
+                _isLoadingFilter = true;
+                selectedFilter = f;
+              });
+              Future.delayed(const Duration(milliseconds: 300), () {
+                if (mounted) {
+                  setState(() => _isLoadingFilter = false);
+                }
+              });
+            }
+          },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             decoration: BoxDecoration(
@@ -479,8 +510,7 @@ class _ExpensePageState extends State<ExpensePage> {
   }
 
   Widget _buildExpenseItem(Expense expense, AppLocalizations l10n, String currencySymbol) {
-    final icon = CategoryHelper.getIconForCategory(expense.category);
-    final iconColor = CategoryHelper.getColorForCategory(expense.category);
+    final emoji = CategoryHelper.getEmojiForCategory(expense.category);
     final localizedCategory = CategoryHelper.getLocalizedName(expense.category, l10n);
 
     return GestureDetector(
@@ -491,7 +521,7 @@ class _ExpensePageState extends State<ExpensePage> {
         decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xFFF1F5F9))),
         child: Row(
           children: [
-            Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(16)), child: Icon(icon, color: iconColor, size: 22)),
+            Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(16)), child: Text(emoji, style: const TextStyle(fontSize: 22))),
             const SizedBox(width: 16),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(expense.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))), Text("$localizedCategory  •  ${DateFormat('HH:mm').format(expense.date)}", style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13))])),
             Text("- ${_formatCurrency(expense.amount)} $currencySymbol", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E293B))),

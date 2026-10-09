@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pockettrack/features/auth/application/auth_cubit.dart';
 import 'package:pockettrack/features/auth/application/auth_state.dart';
 import 'package:pockettrack/features/settings/application/settings_cubit.dart';
+import 'package:pockettrack/core/utils/phone_formatter.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class AccountSettingsPage extends StatefulWidget {
@@ -237,6 +239,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                         label: l10n.phoneNumber,
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
+                        inputFormatters: [PhoneNumberInputFormatter()],
                       ),
                       const SizedBox(height: 20),
                       _buildInputField(
@@ -301,6 +304,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     required String label,
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,6 +328,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
             decoration: const InputDecoration(border: InputBorder.none),
           ),
         ),

@@ -76,31 +76,33 @@ class _OnboardingPageState extends State<OnboardingPage> {
       default: iconData = Icons.help_outline;
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const SizedBox(height: 20),
           Container(
-            width: 160, height: 160,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF0FDFA),
+            width: 140, height: 140,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF0FDFA),
               shape: BoxShape.circle,
             ),
-            child: Icon(iconData, size: 64, color: const Color(0xFF0D9488)),
+            child: Icon(iconData, size: 56, color: const Color(0xFF0D9488)),
           ),
-          const SizedBox(height: 60),
+          const SizedBox(height: 36),
           Text(
             onboardingData[index]['title']!,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             onboardingData[index]['desc']!,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 15, color: Color(0xFF64748B), height: 1.5),
+            style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.5),
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );

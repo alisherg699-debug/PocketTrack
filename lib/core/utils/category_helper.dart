@@ -2,27 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class CategoryHelper {
-  static IconData getIconForCategory(String categoryName) {
+  static String getEmojiForCategory(String categoryName) {
     final lower = categoryName.toLowerCase();
-    if (lower.contains('oziq') || lower.contains('food') || lower.contains('продукт')) {
-      return Icons.restaurant;
-    } else if (lower.contains('transport') || lower.contains('транспорт')) {
-      return Icons.directions_car;
-    } else if (lower.contains('xarid') || lower.contains('shop') || lower.contains('покуп')) {
-      return Icons.shopping_bag_outlined;
-    } else if (lower.contains('to\'lov') || lower.contains('tolov') || lower.contains('pay') || lower.contains('платеж')) {
-      return Icons.credit_card;
-    } else if (lower.contains('salo') || lower.contains('health') || lower.contains('здоров')) {
-      return Icons.favorite_border;
-    } else if (lower.contains('oylik') || lower.contains('maosh') || lower.contains('salar') || lower.contains('зарплат')) {
-      return Icons.account_balance_wallet_outlined;
-    } else if (lower.contains('free') || lower.contains('фриланс')) {
-      return Icons.laptop_mac;
-    } else if (lower.contains('invest') || lower.contains('инвест')) {
-      return Icons.trending_up;
-    } else if (lower.contains('sovg') || lower.contains('gift') || lower.contains('подар')) {
-      return Icons.card_giftcard;
-    }
+    if (lower.contains('oziq') || lower.contains('food') || lower.contains('продукт')) return '🍕';
+    if (lower.contains('transport') || lower.contains('транспорт')) return '🚗';
+    if (lower.contains('xarid') || lower.contains('shop') || lower.contains('покуп')) return '🛍️';
+    if (lower.contains('to\'lov') || lower.contains('tolov') || lower.contains('pay') || lower.contains('платеж')) return '💳';
+    if (lower.contains('salo') || lower.contains('health') || lower.contains('здоров')) return '❤️';
+    if (lower.contains('oylik') || lower.contains('maosh') || lower.contains('salar') || lower.contains('зарплат')) return '💰';
+    if (lower.contains('free') || lower.contains('фриланс')) return '💻';
+    if (lower.contains('invest') || lower.contains('инвест')) return '📈';
+    if (lower.contains('sovg') || lower.contains('gift') || lower.contains('подар')) return '🎁';
+    return '📁';
+  }
+
+  static IconData getIconForCategory(String categoryName) {
     return Icons.label_outline;
   }
 

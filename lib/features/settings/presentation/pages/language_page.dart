@@ -33,21 +33,21 @@ class LanguagePage extends StatelessWidget {
               children: [
                 _buildLanguageItem(
                   context,
-                  "O'zbekcha",
+                  "🇺🇿 O'zbekcha",
                   "uz",
                   state.locale.languageCode == "uz",
                 ),
                 const SizedBox(height: 12),
                 _buildLanguageItem(
                   context,
-                  "Русский",
+                  "🇷🇺 Русский",
                   "ru",
                   state.locale.languageCode == "ru",
                 ),
                 const SizedBox(height: 12),
                 _buildLanguageItem(
                   context,
-                  "English",
+                  "🇺🇸 English",
                   "en",
                   state.locale.languageCode == "en",
                 ),

@@ -7,6 +7,7 @@ import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/report/presentation/pages/monthly_report_page.dart';
 import 'package:pockettrack/features/report/presentation/pages/comparison_page.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
+import 'package:pockettrack/core/utils/category_helper.dart';
 
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({super.key});
@@ -221,7 +222,7 @@ class StatisticsPage extends StatelessWidget {
     return categorySums.entries.map((entry) {
       double percent = total > 0 ? (entry.value / total) : 0;
       return _buildCategoryItem(
-        icon: _getIconForCategory(entry.key),
+        emoji: CategoryHelper.getEmojiForCategory(entry.key),
         title: entry.key,
         percent: percent,
         amount: entry.value,
@@ -230,7 +231,7 @@ class StatisticsPage extends StatelessWidget {
   }
 
   Widget _buildCategoryItem({
-    required IconData icon,
+    required String emoji,
     required String title,
     required double percent,
     required double amount,
@@ -248,11 +249,11 @@ class StatisticsPage extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                     color: const Color(0xFFF0FDFA),
                     borderRadius: BorderRadius.circular(12)),
-                child: Icon(icon, color: const Color(0xFF0D9488), size: 20),
+                child: Text(emoji, style: const TextStyle(fontSize: 20)),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -286,19 +287,6 @@ class StatisticsPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  IconData _getIconForCategory(String category) {
-    switch (category.toLowerCase()) {
-      case 'oziq-ovqat':
-        return Icons.restaurant;
-      case 'transport':
-        return Icons.directions_car;
-      case 'xaridlar':
-        return Icons.shopping_bag_outlined;
-      default:
-        return Icons.payments_outlined;
-    }
   }
 
   List<double> _getWeeklyData(List<Expense> expenses) {

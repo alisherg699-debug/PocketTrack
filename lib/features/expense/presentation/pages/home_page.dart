@@ -11,6 +11,7 @@ import 'package:pockettrack/features/expense/application/expense/expense_event.d
 import 'package:pockettrack/features/expense/application/expense/expense_state.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/expense/presentation/pages/add_expense_page.dart';
+import 'package:pockettrack/features/expense/presentation/pages/receipt_scanner_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/expense_details_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/expense_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/profile_page.dart';
@@ -56,14 +57,7 @@ class _HomePageState extends State<HomePage> {
 
                   if (hasTodayExpenses) {
                     return FloatingActionButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AddExpensePage(),
-                          ),
-                        );
-                      },
+                      onPressed: () => showAddExpenseOptions(context),
                       backgroundColor: const Color(0xFF0D9488),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -366,9 +360,7 @@ class _HomeContent extends StatelessWidget {
           ),
           const SizedBox(height: 32),
           ElevatedButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const AddExpensePage()));
-            },
+            onPressed: () => showAddExpenseOptions(context),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0D9488),
               foregroundColor: Colors.white,
@@ -416,6 +408,7 @@ class _HomeContent extends StatelessWidget {
   }
 }
 
+
 class _ExpenseItem extends StatelessWidget {
   final Expense expense;
   final String Function(double) formatCurrency;
@@ -425,8 +418,7 @@ class _ExpenseItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currencySymbol = context.watch<SettingsCubit>().state.currency;
-    final icon = CategoryHelper.getIconForCategory(expense.category);
-    final iconColor = CategoryHelper.getColorForCategory(expense.category);
+    final emoji = CategoryHelper.getEmojiForCategory(expense.category);
     final localizedCategory = CategoryHelper.getLocalizedName(expense.category, l10n);
 
     return Container(
@@ -435,9 +427,9 @@ class _ExpenseItem extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(16)),
-            child: Icon(icon, color: iconColor),
+            child: Text(emoji, style: const TextStyle(fontSize: 22)),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -455,4 +447,96 @@ class _ExpenseItem extends StatelessWidget {
       ),
     );
   }
+}
+
+void showAddExpenseOptions(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    ),
+    builder: (context) => Padding(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 36),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: const Color(0xFFCBD5E1),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            "Xarajat qo'shish usuli",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+          ),
+          const SizedBox(height: 20),
+          _buildOptionTile(
+            context,
+            icon: Icons.edit_note_rounded,
+            title: "Qo'lda kiritish",
+            subtitle: "Xarajat ma'lumotlarini o'zingiz kiriting",
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const AddExpensePage()));
+            },
+          ),
+          const SizedBox(height: 12),
+          _buildOptionTile(
+            context,
+            icon: Icons.document_scanner_outlined,
+            title: "Chekni skanerlash",
+            subtitle: "Kamera yordamida chekni avtomatik o'qing",
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ReceiptScannerPage()));
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildOptionTile(BuildContext context, {required IconData icon, required String title, required String subtitle, required VoidCallback onTap}) {
+  return InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(16),
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D9488).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: const Color(0xFF0D9488), size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))),
+                const SizedBox(height: 2),
+                Text(subtitle, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+              ],
+            ),
+          ),
+          const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF94A3B8)),
+        ],
+      ),
+    ),
+  );
 }

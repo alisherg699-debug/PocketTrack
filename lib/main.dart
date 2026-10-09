@@ -10,6 +10,7 @@ import 'package:pockettrack/features/auth/application/auth_state.dart';
 import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
 import 'package:pockettrack/features/auth/presentation/pages/onboarding_page.dart';
 import 'package:pockettrack/features/auth/presentation/pages/pin_entry_page.dart';
+import 'package:pockettrack/features/auth/presentation/pages/splash_page.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/presentation/pages/home_page.dart';
 import 'package:pockettrack/features/income/application/income/income_bloc.dart';
@@ -81,7 +82,7 @@ class _MyAppState extends State<MyApp> {
                       future: const FlutterSecureStorage().read(key: 'user_pin'),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Container(color: const Color(0xFF0D9488));
+                          return const SplashPage();
                         }
                         if (snapshot.hasData && snapshot.data != null && snapshot.data!.isNotEmpty) {
                           return PinEntryPage(onVerified: () {
@@ -96,13 +97,13 @@ class _MyAppState extends State<MyApp> {
                     future: SharedPreferences.getInstance(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Container(color: const Color(0xFF0D9488));
+                        return const SplashPage();
                       }
                       final bool isCompleted = snapshot.data?.getBool('is_onboarding_completed') ?? false;
                       return isCompleted ? const LoginPage() : const OnboardingPage();
                     },
                   ),
-                  orElse: () => Container(color: const Color(0xFF0D9488)),
+                  orElse: () => const SplashPage(),
                 );
               },
             ),
