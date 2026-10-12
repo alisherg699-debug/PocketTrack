@@ -62,24 +62,25 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     String title = l10n.passwordReset;
     if (_currentStage == ResetStage.verifyCode) title = l10n.verificationCode;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF1E293B),
+            color: isDark ? Colors.white : const Color(0xFF1E293B),
           ),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () {
@@ -123,7 +124,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: _buildStageContent(l10n),
+              child: _buildStageContent(l10n, isDark),
             ),
           );
         },
@@ -131,26 +132,29 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
     );
   }
 
-  Widget _buildStageContent(AppLocalizations l10n) {
+  Widget _buildStageContent(AppLocalizations l10n, bool isDark) {
     switch (_currentStage) {
       case ResetStage.enterEmail:
-        return _buildEmailStage(l10n);
+        return _buildEmailStage(l10n, isDark);
       case ResetStage.verifyCode:
-        return _buildVerifyStage(l10n);
+        return _buildVerifyStage(l10n, isDark);
       case ResetStage.newPassword:
-        return _buildNewPasswordStage(l10n);
+        return _buildNewPasswordStage(l10n, isDark);
     }
   }
 
   // 1-bosqich: Email kiritish
-  Widget _buildEmailStage(AppLocalizations l10n) {
+  Widget _buildEmailStage(AppLocalizations l10n, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 24),
         Text(
           l10n.resetEmailSubtitle,
-          style: const TextStyle(fontSize: 15, color: Color(0xFF475569)),
+          style: TextStyle(
+            fontSize: 15,
+            color: isDark ? Colors.white70 : const Color(0xFF475569),
+          ),
         ),
         const SizedBox(height: 32),
         _buildInputField(
@@ -158,6 +162,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           controller: _emailController,
           hint: l10n.emailHint,
           keyboardType: TextInputType.emailAddress,
+          isDark: isDark,
         ),
         const SizedBox(height: 40),
         _buildButton(
@@ -174,7 +179,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   }
 
   // 2-bosqich: Kodni tasdiqlash
-  Widget _buildVerifyStage(AppLocalizations l10n) {
+  Widget _buildVerifyStage(AppLocalizations l10n, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -183,13 +188,16 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           alignment: Alignment.centerLeft,
           child: Text(
             l10n.enterOtpSubtitle,
-            style: const TextStyle(fontSize: 15, color: Color(0xFF475569)),
+            style: TextStyle(
+              fontSize: 15,
+              color: isDark ? Colors.white70 : const Color(0xFF475569),
+            ),
           ),
         ),
         const SizedBox(height: 40),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(4, (index) => _buildOtpBox(index)),
+          children: List.generate(4, (index) => _buildOtpBox(index, isDark)),
         ),
         const SizedBox(height: 48),
         _buildButton(
@@ -207,7 +215,10 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           children: [
             Text(
               l10n.resendCode,
-              style: const TextStyle(color: Color(0xFF64748B), fontSize: 14),
+              style: TextStyle(
+                color: isDark ? Colors.white70 : const Color(0xFF64748B),
+                fontSize: 14,
+              ),
             ),
             const SizedBox(width: 4),
             Text(
@@ -225,14 +236,17 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   }
 
   // 3-bosqich: Yangi parol
-  Widget _buildNewPasswordStage(AppLocalizations l10n) {
+  Widget _buildNewPasswordStage(AppLocalizations l10n, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 24),
         Text(
           l10n.setNewPasswordSubtitle,
-          style: const TextStyle(fontSize: 15, color: Color(0xFF475569)),
+          style: TextStyle(
+            fontSize: 15,
+            color: isDark ? Colors.white70 : const Color(0xFF475569),
+          ),
         ),
         const SizedBox(height: 32),
         _buildInputField(
@@ -240,6 +254,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           controller: _passwordController,
           hint: "********",
           obscureText: true,
+          isDark: isDark,
         ),
         const SizedBox(height: 20),
         _buildInputField(
@@ -247,6 +262,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           controller: _confirmPasswordController,
           hint: "********",
           obscureText: true,
+          isDark: isDark,
         ),
         const SizedBox(height: 40),
         _buildButton(
@@ -271,17 +287,17 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
     );
   }
 
-  Widget _buildOtpBox(int index) {
+  Widget _buildOtpBox(int index, bool isDark) {
     return Container(
       width: 72,
       height: 72,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: _otpControllers[index].text.isNotEmpty
               ? const Color(0xFF0D9488)
-              : const Color(0xFFE2E8F0),
+              : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
           width: 1.5,
         ),
       ),
@@ -292,10 +308,10 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           keyboardType: TextInputType.number,
           textAlign: TextAlign.center,
           maxLength: 1,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: isDark ? Colors.white : Colors.black,
           ),
           decoration: const InputDecoration(
             border: InputBorder.none,
@@ -320,29 +336,33 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
     required String hint,
     bool obscureText = false,
     TextInputType keyboardType = TextInputType.text,
+    required bool isDark,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E293B),
+            color: isDark ? Colors.white : const Color(0xFF1E293B),
           ),
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(
+              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+            ),
           ),
           child: TextField(
             controller: controller,
             obscureText: obscureText,
             keyboardType: keyboardType,
+            style: TextStyle(color: isDark ? Colors.white : Colors.black),
             decoration: InputDecoration(
               hintText: hint,
               border: InputBorder.none,
@@ -350,8 +370,8 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                 horizontal: 16,
                 vertical: 18,
               ),
-              hintStyle: const TextStyle(
-                color: Color(0xFF94A3B8),
+              hintStyle: TextStyle(
+                color: isDark ? Colors.white38 : const Color(0xFF94A3B8),
                 fontSize: 16,
               ),
             ),

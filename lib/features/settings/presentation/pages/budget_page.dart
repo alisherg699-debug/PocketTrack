@@ -79,17 +79,19 @@ class _BudgetPageState extends State<BudgetPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currencySymbol = context.watch<SettingsCubit>().state.currency;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           l10n.budget,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : const Color(0xFF1E293B)),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),
@@ -101,6 +103,7 @@ class _BudgetPageState extends State<BudgetPage> {
               totalMonthlyBudget,
               _saveTotalBudget,
               l10n,
+              isDark,
             ),
             icon: const Icon(Icons.tune_rounded),
           ),
@@ -143,10 +146,10 @@ class _BudgetPageState extends State<BudgetPage> {
                   const SizedBox(height: 32),
                   Text(
                     l10n.categoryAnalysis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: isDark ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -155,7 +158,7 @@ class _BudgetPageState extends State<BudgetPage> {
                         .where((e) => e.category == cat)
                         .fold(0.0, (sum, e) => sum + e.amount);
                     final limit = categoryBudgetLimits[cat] ?? 0;
-                    return _buildCategoryBudgetCard(l10n, cat, spent, limit);
+                    return _buildCategoryBudgetCard(l10n, cat, spent, limit, isDark);
                   }),
                   const SizedBox(height: 80),
                 ],
@@ -321,6 +324,7 @@ class _BudgetPageState extends State<BudgetPage> {
     String title,
     double spent,
     double limit,
+    bool isDark,
   ) {
     final String localizedTitle = _getLocalizedCategoryName(title, l10n);
     final double displayLimit = limit > 0 ? limit : 1.0;
@@ -365,14 +369,15 @@ class _BudgetPageState extends State<BudgetPage> {
         limit,
         (val) => _saveCategoryLimit(title, val),
         l10n,
+        isDark,
       ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
+          border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
         ),
         child: Column(
           children: [
@@ -392,10 +397,10 @@ class _BudgetPageState extends State<BudgetPage> {
                     localizedTitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Color(0xFF1E293B),
+                      color: isDark ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
                 ),
@@ -405,7 +410,7 @@ class _BudgetPageState extends State<BudgetPage> {
                   child: Text(
                     "${_format(spent)} / ${_format(limit)}",
                     style: TextStyle(
-                      color: isOverBudget ? Colors.red : const Color(0xFF64748B),
+                      color: isOverBudget ? Colors.red : (isDark ? Colors.white70 : const Color(0xFF64748B)),
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                     ),
@@ -418,7 +423,7 @@ class _BudgetPageState extends State<BudgetPage> {
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
                 value: percent,
-                backgroundColor: const Color(0xFFF1F5F9),
+                backgroundColor: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
                 valueColor: AlwaysStoppedAnimation<Color>(barColor),
                 minHeight: 6,
               ),
@@ -434,6 +439,7 @@ class _BudgetPageState extends State<BudgetPage> {
     double currentValue,
     Function(double) onSave,
     AppLocalizations l10n,
+    bool isDark,
   ) {
     final currencySymbol = context.read<SettingsCubit>().state.currency;
     final controller = TextEditingController(
@@ -444,7 +450,7 @@ class _BudgetPageState extends State<BudgetPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 24,
@@ -458,11 +464,11 @@ class _BudgetPageState extends State<BudgetPage> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? const Color(0xFF0F172A) : Colors.white,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
+                      color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
                       blurRadius: 10,
                     ),
                   ],
@@ -477,18 +483,18 @@ class _BudgetPageState extends State<BudgetPage> {
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1E293B),
+                  color: isDark ? Colors.white : const Color(0xFF1E293B),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                 l10n.budgetEditDesc,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Color(0xFF94A3B8),
+                style: TextStyle(
+                  color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
                   fontSize: 13,
                   height: 1.4,
                 ),
@@ -497,17 +503,18 @@ class _BudgetPageState extends State<BudgetPage> {
               // AMOUNT INPUT
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? const Color(0xFF0F172A) : Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                 ),
                 child: TextField(
                   controller: controller,
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'[0-9. ]')),
@@ -531,8 +538,8 @@ class _BudgetPageState extends State<BudgetPage> {
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         l10n.cancel,
-                        style: const TextStyle(
-                          color: Color(0xFF1E293B),
+                        style: TextStyle(
+                          color: isDark ? Colors.white70 : const Color(0xFF1E293B),
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
                         ),

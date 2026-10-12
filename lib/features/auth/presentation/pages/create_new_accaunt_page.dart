@@ -73,8 +73,9 @@ class _NewAccountPageState extends State<NewAccountPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           final l10n = AppLocalizations.of(context)!;
@@ -112,46 +113,47 @@ class _NewAccountPageState extends State<NewAccountPage> {
                     children: [
                       Text(
                         l10n.register,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Geist',
-                          color: Colors.black,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         l10n.registerSubtitle,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFF475569),
+                          color: isDark ? Colors.white70 : const Color(0xFF475569),
                         ),
                       ),
                       const SizedBox(height: 32),
                       Text(
                         l10n.fullName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
                       const SizedBox(height: 8),
                       _buildTextField(
                         controller: _nameController,
                         hint: l10n.exampleName,
+                        isDark: isDark,
                       ),
                       const SizedBox(height: 16),
                       Text(
                         l10n.email,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -159,15 +161,16 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         controller: _emailController,
                         hint: l10n.emailHint,
                         keyboardType: TextInputType.emailAddress,
+                        isDark: isDark,
                       ),
                       const SizedBox(height: 16),
                       Text(
                         l10n.password,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -175,12 +178,13 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         controller: _passwordController,
                         hint: l10n.createStrongPassword,
                         obscureText: !_isPasswordVisible,
+                        isDark: isDark,
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
-                            color: const Color(0xFF94A3B8),
+                            color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
                           ),
                           onPressed: () => setState(
                             () => _isPasswordVisible = !_isPasswordVisible,
@@ -190,11 +194,11 @@ class _NewAccountPageState extends State<NewAccountPage> {
                       const SizedBox(height: 16),
                       Text(
                         l10n.confirmPassword,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -202,12 +206,13 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         controller: _confirmPasswordController,
                         hint: l10n.repeatPassword,
                         obscureText: !_isConfirmPasswordVisible,
+                        isDark: isDark,
                         suffixIcon: IconButton(
                           icon: Icon(
                             _isConfirmPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
-                            color: const Color(0xFF94A3B8),
+                            color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
                           ),
                           onPressed: () => setState(
                             () => _isConfirmPasswordVisible =
@@ -245,8 +250,8 @@ class _NewAccountPageState extends State<NewAccountPage> {
                         children: [
                           Text(
                             l10n.alreadyHaveAccount,
-                            style: const TextStyle(
-                              color: Color(0xFF475569),
+                            style: TextStyle(
+                              color: isDark ? Colors.white70 : const Color(0xFF475569),
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Geist',
@@ -289,6 +294,7 @@ class _NewAccountPageState extends State<NewAccountPage> {
     bool obscureText = false,
     Widget? suffixIcon,
     TextInputType keyboardType = TextInputType.text,
+    required bool isDark,
   }) {
     return SizedBox(
       height: 64,
@@ -297,10 +303,12 @@ class _NewAccountPageState extends State<NewAccountPage> {
         controller: controller,
         obscureText: obscureText,
         keyboardType: keyboardType,
+        style: TextStyle(color: isDark ? Colors.white : Colors.black),
         decoration: InputDecoration(
           hintText: hint,
+          hintStyle: TextStyle(color: isDark ? Colors.white38 : const Color(0xFF94A3B8)),
           filled: true,
-          fillColor: const Color(0xFFFFFFFF),
+          fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF),
           suffixIcon: suffixIcon,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
@@ -308,11 +316,17 @@ class _NewAccountPageState extends State<NewAccountPage> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1),
+            borderSide: BorderSide(
+              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+              width: 1,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(color: Color(0xFF94A3B8), width: 1.5),
+            borderSide: BorderSide(
+              color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+              width: 1.5,
+            ),
           ),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,

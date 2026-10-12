@@ -52,6 +52,7 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             locale: settingsState.locale,
+            themeMode: settingsState.themeMode,
             localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
@@ -62,8 +63,33 @@ class _MyAppState extends State<MyApp> {
             theme: ThemeData(
               useMaterial3: true,
               primaryColor: const Color(0xFF0D9488),
-              colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0D9488)),
+              colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0D9488), brightness: Brightness.light),
               fontFamily: 'Geist',
+              brightness: Brightness.light,
+              scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+              cardColor: Colors.white,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+                elevation: 0,
+              ),
+            ),
+            darkTheme: ThemeData(
+              useMaterial3: true,
+              primaryColor: const Color(0xFF0D9488),
+              colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0D9488), brightness: Brightness.dark),
+              fontFamily: 'Geist',
+              brightness: Brightness.dark,
+              scaffoldBackgroundColor: const Color(0xFF0F172A),
+              cardColor: const Color(0xFF1E293B),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Color(0xFF1E293B),
+                foregroundColor: Colors.white,
+                elevation: 0,
+              ),
+              dialogTheme: const DialogThemeData(
+                backgroundColor: Color(0xFF1E293B),
+              ),
             ),
             builder: (context, child) {
               return GestureDetector(

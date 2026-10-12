@@ -59,8 +59,9 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         behavior: HitTestBehavior.opaque,
@@ -105,37 +106,38 @@ class _LoginPageState extends State<LoginPage> {
                             'assets/iconssvg/cash.svg',
                             height: 18,
                             width: 19,
+                            colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
                       Text(
                         l10n.welcome,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Geist',
-                          color: Colors.black,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         l10n.loginSubtitle,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w400,
-                          color: Color(0xFF475569),
+                          color: isDark ? Colors.white70 : const Color(0xFF475569),
                         ),
                       ),
                       const SizedBox(height: 28),
                       Text(
                         l10n.email,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -146,18 +148,20 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _usernameController,
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.emailAddress,
+                          style: TextStyle(color: isDark ? Colors.white : Colors.black),
                           decoration: InputDecoration(
                             hintText: l10n.emailHint,
+                            hintStyle: TextStyle(color: isDark ? Colors.white38 : const Color(0xFF94A3B8)),
                             filled: true,
-                            fillColor: const Color(0xFFFFFFFF),
+                            fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide: BorderSide.none,
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE2E8F0),
+                              borderSide: BorderSide(
+                                color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
                                 width: 1,
                               ),
                             ),
@@ -178,11 +182,11 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 16),
                       Text(
                         l10n.password,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontFamily: 'Geist',
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -194,14 +198,16 @@ class _LoginPageState extends State<LoginPage> {
                           obscureText: !_isPasswordVisible,
                           textInputAction: TextInputAction.done,
                           onSubmitted: (_) => _handleLogin(),
+                          style: TextStyle(color: isDark ? Colors.white : Colors.black),
                           decoration: InputDecoration(
                             hintText: l10n.enterPassword,
+                            hintStyle: TextStyle(color: isDark ? Colors.white38 : const Color(0xFF94A3B8)),
                             filled: true,
-                            fillColor: const Color(0xFFFFFFFF),
+                            fillColor: isDark ? const Color(0xFF1E293B) : const Color(0xFFFFFFFF),
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                color: const Color(0xFF94A3B8),
+                                color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
                               ),
                               onPressed: () {
                                 setState(() {
@@ -215,8 +221,8 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE2E8F0),
+                              borderSide: BorderSide(
+                                color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
                                 width: 1,
                               ),
                             ),
@@ -291,8 +297,8 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Text(
                             l10n.dontHaveAccount,
-                            style: const TextStyle(
-                              color: Color(0xFF475569),
+                            style: TextStyle(
+                              color: isDark ? Colors.white70 : const Color(0xFF475569),
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Geist',

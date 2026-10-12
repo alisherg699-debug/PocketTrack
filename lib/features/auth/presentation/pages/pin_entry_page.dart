@@ -48,8 +48,9 @@ class _PinEntryPageState extends State<PinEntryPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -60,12 +61,16 @@ class _PinEntryPageState extends State<PinEntryPage> {
               const SizedBox(height: 24),
               Text(
                 l10n.securityCode,
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : const Color(0xFF1E293B),
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 l10n.enterPin,
-                style: const TextStyle(color: Color(0xFF64748B)),
+                style: TextStyle(color: isDark ? Colors.white70 : const Color(0xFF64748B)),
               ),
               const SizedBox(height: 48),
               Row(
@@ -81,14 +86,20 @@ class _PinEntryPageState extends State<PinEntryPage> {
                     maxLength: 1,
                     obscureText: true,
                     autofocus: index == 0,
-                    style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
                     decoration: InputDecoration(
                       counterText: "",
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                        borderSide: BorderSide(
+                          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),

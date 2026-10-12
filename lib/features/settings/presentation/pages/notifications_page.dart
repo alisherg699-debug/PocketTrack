@@ -84,9 +84,20 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   Future<void> _selectTime() async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: reminderHour, minute: reminderMinute),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: isDark 
+                ? const ColorScheme.dark(primary: Color(0xFF0D9488))
+                : const ColorScheme.light(primary: Color(0xFF0D9488)),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -103,20 +114,21 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     String timeLabel =
         "${reminderHour.toString().padLeft(2, '0')}:${reminderMinute.toString().padLeft(2, '0')}";
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           l10n.notifications,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : const Color(0xFF1E293B)),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),
@@ -130,10 +142,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
               child: Text(
                 l10n.systemNotifications,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF94A3B8),
+                  color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
                   letterSpacing: 0.5,
                 ),
               ),
@@ -151,6 +163,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       setState(() => dailyReminder = val);
                       _updateSetting('daily_reminder', val);
                     },
+                    isDark: isDark,
                   ),
                   const SizedBox(height: 12),
                   _buildNotificationItem(
@@ -161,17 +174,19 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       setState(() => weeklyReport = val);
                       _updateSetting('weekly_report', val);
                     },
+                    isDark: isDark,
                   ),
                   const SizedBox(height: 12),
                   _buildNotificationItem(
                     title: l10n.budgetAlertTitle,
                     description: l10n.budgetAlertDesc(alertThreshold),
                     value: budgetAlert,
-                    onTap: () => _showThresholdDialog(l10n),
+                    onTap: () => _showThresholdDialog(l10n, isDark),
                     onChanged: (val) {
                       setState(() => budgetAlert = val);
                       _updateSetting('budget_alert', val);
                     },
+                    isDark: isDark,
                   ),
                   const SizedBox(height: 12),
                   _buildNotificationItem(
@@ -182,6 +197,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       setState(() => newFeatures = val);
                       _updateSetting('new_features', val);
                     },
+                    isDark: isDark,
                   ),
                 ],
               ),
@@ -197,6 +213,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     required String description,
     required bool value,
     required ValueChanged<bool> onChanged,
+    required bool isDark,
     VoidCallback? onTap,
   }) {
     return GestureDetector(
@@ -204,9 +221,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
+          border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
         ),
         child: Row(
           children: [
@@ -216,18 +233,18 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: isDark ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF64748B),
+                      color: isDark ? Colors.white70 : const Color(0xFF64748B),
                       height: 1.4,
                     ),
                   ),
@@ -252,19 +269,20 @@ class _NotificationsPageState extends State<NotificationsPage> {
     );
   }
 
-  void _showThresholdDialog(AppLocalizations l10n) {
+  void _showThresholdDialog(AppLocalizations l10n, bool isDark) {
     final controller = TextEditingController(text: alertThreshold.toString());
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(l10n.selectLimitPercentage),
+        title: Text(l10n.selectLimitPercentage, style: TextStyle(color: isDark ? Colors.white : Colors.black)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               l10n.thresholdQuestion,
-              style: const TextStyle(color: Colors.grey, fontSize: 14),
+              style: TextStyle(color: isDark ? Colors.white70 : Colors.grey, fontSize: 14),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -272,6 +290,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               autofocus: true,
+              style: TextStyle(color: isDark ? Colors.white : Colors.black),
               decoration: const InputDecoration(
                 suffixText: "%",
                 border: OutlineInputBorder(

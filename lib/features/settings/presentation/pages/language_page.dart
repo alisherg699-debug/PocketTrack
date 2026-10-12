@@ -9,19 +9,21 @@ class LanguagePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text(
           l10n.selectLanguage,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, size: 20, color: isDark ? Colors.white : Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -36,6 +38,7 @@ class LanguagePage extends StatelessWidget {
                   "🇺🇿 O'zbekcha",
                   "uz",
                   state.locale.languageCode == "uz",
+                  isDark,
                 ),
                 const SizedBox(height: 12),
                 _buildLanguageItem(
@@ -43,6 +46,7 @@ class LanguagePage extends StatelessWidget {
                   "🇷🇺 Русский",
                   "ru",
                   state.locale.languageCode == "ru",
+                  isDark,
                 ),
                 const SizedBox(height: 12),
                 _buildLanguageItem(
@@ -50,6 +54,7 @@ class LanguagePage extends StatelessWidget {
                   "🇺🇸 English",
                   "en",
                   state.locale.languageCode == "en",
+                  isDark,
                 ),
               ],
             ),
@@ -64,6 +69,7 @@ class LanguagePage extends StatelessWidget {
     String title,
     String code,
     bool isSelected,
+    bool isDark,
   ) {
     return GestureDetector(
       onTap: () {
@@ -73,12 +79,12 @@ class LanguagePage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? const Color(0xFF1E293B) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
                 ? const Color(0xFF0D9488)
-                : const Color(0xFFF1F5F9),
+                : (isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
             width: 1.5,
           ),
         ),
@@ -89,7 +95,7 @@ class LanguagePage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: const Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
               ),
             ),
             const Spacer(),

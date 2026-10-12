@@ -40,6 +40,17 @@ class _ComparisonPageState extends State<ComparisonPage> {
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
       helpText: isFirst ? l10n.selectFirstMonth : l10n.selectSecondMonth,
+      builder: (context, child) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: isDark 
+                ? const ColorScheme.dark(primary: Color(0xFF0D9488))
+                : const ColorScheme.light(primary: Color(0xFF0D9488)),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -54,17 +65,19 @@ class _ComparisonPageState extends State<ComparisonPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           l10n.comparisonTitle,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : const Color(0xFF1E293B)),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),
@@ -92,16 +105,16 @@ class _ComparisonPageState extends State<ComparisonPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildMonthHeader(l10n),
+                        _buildMonthHeader(l10n, isDark),
                         const SizedBox(height: 24),
-                        _buildComparisonChart(m1Data.total, m2Data.total, l10n),
+                        _buildComparisonChart(m1Data.total, m2Data.total, l10n, isDark),
                         const SizedBox(height: 32),
                         Text(
                           l10n.categoryAnalysis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E293B),
+                            color: isDark ? Colors.white : const Color(0xFF1E293B),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -118,12 +131,13 @@ class _ComparisonPageState extends State<ComparisonPage> {
                             l10n,
                             m1Data.categories,
                             m2Data.categories,
+                            isDark,
                           ),
                       ],
                     ),
                   ),
                 ),
-                _buildSummaryFooter(totalDiffPercent, l10n),
+                _buildSummaryFooter(totalDiffPercent, l10n, isDark),
               ],
             );
           }
@@ -133,7 +147,7 @@ class _ComparisonPageState extends State<ComparisonPage> {
     );
   }
 
-  Widget _buildMonthHeader(AppLocalizations l10n) {
+  Widget _buildMonthHeader(AppLocalizations l10n, bool isDark) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -143,14 +157,15 @@ class _ComparisonPageState extends State<ComparisonPage> {
             DateFormat.MMMM(
               Localizations.localeOf(context).toString(),
             ).format(firstMonth),
+            isDark,
           ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             l10n.vs,
-            style: const TextStyle(
-              color: Color(0xFF94A3B8),
+            style: TextStyle(
+              color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -161,31 +176,32 @@ class _ComparisonPageState extends State<ComparisonPage> {
             DateFormat.MMMM(
               Localizations.localeOf(context).toString(),
             ).format(secondMonth),
+            isDark,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildMonthButton(String label) {
+  Widget _buildMonthButton(String label, bool isDark) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
       ),
       child: Row(
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1E293B),
+              color: isDark ? Colors.white : const Color(0xFF1E293B),
             ),
           ),
           const SizedBox(width: 4),
-          const Icon(Icons.arrow_drop_down, size: 20, color: Color(0xFF94A3B8)),
+          Icon(Icons.arrow_drop_down, size: 20, color: isDark ? Colors.white70 : const Color(0xFF94A3B8)),
         ],
       ),
     );
@@ -195,6 +211,7 @@ class _ComparisonPageState extends State<ComparisonPage> {
     double m1Total,
     double m2Total,
     AppLocalizations l10n,
+    bool isDark,
   ) {
     double maxY = (m1Total > m2Total ? m1Total : m2Total) * 1.3;
     if (maxY == 0) maxY = 100;
@@ -203,16 +220,16 @@ class _ComparisonPageState extends State<ComparisonPage> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             l10n.totalComparison,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : const Color(0xFF1E293B)),
           ),
           const SizedBox(height: 32),
           SizedBox(
@@ -233,8 +250,8 @@ class _ComparisonPageState extends State<ComparisonPage> {
                               DateFormat.MMM(
                                 Localizations.localeOf(context).toString(),
                               ).format(firstMonth),
-                              style: const TextStyle(
-                                color: Color(0xFF94A3B8),
+                              style: TextStyle(
+                                color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
                                 fontSize: 12,
                               ),
                             ),
@@ -275,7 +292,7 @@ class _ComparisonPageState extends State<ComparisonPage> {
                     barRods: [
                       BarChartRodData(
                         toY: m1Total,
-                        color: const Color(0xFF94A3B8),
+                        color: isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
                         width: 30,
                         borderRadius: BorderRadius.circular(4),
                       ),
@@ -305,6 +322,7 @@ class _ComparisonPageState extends State<ComparisonPage> {
     AppLocalizations l10n,
     Map<String, double> m1Cats,
     Map<String, double> m2Cats,
+    bool isDark,
   ) {
     Set<String> allCategories = {...m1Cats.keys, ...m2Cats.keys};
     return allCategories.map((cat) {
@@ -315,9 +333,9 @@ class _ComparisonPageState extends State<ComparisonPage> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
+          border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
         ),
         child: Row(
           children: [
@@ -327,16 +345,17 @@ class _ComparisonPageState extends State<ComparisonPage> {
                 children: [
                   Text(
                     CategoryHelper.getLocalizedName(cat, l10n),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
+                      color: isDark ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     "${DateFormat.MMM(Localizations.localeOf(context).toString()).format(firstMonth)}: ${_formatK(v1)}  •  ${DateFormat.MMM(Localizations.localeOf(context).toString()).format(secondMonth)}: ${_formatK(v2)}",
-                    style: const TextStyle(
-                      color: Color(0xFF94A3B8),
+                    style: TextStyle(
+                      color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
                       fontSize: 13,
                     ),
                   ),
@@ -347,8 +366,8 @@ class _ComparisonPageState extends State<ComparisonPage> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
                 color: diff <= 0
-                    ? const Color(0xFFF0FDFA)
-                    : const Color(0xFFFFF1F2),
+                    ? (isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDFA))
+                    : (isDark ? const Color(0xFF1E1B1B) : const Color(0xFFFFF1F2)),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -368,14 +387,14 @@ class _ComparisonPageState extends State<ComparisonPage> {
     }).toList();
   }
 
-  Widget _buildSummaryFooter(double percent, AppLocalizations l10n) {
+  Widget _buildSummaryFooter(double percent, AppLocalizations l10n, bool isDark) {
     bool isSaving = percent <= 0;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
-        color: Color(0xFFF0FDFA),
-        border: Border(top: BorderSide(color: Color(0xFF0D9488), width: 0.5)),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF0FDFA),
+        border: const Border(top: BorderSide(color: Color(0xFF0D9488), width: 0.5)),
       ),
       child: SafeArea(
         top: false,

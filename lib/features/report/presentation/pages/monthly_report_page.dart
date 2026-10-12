@@ -43,23 +43,25 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
-            color: Colors.black,
+            color: isDark ? Colors.white : Colors.black,
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           l10n.report,
-          style: const TextStyle(
-            color: Color(0xFF1E293B),
+          style: TextStyle(
+            color: isDark ? Colors.white : const Color(0xFF1E293B),
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -106,20 +108,20 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildMonthSelector(l10n),
+                  _buildMonthSelector(l10n, isDark),
                   const SizedBox(height: 24),
-                  _buildIncomeExpenseRow(l10n, currencySymbol, totalIncome, totalExpense),
+                  _buildIncomeExpenseRow(l10n, currencySymbol, totalIncome, totalExpense, isDark),
                   const SizedBox(height: 16),
                   _buildBalanceSection(l10n, currencySymbol, balance),
                   const SizedBox(height: 32),
-                  _buildPieChartCard(l10n, filteredExpenses, totalExpense),
+                  _buildPieChartCard(l10n, filteredExpenses, totalExpense, isDark),
                   const SizedBox(height: 32),
                   Text(
                     l10n.topCategories,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: isDark ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -128,6 +130,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                     currencySymbol,
                     filteredExpenses,
                     totalExpense,
+                    isDark,
                   ),
                   const SizedBox(height: 32),
                   _buildDownloadButton(l10n),
@@ -141,7 +144,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     );
   }
 
-  Widget _buildMonthSelector(AppLocalizations l10n) {
+  Widget _buildMonthSelector(AppLocalizations l10n, bool isDark) {
     final rawMonth = DateFormat(
       'MMMM yyyy',
       Localizations.localeOf(context).toString(),
@@ -153,12 +156,12 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -181,7 +184,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
+                  color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -205,9 +208,9 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                 builder: (context, child) {
                   return Theme(
                     data: Theme.of(context).copyWith(
-                      colorScheme: const ColorScheme.light(
-                        primary: Color(0xFF0D9488),
-                      ),
+                      colorScheme: isDark 
+                          ? const ColorScheme.dark(primary: Color(0xFF0D9488))
+                          : const ColorScheme.light(primary: Color(0xFF0D9488)),
                     ),
                     child: child!,
                   );
@@ -222,7 +225,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0FDFA),
+                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDFA),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: const Color(0xFF0D9488).withValues(alpha: 0.2),
@@ -239,10 +242,10 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                   const SizedBox(width: 8),
                   Text(
                     monthName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: isDark ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -270,7 +273,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
+                  color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -291,6 +294,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     String currencySymbol,
     double income,
     double expense,
+    bool isDark,
   ) {
     return Row(
       children: [
@@ -300,7 +304,8 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
             currencySymbol,
             income,
             const Color(0xFF0D9488),
-            const Color(0xFFF0FDFA),
+            isDark ? const Color(0xFF1E293B) : const Color(0xFFF0FDFA),
+            isDark,
           ),
         ),
         const SizedBox(width: 16),
@@ -309,8 +314,9 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
             l10n.totalExpense,
             currencySymbol,
             expense,
-            const Color(0xFF1E293B),
-            Colors.white,
+            isDark ? Colors.white : const Color(0xFF1E293B),
+            Theme.of(context).cardColor,
+            isDark,
           ),
         ),
       ],
@@ -323,13 +329,14 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     double amount,
     Color color,
     Color bgColor,
+    bool isDark,
   ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,6 +404,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     AppLocalizations l10n,
     List<Expense> expenses,
     double total,
+    bool isDark,
   ) {
     Map<String, double> categorySums = {};
     for (var e in expenses) {
@@ -427,9 +435,9 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
       ),
       child: Column(
         children: [
@@ -437,7 +445,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
             alignment: Alignment.centerLeft,
             child: Text(
               l10n.categoryAnalysis,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF1E293B)),
             ),
           ),
           const SizedBox(height: 32),
@@ -458,15 +466,15 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                   children: [
                     Text(
                       l10n.expenses,
-                      style: const TextStyle(
-                        color: Color(0xFF94A3B8),
+                      style: TextStyle(
+                        color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
                         fontSize: 12,
                       ),
                     ),
-                    const Text(
+                    Text(
                       "100%",
                       style: TextStyle(
-                        color: Color(0xFF1E293B),
+                        color: isDark ? Colors.white : const Color(0xFF1E293B),
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
@@ -486,6 +494,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
     String currencySymbol,
     List<Expense> expenses,
     double total,
+    bool isDark,
   ) {
     Map<String, double> categorySums = {};
     for (var e in expenses) {
@@ -505,9 +514,9 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
+          border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
         ),
         child: Row(
           children: [
@@ -526,15 +535,16 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
                 children: [
                   Text(
                     CategoryHelper.getLocalizedName(entry.key, l10n),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
+                      color: isDark ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
                   Text(
                     l10n.sharePercent(((entry.value / total) * 100).toInt()),
-                    style: const TextStyle(
-                      color: Color(0xFF94A3B8),
+                    style: TextStyle(
+                      color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
                       fontSize: 12,
                     ),
                   ),
@@ -543,7 +553,7 @@ class _MonthlyReportPageState extends State<MonthlyReportPage> {
             ),
             Text(
               "${_formatCurrency(entry.value)} $currencySymbol",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : const Color(0xFF1E293B)),
             ),
           ],
         ),

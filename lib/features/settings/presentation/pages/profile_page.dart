@@ -12,6 +12,7 @@ import 'package:pockettrack/features/settings/presentation/pages/security_page.d
 
 import 'help_support_page.dart';
 import 'language_page.dart';
+import 'appearance_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -21,12 +22,12 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Widget _buildAvatarWidget(String? imagePath) {
+  Widget _buildAvatarWidget(String? imagePath, bool isDark) {
     Widget fallbackIcon = Container(
       width: 104,
       height: 104,
       decoration: BoxDecoration(
-        color: const Color(0xFFE6F4F1),
+        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE6F4F1),
         shape: BoxShape.circle,
         border: Border.all(
           color: const Color(0xFF0D9488).withValues(alpha: 0.2),
@@ -51,7 +52,7 @@ class _ProfilePageState extends State<ProfilePage> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: const Color(0xFFE2E8F0),
+            color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
             width: 3,
           ),
         ),
@@ -74,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: const Color(0xFFE2E8F0),
+            color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
             width: 3,
           ),
         ),
@@ -101,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: const Color(0xFFE2E8F0),
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
           width: 3,
         ),
       ),
@@ -119,6 +120,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         state.maybeWhen(
@@ -139,38 +142,38 @@ class _ProfilePageState extends State<ProfilePage> {
         );
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8FAFC),
+          backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
           appBar: AppBar(
             title: Text(
               l10n.profile,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
               ),
             ),
             centerTitle: true,
-            backgroundColor: Colors.white,
+            backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
             elevation: 0,
-            foregroundColor: Colors.black,
+            foregroundColor: isDark ? Colors.white : Colors.black,
           ),
           body: SingleChildScrollView(
             child: Column(
               children: [
                 Container(
                   width: double.infinity,
-                  color: Colors.white,
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 32),
                   child: Column(
                     children: [
-                      _buildAvatarWidget(user?.image),
+                      _buildAvatarWidget(user?.image, isDark),
                       const SizedBox(height: 16),
                       Text(
                         user?.firstName ?? l10n.loading,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E293B),
+                          color: isDark ? Colors.white : const Color(0xFF1E293B),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -207,8 +210,23 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       _buildMenuItem(
+                        icon: Icons.palette_outlined,
+                        title: l10n.appearance,
+                        isDark: isDark,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AppearancePage(),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      _buildMenuItem(
                         icon: Icons.person_outline,
                         title: l10n.accountSettings,
+                        isDark: isDark,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -223,6 +241,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       _buildMenuItem(
                         icon: Icons.account_balance_wallet_outlined,
                         title: l10n.categories,
+                        isDark: isDark,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -236,6 +255,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       _buildMenuItem(
                         icon: Icons.notifications_none,
                         title: l10n.notifications,
+                        isDark: isDark,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -249,6 +269,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       _buildMenuItem(
                         icon: Icons.lock_outline,
                         title: l10n.security,
+                        isDark: isDark,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -262,6 +283,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       _buildMenuItem(
                         icon: Icons.language_outlined,
                         title: l10n.changeLanguage,
+                        isDark: isDark,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -275,6 +297,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       _buildMenuItem(
                         icon: Icons.help_outline,
                         title: l10n.helpSupport,
+                        isDark: isDark,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -290,7 +313,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 40),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _buildLogoutButton(l10n),
+                  child: _buildLogoutButton(l10n, isDark),
                 ),
                 const SizedBox(height: 40),
               ],
@@ -304,30 +327,31 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildMenuItem({
     required IconData icon,
     required String title,
+    required bool isDark,
     required VoidCallback onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
       ),
       child: ListTile(
         onTap: onTap,
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFC),
+            color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: const Color(0xFF1E293B), size: 22),
+          child: Icon(icon, color: isDark ? Colors.white : const Color(0xFF1E293B), size: 22),
         ),
         title: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E293B),
+            color: isDark ? Colors.white : const Color(0xFF1E293B),
           ),
         ),
         trailing: const Icon(
@@ -339,12 +363,12 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildLogoutButton(AppLocalizations l10n) {
+  Widget _buildLogoutButton(AppLocalizations l10n, bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
       ),
       child: ListTile(
         onTap: () => _showLogoutDialog(l10n),

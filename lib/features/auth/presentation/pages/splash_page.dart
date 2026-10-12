@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/home_page.dart';
 import 'package:pockettrack/features/auth/presentation/pages/onboarding_page.dart';
+import 'package:pockettrack/features/auth/presentation/pages/language_selection_page.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class SplashPage extends StatefulWidget {
@@ -31,10 +33,21 @@ class _SplashPageState extends State<SplashPage> {
 
     // Kerakli holatlarni tekshiramiz
     final prefs = await SharedPreferences.getInstance();
+    final bool isLanguageSelected = prefs.getBool('is_language_selected') ?? false;
     final bool isOnboardingDone = prefs.getBool('is_onboarding_completed') ?? false;
     
     final fbUser = FirebaseAuth.instance.currentUser;
     final pin = await const FlutterSecureStorage().read(key: 'user_pin');
+
+    if (!mounted) return;
+
+    if (!isLanguageSelected) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LanguageSelectionPage()),
+      );
+      return;
+    }
 
     if (fbUser != null) {
       // Foydalanuvchi tizimda bo'lsa
@@ -62,8 +75,9 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -87,12 +101,12 @@ class _SplashPageState extends State<SplashPage> {
             ),
             const SizedBox(height: 24),
             // ILOVA NOMI
-            const Text(
+            Text(
               "PocketTrack",
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
                 fontFamily: 'Geist',
               ),
             ),
@@ -100,9 +114,9 @@ class _SplashPageState extends State<SplashPage> {
             // SHIOR
             Text(
               AppLocalizations.of(context)?.appTagline ?? "Har bir tiyinni hisobga oling",
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: Color(0xFF64748B),
+                color: isDark ? Colors.white70 : const Color(0xFF64748B),
                 fontFamily: 'Geist',
               ),
             ),

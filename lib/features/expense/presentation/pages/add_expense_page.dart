@@ -173,18 +173,19 @@ class _AddExpensePageState extends State<AddExpensePage> {
     final l10n = AppLocalizations.of(context)!;
     final currencySymbol = context.watch<SettingsCubit>().state.currency;
     final bool isEditing = widget.expenseToEdit != null;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           isEditing ? l10n.editExpense : l10n.addExpense,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B)),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
       ),
       body: categories.isEmpty 
         ? const Center(child: CircularProgressIndicator())
@@ -198,7 +199,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
               alignment: Alignment.center,
               child: Text(
                 l10n.amount.toUpperCase(),
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF94A3B8)),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isDark ? Colors.white70 : const Color(0xFF94A3B8)),
               ),
             ),
             const SizedBox(height: 12),
@@ -214,13 +215,13 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         autofocus: !isEditing,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 48, fontWeight: FontWeight.w800, color: Colors.black),
+                        style: TextStyle(fontSize: 48, fontWeight: FontWeight.w800, color: isDark ? Colors.white : Colors.black),
                         decoration: InputDecoration(
                           hintText: "0",
                           border: InputBorder.none,
                           isDense: true,
                           contentPadding: EdgeInsets.zero,
-                          hintStyle: TextStyle(color: Colors.black.withValues(alpha: 0.1)),
+                          hintStyle: TextStyle(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1)),
                         ),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9. ]')),
@@ -238,13 +239,13 @@ class _AddExpensePageState extends State<AddExpensePage> {
               ),
             ),
             const SizedBox(height: 48),
-            _buildLabel(l10n.title),
-            _buildTextField(_titleController, l10n.exampleLunch),
+            _buildLabel(l10n.title, isDark),
+            _buildTextField(_titleController, l10n.exampleLunch, isDark),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildLabel(l10n.category),
+                _buildLabel(l10n.category, isDark),
                 IconButton(
                   icon: const Icon(Icons.add_circle_outline, color: Color(0xFF0D9488), size: 22),
                   onPressed: () {
@@ -267,21 +268,21 @@ class _AddExpensePageState extends State<AddExpensePage> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFF0D9488) : Colors.white,
+                      color: isSelected ? const Color(0xFF0D9488) : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: isSelected ? const Color(0xFF0D9488) : const Color(0xFFE2E8F0), width: 1.5),
+                      border: Border.all(color: isSelected ? const Color(0xFF0D9488) : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)), width: 1.5),
                     ),
                     child: Text(
                       displayTitle,
-                      style: TextStyle(color: isSelected ? Colors.white : const Color(0xFF475569), fontWeight: FontWeight.bold, fontSize: 14),
+                      style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.white70 : const Color(0xFF475569)), fontWeight: FontWeight.bold, fontSize: 14),
                     ),
                   ),
                 );
               }).toList(),
             ),
             const SizedBox(height: 24),
-            _buildLabel(l10n.description),
-            _buildTextField(_descController, l10n.addDescription, maxLines: 3),
+            _buildLabel(l10n.description, isDark),
+            _buildTextField(_descController, l10n.addDescription, isDark, maxLines: 3),
             const SizedBox(height: 40),
           ],
         ),
@@ -306,28 +307,29 @@ class _AddExpensePageState extends State<AddExpensePage> {
     );
   }
 
-  Widget _buildLabel(String text) {
+  Widget _buildLabel(String text, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
-      child: Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1E293B))),
+      child: Text(text, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: isDark ? Colors.white : const Color(0xFF1E293B))),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, {int maxLines = 1}) {
+  Widget _buildTextField(TextEditingController controller, String hint, bool isDark, {int maxLines = 1}) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
       ),
       child: TextField(
         controller: controller,
         maxLines: maxLines,
+        style: TextStyle(color: isDark ? Colors.white : Colors.black),
         decoration: InputDecoration(
           hintText: hint,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 16),
+          hintStyle: TextStyle(color: isDark ? Colors.white38 : const Color(0xFF94A3B8), fontSize: 16),
         ),
       ),
     );

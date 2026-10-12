@@ -75,6 +75,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     int strengthCount = [
       has8Chars,
       hasUppercase,
@@ -83,16 +84,20 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     ].where((e) => e).length;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text(
           l10n.changePassword,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: isDark ? Colors.white : Colors.black,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),
@@ -120,20 +125,22 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildLabel(l10n.currentPassword),
+                _buildLabel(l10n.currentPassword, isDark),
                 _buildField(
                   _oldPasswordController,
                   _oldVisible,
                   (val) => setState(() => _oldVisible = !val),
+                  isDark: isDark,
                 ),
                 const SizedBox(height: 24),
 
-                _buildLabel(l10n.newPassword),
+                _buildLabel(l10n.newPassword, isDark),
                 _buildField(
                   _newPasswordController,
                   _newVisible,
                   (val) => setState(() => _newVisible = !val),
                   isNew: true,
+                  isDark: isDark,
                 ),
                 const SizedBox(height: 12),
 
@@ -148,7 +155,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         decoration: BoxDecoration(
                           color: index < strengthCount
                               ? const Color(0xFF0D9488)
-                              : const Color(0xFFE2E8F0),
+                              : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -163,26 +170,27 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   style: TextStyle(
                     color: strengthCount == 4
                         ? const Color(0xFF0D9488)
-                        : Colors.grey,
+                        : (isDark ? Colors.white60 : Colors.grey),
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 24),
 
-                _buildLabel(l10n.confirmPassword),
+                _buildLabel(l10n.confirmPassword, isDark),
                 _buildField(
                   _confirmPasswordController,
                   _confirmVisible,
                   (val) => setState(() => _confirmVisible = !val),
                   hint: "Yangi parolni qayta kiriting",
+                  isDark: isDark,
                 ),
 
                 const SizedBox(height: 32),
-                _buildRequirement(l10n.min8Chars, has8Chars),
-                _buildRequirement(l10n.uppercase, hasUppercase),
-                _buildRequirement(l10n.digit, hasDigits),
-                _buildRequirement(l10n.specialChar, hasSpecial),
+                _buildRequirement(l10n.min8Chars, has8Chars, isDark),
+                _buildRequirement(l10n.uppercase, hasUppercase, isDark),
+                _buildRequirement(l10n.digit, hasDigits, isDark),
+                _buildRequirement(l10n.specialChar, hasSpecial, isDark),
 
                 const SizedBox(height: 48),
                 ElevatedButton(
@@ -214,15 +222,15 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 
-  Widget _buildLabel(String text) {
+  Widget _buildLabel(String text, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF1E293B),
+          color: isDark ? Colors.white : const Color(0xFF1E293B),
         ),
       ),
     );
@@ -234,23 +242,27 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     Function(bool) toggle, {
     bool isNew = false,
     String? hint,
+    required bool isDark,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isNew && controller.text.isNotEmpty
               ? const Color(0xFF0D9488)
-              : const Color(0xFFE2E8F0),
+              : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
         ),
       ),
       child: TextField(
         controller: controller,
         obscureText: !visible,
+        style: TextStyle(color: isDark ? Colors.white : Colors.black),
         decoration: InputDecoration(
           hintText: hint ?? "********",
-          hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+          hintStyle: TextStyle(
+            color: isDark ? Colors.white38 : const Color(0xFF94A3B8),
+          ),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 20,
             vertical: 20,
@@ -259,7 +271,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           suffixIcon: IconButton(
             icon: Icon(
               visible ? Icons.visibility : Icons.visibility_off,
-              color: const Color(0xFF94A3B8),
+              color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
             ),
             onPressed: () => toggle(visible),
           ),
@@ -268,7 +280,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 
-  Widget _buildRequirement(String text, bool isMet) {
+  Widget _buildRequirement(String text, bool isMet, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Row(
@@ -276,13 +288,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           Icon(
             Icons.check,
             size: 20,
-            color: isMet ? const Color(0xFF0D9488) : const Color(0xFF94A3B8),
+            color: isMet
+                ? const Color(0xFF0D9488)
+                : (isDark ? Colors.white38 : const Color(0xFF94A3B8)),
           ),
           const SizedBox(width: 12),
           Text(
             text,
             style: TextStyle(
-              color: isMet ? const Color(0xFF1E293B) : const Color(0xFF94A3B8),
+              color: isMet
+                  ? (isDark ? Colors.white : const Color(0xFF1E293B))
+                  : (isDark ? Colors.white38 : const Color(0xFF94A3B8)),
               fontSize: 14,
               fontWeight: isMet ? FontWeight.bold : FontWeight.normal,
             ),

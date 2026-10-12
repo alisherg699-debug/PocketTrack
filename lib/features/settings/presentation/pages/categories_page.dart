@@ -53,31 +53,15 @@ class _CategoriesPageState extends State<CategoriesPage> {
               .toList();
         });
       } else {
-        if (mounted) {
-          final l10n = AppLocalizations.of(context)!;
-          _setInitialCategories(l10n);
-        }
+        setState(() {
+          categories = [];
+        });
       }
     } catch (e) {
-      if (mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        _setInitialCategories(l10n);
-      }
+      setState(() {
+        categories = [];
+      });
     }
-  }
-
-  void _setInitialCategories(AppLocalizations l10n) {
-    setState(() {
-      categories = [
-        CategoryItem(title: l10n.food, emoji: '🍕'),
-        CategoryItem(title: l10n.transport, emoji: '🚗'),
-        CategoryItem(title: l10n.shopping, emoji: '🛍️'),
-        CategoryItem(title: l10n.payments, emoji: '💳'),
-        CategoryItem(title: l10n.health, emoji: '❤️'),
-        CategoryItem(title: l10n.other, emoji: '📁'),
-      ];
-    });
-    _saveCategories();
   }
 
   Future<void> _saveCategories() async {
@@ -92,7 +76,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
     );
   }
 
-  void _addOrUpdateCategory({int? index}) {
+  void _addOrUpdateCategory(BuildContext dialogContext, {int? index}) {
     if (_categoryController.text.isNotEmpty) {
       setState(() {
         final newItem = CategoryItem(
@@ -109,43 +93,59 @@ class _CategoriesPageState extends State<CategoriesPage> {
         selectedEmoji = '🍕';
       });
       _saveCategories();
-      Navigator.pop(context);
+      Navigator.pop(dialogContext);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           l10n.categories,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : const Color(0xFF1E293B)),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(20),
-        itemCount: categories.length,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final item = categories[index];
-          return _buildCategoryCard(item, index);
-        },
-      ),
+      body: categories.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.category_outlined, size: 64, color: Colors.grey.withValues(alpha: 0.5)),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.noData,
+                    style: TextStyle(color: isDark ? Colors.white70 : const Color(0xFF64748B), fontSize: 16),
+                  ),
+                ],
+              ),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.all(20),
+              itemCount: categories.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final item = categories[index];
+                return _buildCategoryCard(item, index, isDark);
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           selectedEmoji = '🍕';
           _emojiController.text = '🍕';
-          _showCategoryDialog();
+          _showCategoryDialog(isDark: isDark);
         },
         backgroundColor: const Color(0xFF064E3B),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -195,27 +195,27 @@ class _CategoriesPageState extends State<CategoriesPage> {
     return cat;
   }
 
-  Widget _buildCategoryCard(CategoryItem item, int index) {
+  Widget _buildCategoryCard(CategoryItem item, int index, bool isDark) {
     final l10n = AppLocalizations.of(context)!;
     final displayTitle = _getLocalizedCategoryName(item.title, l10n);
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
       ),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFF0D9488).withValues(alpha: 0.05),
+            color: isDark ? const Color(0xFF0F172A) : const Color(0xFF0D9488).withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(item.emoji, style: const TextStyle(fontSize: 22)),
         ),
         title: Text(
           displayTitle,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF1E293B)),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -225,7 +225,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
               onPressed: () {
                 selectedEmoji = item.emoji;
                 _emojiController.text = item.emoji;
-                _showCategoryDialog(index: index, initialValue: item.title, initialEmoji: item.emoji);
+                _showCategoryDialog(index: index, initialValue: item.title, initialEmoji: item.emoji, isDark: isDark);
               },
             ),
             IconButton(
@@ -243,15 +243,15 @@ class _CategoriesPageState extends State<CategoriesPage> {
     );
   }
 
-  void _showCategoryDialog({int? index, String? initialValue, String? initialEmoji}) {
+  void _showCategoryDialog({int? index, String? initialValue, String? initialEmoji, required bool isDark}) {
     final l10n = AppLocalizations.of(context)!;
     _categoryController.text = initialValue ?? "";
     _emojiController.text = initialEmoji ?? selectedEmoji;
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
+      builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: Colors.white,
+          backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
@@ -263,7 +263,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0FDFA),
+                  color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDFA),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.category_outlined, color: Color(0xFF0D9488), size: 22),
@@ -272,7 +272,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
               Expanded(
                 child: Text(
                   index == null ? l10n.newCategory : l10n.editCategory,
-                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B)),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -291,7 +291,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       width: 56,
                       height: 56,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF0FDFA),
+                        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDFA),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: const Color(0xFF0D9488), width: 1.5),
                       ),
@@ -317,12 +317,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       child: TextField(
                         controller: _categoryController,
                         autofocus: true,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF1E293B)),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: isDark ? Colors.white : const Color(0xFF1E293B)),
                         decoration: InputDecoration(
                           hintText: l10n.categoryName,
-                          hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+                          hintStyle: TextStyle(color: isDark ? Colors.white38 : const Color(0xFF94A3B8)),
                           filled: true,
-                          fillColor: const Color(0xFFF8FAFC),
+                          fillColor: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -330,7 +330,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                            borderSide: BorderSide(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -344,56 +344,52 @@ class _CategoriesPageState extends State<CategoriesPage> {
                 const SizedBox(height: 24),
                 Text(
                   l10n.selectIcon,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF475569)),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white70 : const Color(0xFF475569)),
                 ),
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
+                    color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                   ),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                    ),
-                    itemCount: emojiOptions.length,
-                    itemBuilder: (context, i) {
-                      bool isSel = selectedEmoji == emojiOptions[i];
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: emojiOptions.map((emoji) {
+                      bool isSel = selectedEmoji == emoji;
                       return GestureDetector(
                         onTap: () {
                           setDialogState(() {
-                            selectedEmoji = emojiOptions[i];
-                            _emojiController.text = emojiOptions[i];
+                            selectedEmoji = emoji;
+                            _emojiController.text = emoji;
                           });
                           setState(() {
-                            selectedEmoji = emojiOptions[i];
-                            _emojiController.text = emojiOptions[i];
+                            selectedEmoji = emoji;
+                            _emojiController.text = emoji;
                           });
                         },
                         child: Container(
+                          width: 44,
+                          height: 44,
                           decoration: BoxDecoration(
-                            color: isSel ? const Color(0xFF0D9488).withValues(alpha: 0.15) : Colors.white,
+                            color: isSel ? const Color(0xFF0D9488).withValues(alpha: 0.15) : (isDark ? const Color(0xFF1E293B) : Colors.white),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: isSel ? const Color(0xFF0D9488) : const Color(0xFFE2E8F0),
+                              color: isSel ? const Color(0xFF0D9488) : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                               width: isSel ? 2 : 1,
                             ),
                           ),
                           child: Center(
                             child: Text(
-                              emojiOptions[i],
+                              emoji,
                               style: const TextStyle(fontSize: 22),
                             ),
                           ),
                         ),
                       );
-                    },
+                    }).toList(),
                   ),
                 ),
               ],
@@ -404,12 +400,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
               children: [
                 Expanded(
                   child: TextButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.pop(dialogContext),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     ),
-                    child: Text(l10n.cancel, style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: Text(l10n.cancel, style: TextStyle(color: isDark ? Colors.white70 : const Color(0xFF64748B), fontWeight: FontWeight.bold, fontSize: 16)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -422,7 +418,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       elevation: 0,
                     ),
-                    onPressed: () => _addOrUpdateCategory(index: index),
+                    onPressed: () => _addOrUpdateCategory(dialogContext, index: index),
                     child: Text(l10n.save, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   ),
                 ),

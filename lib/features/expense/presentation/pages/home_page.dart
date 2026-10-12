@@ -36,6 +36,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final List<Widget> pages = [
       _HomeContent(onSeeAllPressed: () => setState(() => _currentIndex = 1)),
       const ExpensePage(),
@@ -43,7 +45,7 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: pages[_currentIndex],
       floatingActionButton: _currentIndex == 0
           ? BlocBuilder<ExpenseBloc, ExpenseState>(
@@ -57,7 +59,7 @@ class _HomePageState extends State<HomePage> {
 
                   if (hasTodayExpenses) {
                     return FloatingActionButton(
-                      onPressed: () => showAddExpenseOptions(context),
+                      onPressed: () => showAddExpenseOptions(context, isDark),
                       backgroundColor: const Color(0xFF0D9488),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -74,7 +76,8 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
         selectedItemColor: const Color(0xFF0D9488),
-        unselectedItemColor: const Color(0xFF94A3B8),
+        unselectedItemColor: isDark ? Colors.white60 : const Color(0xFF94A3B8),
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
         items: [
@@ -98,12 +101,12 @@ class _HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderAvatar(String? path) {
+  Widget _buildHeaderAvatar(String? path, bool isDark) {
     Widget fallbackIcon = Container(
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: const Color(0xFFE6F4F1),
+        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE6F4F1),
         shape: BoxShape.circle,
         border: Border.all(
           color: const Color(0xFF0D9488).withValues(alpha: 0.2),
@@ -176,7 +179,6 @@ class _HomeContent extends StatelessWidget {
     );
   }
 
-  // DINAMIK SALOMLASHISH
   String _getGreeting(AppLocalizations l10n) {
     final hour = DateTime.now().hour;
     if (hour >= 5 && hour < 12) return l10n.goodMorning;
@@ -189,6 +191,8 @@ class _HomeContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currencySymbol = context.watch<SettingsCubit>().state.currency;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, authState) {
         final user = authState.maybeWhen(
@@ -215,9 +219,8 @@ class _HomeContent extends StatelessWidget {
             return SafeArea(
               child: Column(
                 children: [
-                  // 1. QOTIB TURUVCHI, UMUMAN QIMIRLAMAYDIGAN STATIK YUQORI APPBAR
                   Container(
-                    color: const Color(0xFFF8FAFC),
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -226,16 +229,15 @@ class _HomeContent extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(_getGreeting(l10n), style: const TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                            Text(userName, style: const TextStyle(color: Color(0xFF1E293B), fontSize: 20, fontWeight: FontWeight.bold)),
+                            Text(_getGreeting(l10n), style: TextStyle(color: isDark ? Colors.white70 : const Color(0xFF64748B), fontSize: 13)),
+                            Text(userName, style: TextStyle(color: isDark ? Colors.white : const Color(0xFF1E293B), fontSize: 20, fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        _buildHeaderAvatar(user?.image),
+                        _buildHeaderAvatar(user?.image, isDark),
                       ],
                     ),
                   ),
 
-                  // 2. PASTDAGI MA'LUMOTLAR SCROLL BO'LIB SHU APPBAR TAGIGA KIRIB KETADI
                   Expanded(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -247,7 +249,7 @@ class _HomeContent extends StatelessWidget {
                             width: double.infinity,
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: isError ? const Color(0xFF94A3B8) : const Color(0xFF0D9488),
+                              color: isError ? (isDark ? const Color(0xFF334155) : const Color(0xFF94A3B8)) : const Color(0xFF0D9488),
                               borderRadius: BorderRadius.circular(24),
                             ),
                             child: Column(
@@ -281,13 +283,13 @@ class _HomeContent extends StatelessWidget {
                           if (state is ExpenseLoading)
                             const Padding(padding: EdgeInsets.only(top: 100), child: Center(child: CircularProgressIndicator()))
                           else if (isError)
-                            _buildErrorState(context, l10n)
+                            _buildErrorState(context, l10n, isDark)
                           else if (allExpenses.isEmpty)
-                            _buildEmptyState(context, l10n, isNewUser: true)
+                            _buildEmptyState(context, l10n, isNewUser: true, isDark: isDark)
                           else if (todayExpenses.isEmpty)
-                            _buildEmptyState(context, l10n, isNewUser: false)
+                            _buildEmptyState(context, l10n, isNewUser: false, isDark: isDark)
                           else
-                            _buildExpensesList(todayExpenses, l10n),
+                            _buildExpensesList(context, todayExpenses, l10n, isDark),
 
                           const SizedBox(height: 100),
                         ],
@@ -303,18 +305,18 @@ class _HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, AppLocalizations l10n) {
+  Widget _buildErrorState(BuildContext context, AppLocalizations l10n, bool isDark) {
     return Center(
       child: Column(
         children: [
           const SizedBox(height: 40),
           Container(
             padding: const EdgeInsets.all(30),
-            decoration: const BoxDecoration(color: Color(0xFFFEF2F2), shape: BoxShape.circle),
+            decoration: BoxDecoration(color: isDark ? const Color(0xFF1E1B1B) : const Color(0xFFFEF2F2), shape: BoxShape.circle),
             child: const Icon(Icons.error_outline, color: Colors.red, size: 40),
           ),
           const SizedBox(height: 24),
-          Text(l10n.errorOccurred, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(l10n.errorOccurred, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black)),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () => context.read<ExpenseBloc>().add(GetExpenses()),
@@ -325,7 +327,7 @@ class _HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n, {required bool isNewUser}) {
+  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n, {required bool isNewUser, required bool isDark}) {
     return Center(
       child: Column(
         children: [
@@ -338,14 +340,14 @@ class _HomeContent extends StatelessWidget {
             ),
             padding: const EdgeInsets.all(20),
             child: Container(
-              decoration: const BoxDecoration(color: Color(0xFFF0FDFA), shape: BoxShape.circle),
+              decoration: BoxDecoration(color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDFA), shape: BoxShape.circle),
               child: const Icon(Icons.account_balance_wallet_outlined, color: Color(0xFF0D9488), size: 40),
             ),
           ),
           const SizedBox(height: 32),
           Text(
             isNewUser ? l10n.noExpensesYet : l10n.noExpensesToday,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B)),
           ),
           const SizedBox(height: 12),
           Padding(
@@ -355,12 +357,12 @@ class _HomeContent extends StatelessWidget {
                 ? l10n.addFirstExpense
                 : l10n.addTodayFirstExpense,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Color(0xFF64748B), fontSize: 14, height: 1.5),
+              style: TextStyle(color: isDark ? Colors.white70 : const Color(0xFF64748B), fontSize: 14, height: 1.5),
             ),
           ),
           const SizedBox(height: 32),
           ElevatedButton(
-            onPressed: () => showAddExpenseOptions(context),
+            onPressed: () => showAddExpenseOptions(context, isDark),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0D9488),
               foregroundColor: Colors.white,
@@ -375,14 +377,14 @@ class _HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildExpensesList(List<Expense> expenses, AppLocalizations l10n) {
+  Widget _buildExpensesList(BuildContext context, List<Expense> expenses, AppLocalizations l10n, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(l10n.todayOperations, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+            Text(l10n.todayOperations, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B))),
             TextButton(
               onPressed: onSeeAllPressed,
               child: Text(l10n.seeAll, style: const TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.w600)),
@@ -399,7 +401,7 @@ class _HomeContent extends StatelessWidget {
             final expense = expenses[index];
             return GestureDetector(
               onTap: () { Navigator.push(context, MaterialPageRoute(builder: (context) => ExpenseDetailsPage(expense: expense))); },
-              child: _ExpenseItem(expense: expense, formatCurrency: _formatCurrency, l10n: l10n),
+              child: _ExpenseItem(expense: expense, formatCurrency: _formatCurrency, l10n: l10n, isDark: isDark),
             );
           },
         ),
@@ -408,12 +410,12 @@ class _HomeContent extends StatelessWidget {
   }
 }
 
-
 class _ExpenseItem extends StatelessWidget {
   final Expense expense;
   final String Function(double) formatCurrency;
   final AppLocalizations l10n;
-  const _ExpenseItem({required this.expense, required this.formatCurrency, required this.l10n});
+  final bool isDark;
+  const _ExpenseItem({required this.expense, required this.formatCurrency, required this.l10n, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -423,12 +425,19 @@ class _ExpenseItem extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xFFF1F5F9))),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
+      ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(16)),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Text(emoji, style: const TextStyle(fontSize: 22)),
           ),
           const SizedBox(width: 16),
@@ -436,23 +445,23 @@ class _ExpenseItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(expense.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))),
+                Text(expense.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF1E293B))),
                 const SizedBox(height: 4),
                 Text("$localizedCategory  •  ${DateFormat('hh:mm a').format(expense.date)}", style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13)),
               ],
             ),
           ),
-          Text("- ${formatCurrency(expense.amount)} $currencySymbol", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))),
+          Text("- ${formatCurrency(expense.amount)} $currencySymbol", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF1E293B))),
         ],
       ),
     );
   }
 }
 
-void showAddExpenseOptions(BuildContext context) {
+void showAddExpenseOptions(BuildContext context, bool isDark) {
   showModalBottomSheet(
     context: context,
-    backgroundColor: Colors.white,
+    backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
     ),
@@ -465,14 +474,14 @@ void showAddExpenseOptions(BuildContext context) {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: const Color(0xFFCBD5E1),
+              color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             "Xarajat qo'shish usuli",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B)),
           ),
           const SizedBox(height: 20),
           _buildOptionTile(
@@ -480,6 +489,7 @@ void showAddExpenseOptions(BuildContext context) {
             icon: Icons.edit_note_rounded,
             title: "Qo'lda kiritish",
             subtitle: "Xarajat ma'lumotlarini o'zingiz kiriting",
+            isDark: isDark,
             onTap: () {
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (context) => const AddExpensePage()));
@@ -491,6 +501,7 @@ void showAddExpenseOptions(BuildContext context) {
             icon: Icons.document_scanner_outlined,
             title: "Chekni skanerlash",
             subtitle: "Kamera yordamida chekni avtomatik o'qing",
+            isDark: isDark,
             onTap: () {
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (context) => const ReceiptScannerPage()));
@@ -502,16 +513,16 @@ void showAddExpenseOptions(BuildContext context) {
   );
 }
 
-Widget _buildOptionTile(BuildContext context, {required IconData icon, required String title, required String subtitle, required VoidCallback onTap}) {
+Widget _buildOptionTile(BuildContext context, {required IconData icon, required String title, required String subtitle, required bool isDark, required VoidCallback onTap}) {
   return InkWell(
     onTap: onTap,
     borderRadius: BorderRadius.circular(16),
     child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
       ),
       child: Row(
         children: [
@@ -528,9 +539,9 @@ Widget _buildOptionTile(BuildContext context, {required IconData icon, required 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))),
+                Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF1E293B))),
                 const SizedBox(height: 2),
-                Text(subtitle, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                Text(subtitle, style: TextStyle(fontSize: 13, color: isDark ? Colors.white70 : const Color(0xFF64748B))),
               ],
             ),
           ),

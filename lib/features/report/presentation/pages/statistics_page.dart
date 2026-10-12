@@ -12,7 +12,6 @@ import 'package:pockettrack/core/utils/category_helper.dart';
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({super.key});
 
-
   String _formatCurrency(double amount) {
     return amount.toStringAsFixed(0).replaceAllMapped(
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
@@ -23,15 +22,17 @@ class StatisticsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(l10n.statistics,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : const Color(0xFF1E293B))),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),
@@ -49,12 +50,12 @@ class StatisticsPage extends StatelessWidget {
             icon: Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.compare_arrows_rounded,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
                 size: 22,
               ),
             ),
@@ -71,12 +72,12 @@ class StatisticsPage extends StatelessWidget {
             icon: Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.pie_chart_outline_rounded,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
                 size: 22,
               ),
             ),
@@ -86,8 +87,9 @@ class StatisticsPage extends StatelessWidget {
       ),
       body: BlocBuilder<ExpenseBloc, ExpenseState>(
         builder: (context, state) {
-          if (state is ExpenseLoading)
+          if (state is ExpenseLoading) {
             return const Center(child: CircularProgressIndicator());
+          }
           if (state is ExpenseLoaded) {
             final expenses = state.expenses;
             final totalAmount =
@@ -99,17 +101,17 @@ class StatisticsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildWeeklyChartCard(weeklyData, totalAmount),
+                  _buildWeeklyChartCard(context, weeklyData, totalAmount, isDark),
                   const SizedBox(height: 32),
                   Text(
                     l10n.categoriesTitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B)),
+                        color: isDark ? Colors.white : const Color(0xFF1E293B)),
                   ),
                   const SizedBox(height: 16),
-                  ..._buildCategoryList(expenses, totalAmount),
+                  ..._buildCategoryList(context, expenses, totalAmount, isDark),
                 ],
               ),
             );
@@ -120,14 +122,14 @@ class StatisticsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildWeeklyChartCard(List<double> data, double total) {
+  Widget _buildWeeklyChartCard(BuildContext context, List<double> data, double total, bool isDark) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,11 +137,11 @@ class StatisticsPage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Haftalik sarf-xarajat",
+              Text("Haftalik sarf-xarajat",
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B))),
+                      color: isDark ? Colors.white : const Color(0xFF1E293B))),
               Text("Jami: ${_formatCurrency(total)} so'm",
                   style: const TextStyle(
                       fontSize: 14,
@@ -175,8 +177,8 @@ class StatisticsPage extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(days[value.toInt() % 7],
-                              style: const TextStyle(
-                                  color: Color(0xFF94A3B8),
+                              style: TextStyle(
+                                  color: isDark ? Colors.white70 : const Color(0xFF94A3B8),
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold)),
                         );
@@ -213,7 +215,7 @@ class StatisticsPage extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildCategoryList(List<Expense> expenses, double total) {
+  List<Widget> _buildCategoryList(BuildContext context, List<Expense> expenses, double total, bool isDark) {
     Map<String, double> categorySums = {};
     for (var e in expenses) {
       categorySums[e.category] = (categorySums[e.category] ?? 0) + e.amount;
@@ -222,27 +224,31 @@ class StatisticsPage extends StatelessWidget {
     return categorySums.entries.map((entry) {
       double percent = total > 0 ? (entry.value / total) : 0;
       return _buildCategoryItem(
+        context: context,
         emoji: CategoryHelper.getEmojiForCategory(entry.key),
         title: entry.key,
         percent: percent,
         amount: entry.value,
+        isDark: isDark,
       );
     }).toList();
   }
 
   Widget _buildCategoryItem({
+    required BuildContext context,
     required String emoji,
     required String title,
     required double percent,
     required double amount,
+    required bool isDark,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
       ),
       child: Column(
         children: [
@@ -251,27 +257,27 @@ class StatisticsPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                    color: const Color(0xFFF0FDFA),
+                    color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDFA),
                     borderRadius: BorderRadius.circular(12)),
                 child: Text(emoji, style: const TextStyle(fontSize: 20)),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(title,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF1E293B))),
+                        color: isDark ? Colors.white : const Color(0xFF1E293B))),
               ),
               Text("${(percent * 100).toInt()}%",
                   style:
-                      const TextStyle(color: Color(0xFF94A3B8), fontSize: 13)),
+                      TextStyle(color: isDark ? Colors.white70 : const Color(0xFF94A3B8), fontSize: 13)),
               const SizedBox(width: 12),
               Text("${_formatCurrency(amount)} so'm",
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B))),
+                      color: isDark ? Colors.white : const Color(0xFF1E293B))),
             ],
           ),
           const SizedBox(height: 12),
@@ -279,7 +285,7 @@ class StatisticsPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
               value: percent,
-              backgroundColor: const Color(0xFFF1F5F9),
+              backgroundColor: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9),
               valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF0D9488)),
               minHeight: 6,
             ),

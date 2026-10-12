@@ -56,12 +56,12 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     }
   }
 
-  Widget _buildAvatarWidget(String? path) {
+  Widget _buildAvatarWidget(String? path, bool isDark) {
     Widget fallbackIcon = Container(
       width: 100,
       height: 100,
       decoration: BoxDecoration(
-        color: const Color(0xFFE6F4F1),
+        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE6F4F1),
         shape: BoxShape.circle,
         border: Border.all(
           color: const Color(0xFF0D9488).withValues(alpha: 0.2),
@@ -85,7 +85,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         height: 100,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+          border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0), width: 2),
         ),
         child: ClipOval(
           child: Image.network(
@@ -105,7 +105,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         height: 100,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+          border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0), width: 2),
         ),
         child: ClipOval(
           child: Image.asset(
@@ -129,7 +129,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
       height: 100,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0), width: 2),
       ),
       child: ClipOval(
         child: Image.file(
@@ -146,6 +146,8 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         final l10n = AppLocalizations.of(context)!;
@@ -172,20 +174,25 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         );
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8FAFC),
-          appBar: AppBar(title: Text(l10n.accountSettings)),
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          appBar: AppBar(
+            title: Text(l10n.accountSettings, style: TextStyle(color: isDark ? Colors.white : const Color(0xFF1E293B))),
+            backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+            foregroundColor: isDark ? Colors.white : Colors.black,
+            elevation: 0,
+          ),
           body: SingleChildScrollView(
             child: Column(
               children: [
                 Container(
                   width: double.infinity,
-                  color: Colors.white,
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 24),
                   child: Column(
                     children: [
                       Stack(
                         children: [
-                          _buildAvatarWidget(_imagePath),
+                          _buildAvatarWidget(_imagePath, isDark),
                           Positioned(
                             bottom: 0,
                             right: 0,
@@ -227,12 +234,14 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                       _buildInputField(
                         label: l10n.fullName,
                         controller: _nameController,
+                        isDark: isDark,
                       ),
                       const SizedBox(height: 20),
                       _buildInputField(
                         label: l10n.email,
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
+                        isDark: isDark,
                       ),
                       const SizedBox(height: 20),
                       _buildInputField(
@@ -240,11 +249,13 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
                         inputFormatters: [PhoneNumberInputFormatter()],
+                        isDark: isDark,
                       ),
                       const SizedBox(height: 20),
                       _buildInputField(
                         label: l10n.currency,
                         controller: _currencyController,
+                        isDark: isDark,
                       ),
                     ],
                   ),
@@ -305,30 +316,32 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
     List<TextInputFormatter>? inputFormatters,
+    required bool isDark,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF1E293B),
+            color: isDark ? Colors.white : const Color(0xFF1E293B),
           ),
         ),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
           ),
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
             inputFormatters: inputFormatters,
+            style: TextStyle(color: isDark ? Colors.white : Colors.black),
             decoration: const InputDecoration(border: InputBorder.none),
           ),
         ),

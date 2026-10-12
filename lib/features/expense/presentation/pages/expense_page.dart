@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,7 +8,6 @@ import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/expense/presentation/pages/expense_details_page.dart';
 import 'package:pockettrack/features/report/presentation/pages/statistics_page.dart';
 import 'package:pockettrack/features/settings/presentation/pages/budget_page.dart';
-import 'package:pockettrack/core/utils/currency_formatter.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'package:pockettrack/core/utils/category_helper.dart';
 import 'package:pockettrack/features/settings/application/settings_cubit.dart';
@@ -71,17 +69,19 @@ class _ExpensePageState extends State<ExpensePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final currencySymbol = context.watch<SettingsCubit>().state.currency;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           l10n.expenses,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black),
         ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         actions: [
           IconButton(
             onPressed: () {
@@ -93,12 +93,12 @@ class _ExpensePageState extends State<ExpensePage> {
             icon: Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.tune_rounded,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
                 size: 22,
               ),
             ),
@@ -137,9 +137,9 @@ class _ExpensePageState extends State<ExpensePage> {
                 children: [
                   _buildLimitCard(totalAmount, monthlyLimit, percent, currencySymbol),
                   const SizedBox(height: 24),
-                  _buildSearchBar(l10n),
+                  _buildSearchBar(l10n, isDark),
                   const SizedBox(height: 24),
-                  _buildFilters(l10n),
+                  _buildFilters(l10n, isDark),
                   const SizedBox(height: 28),
                   if (_isLoadingFilter)
                     const SizedBox(
@@ -170,10 +170,10 @@ class _ExpensePageState extends State<ExpensePage> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildSectionTitle(entry.key),
+                          _buildSectionTitle(entry.key, isDark),
                           const SizedBox(height: 12),
                           ...entry.value
-                              .map((e) => _buildExpenseItem(e, l10n, currencySymbol))
+                              .map((e) => _buildExpenseItem(e, l10n, currencySymbol, isDark))
                               .toList(),
                           const SizedBox(height: 16),
                         ],
@@ -189,20 +189,22 @@ class _ExpensePageState extends State<ExpensePage> {
     );
   }
 
-  Widget _buildSearchBar(AppLocalizations l10n) {
+  Widget _buildSearchBar(AppLocalizations l10n, bool isDark) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
+              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
               blurRadius: 10,
               offset: const Offset(0, 4)),
         ],
       ),
       child: TextField(
         controller: _searchController,
+        style: TextStyle(color: isDark ? Colors.white : Colors.black),
         decoration: InputDecoration(
           hintText: l10n.search,
           hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 15),
@@ -299,131 +301,44 @@ class _ExpensePageState extends State<ExpensePage> {
 
   void _showSetLimitDialog(String currencySymbol) {
     final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController(
-      text: monthlyLimit > 0 ? ThousandsSeparatorInputFormatter.format(monthlyLimit) : "",
-    );
+    final TextEditingController controller = TextEditingController(text: monthlyLimit.toStringAsFixed(0));
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFFF8FAFC),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ICON BOX
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                  )
-                ],
-              ),
-              child: const Icon(
-                Icons.money,
-                color: Color(0xFF0D9488),
-                size: 28,
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              l10n.setMonthlyLimit,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF1E293B),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.budgetEditDesc,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Color(0xFF94A3B8),
-                fontSize: 14,
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 32),
-            // AMOUNT INPUT
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-              ),
-              child: TextField(
-                controller: controller,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9. ]')),
-                  ThousandsSeparatorInputFormatter(),
-                ],
-                decoration: InputDecoration(
-                  hintText: "Masalan: 2 000 000",
-                  suffixText: "$currencySymbol ",
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 18),
-                ),
-              ),
-            ),
-            const SizedBox(height: 40),
-            // BUTTONS
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      l10n.cancel,
-                      style: const TextStyle(
-                        color: Color(0xFF1E293B),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 3,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0D9488),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    onPressed: () async {
-                      if (controller.text.isNotEmpty) {
-                        final newLimit = double.tryParse(controller.text.replaceAll(' ', ''));
-                        if (newLimit != null) {
-                          await _saveLimit(newLimit);
-                        }
-                        if (context.mounted) Navigator.pop(context);
-                      }
-                    },
-                    child: Text(
-                      l10n.save,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(l10n.setMonthlyLimit),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: l10n.amount,
+            suffixText: currencySymbol,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+          ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0D9488),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () async {
+              if (controller.text.isNotEmpty) {
+                final newLimit = double.tryParse(controller.text.replaceAll(' ', ''));
+                if (newLimit != null) {
+                  await _saveLimit(newLimit);
+                }
+                if (context.mounted) Navigator.pop(context);
+              }
+            },
+            child: Text(l10n.save),
+          ),
+        ],
       ),
     );
   }
@@ -470,7 +385,7 @@ class _ExpensePageState extends State<ExpensePage> {
     return grouped;
   }
 
-  Widget _buildFilters(AppLocalizations l10n) {
+  Widget _buildFilters(AppLocalizations l10n, bool isDark) {
     final List<String> filters = [l10n.today, l10n.week, l10n.month, l10n.year];
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -493,23 +408,23 @@ class _ExpensePageState extends State<ExpensePage> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFF0D9488) : Colors.white,
+              color: isSelected ? const Color(0xFF0D9488) : Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: isSelected ? const Color(0xFF0D9488) : const Color(0xFFE2E8F0)),
+              border: Border.all(color: isSelected ? const Color(0xFF0D9488) : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
               boxShadow: isSelected ? [BoxShadow(color: const Color(0xFF0D9488).withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 4))] : [],
             ),
-            child: Text(f, style: TextStyle(color: isSelected ? Colors.white : const Color(0xFF64748B), fontWeight: FontWeight.bold, fontSize: 14)),
+            child: Text(f, style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.white70 : const Color(0xFF64748B)), fontWeight: FontWeight.bold, fontSize: 14)),
           ),
         );
       }).toList(),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)));
+  Widget _buildSectionTitle(String title, bool isDark) {
+    return Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B)));
   }
 
-  Widget _buildExpenseItem(Expense expense, AppLocalizations l10n, String currencySymbol) {
+  Widget _buildExpenseItem(Expense expense, AppLocalizations l10n, String currencySymbol, bool isDark) {
     final emoji = CategoryHelper.getEmojiForCategory(expense.category);
     final localizedCategory = CategoryHelper.getLocalizedName(expense.category, l10n);
 
@@ -518,13 +433,32 @@ class _ExpensePageState extends State<ExpensePage> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xFFF1F5F9))),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
+        ),
         child: Row(
           children: [
-            Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(16)), child: Text(emoji, style: const TextStyle(fontSize: 22))),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(emoji, style: const TextStyle(fontSize: 22)),
+            ),
             const SizedBox(width: 16),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(expense.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF1E293B))), Text("$localizedCategory  •  ${DateFormat('HH:mm').format(expense.date)}", style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13))])),
-            Text("- ${_formatCurrency(expense.amount)} $currencySymbol", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E293B))),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(expense.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF1E293B))),
+                  Text("$localizedCategory  •  ${DateFormat('HH:mm').format(expense.date)}", style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13)),
+                ],
+              ),
+            ),
+            Text("- ${_formatCurrency(expense.amount)} $currencySymbol", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : const Color(0xFF1E293B))),
           ],
         ),
       ),

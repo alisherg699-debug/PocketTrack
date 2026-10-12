@@ -7,17 +7,19 @@ class HelpSupportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           l10n.helpSupport,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : const Color(0xFF1E293B)),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),
@@ -30,38 +32,42 @@ class HelpSupportPage extends StatelessWidget {
           children: [
             Text(
               l10n.faqTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 16),
-            _buildFaqItem(l10n.faq1Question, l10n.faq1Answer),
-            _buildFaqItem(l10n.faq2Question, l10n.faq2Answer),
-            _buildFaqItem(l10n.faq3Question, l10n.faq3Answer),
+            _buildFaqItem(context, l10n.faq1Question, l10n.faq1Answer, isDark),
+            _buildFaqItem(context, l10n.faq2Question, l10n.faq2Answer, isDark),
+            _buildFaqItem(context, l10n.faq3Question, l10n.faq3Answer, isDark),
             const SizedBox(height: 32),
             Text(
               l10n.contactUs,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 16),
             _buildSupportButton(
+              context,
               icon: Icons.send_rounded,
               title: l10n.contactTelegram,
               color: const Color(0xFF0088CC),
               onTap: () {},
+              isDark: isDark,
             ),
             const SizedBox(height: 12),
             _buildSupportButton(
+              context,
               icon: Icons.email_outlined,
               title: l10n.contactEmail,
               color: const Color(0xFF0D9488),
               onTap: () {},
+              isDark: isDark,
             ),
           ],
         ),
@@ -69,21 +75,21 @@ class HelpSupportPage extends StatelessWidget {
     );
   }
 
-  Widget _buildFaqItem(String question, String answer) {
+  Widget _buildFaqItem(BuildContext context, String question, String answer, bool isDark) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
       ),
       child: ExpansionTile(
         title: Text(
           question,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 15,
-            color: Color(0xFF1E293B),
+            color: isDark ? Colors.white : const Color(0xFF1E293B),
           ),
         ),
         children: [
@@ -91,8 +97,8 @@ class HelpSupportPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             child: Text(
               answer,
-              style: const TextStyle(
-                color: Color(0xFF64748B),
+              style: TextStyle(
+                color: isDark ? Colors.white70 : const Color(0xFF64748B),
                 fontSize: 14,
                 height: 1.5,
               ),
@@ -103,20 +109,22 @@ class HelpSupportPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSupportButton({
+  Widget _buildSupportButton(
+    BuildContext context, {
     required IconData icon,
     required String title,
     required Color color,
     required VoidCallback onTap,
+    required bool isDark,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
+          border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
         ),
         child: Row(
           children: [
@@ -131,10 +139,10 @@ class HelpSupportPage extends StatelessWidget {
             const SizedBox(width: 16),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
               ),
             ),
           ],

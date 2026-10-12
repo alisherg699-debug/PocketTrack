@@ -46,9 +46,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final onboardingData = _getOnboardingData(l10n);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? const Color(0xFF0F172A) : Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -57,17 +58,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 controller: _pageController,
                 onPageChanged: (value) => setState(() => _currentPage = value),
                 itemCount: onboardingData.length,
-                itemBuilder: (context, index) => _buildPageContent(index, onboardingData),
+                itemBuilder: (context, index) => _buildPageContent(index, onboardingData, isDark),
               ),
             ),
-            _buildBottomSection(l10n, onboardingData),
+            _buildBottomSection(l10n, onboardingData, isDark),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPageContent(int index, List<Map<String, String>> onboardingData) {
+  Widget _buildPageContent(int index, List<Map<String, String>> onboardingData, bool isDark) {
     IconData iconData;
     switch (onboardingData[index]['icon']) {
       case 'wallet': iconData = Icons.account_balance_wallet_outlined; break;
@@ -84,8 +85,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 20),
           Container(
             width: 140, height: 140,
-            decoration: const BoxDecoration(
-              color: Color(0xFFF0FDFA),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF0FDFA),
               shape: BoxShape.circle,
             ),
             child: Icon(iconData, size: 56, color: const Color(0xFF0D9488)),
@@ -94,13 +95,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
           Text(
             onboardingData[index]['title']!,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : const Color(0xFF1E293B),
+            ),
           ),
           const SizedBox(height: 12),
           Text(
             onboardingData[index]['desc']!,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF64748B), height: 1.5),
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? Colors.white70 : const Color(0xFF64748B),
+              height: 1.5,
+            ),
           ),
           const SizedBox(height: 20),
         ],
@@ -108,7 +117,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     );
   }
 
-  Widget _buildBottomSection(AppLocalizations l10n, List<Map<String, String>> onboardingData) {
+  Widget _buildBottomSection(AppLocalizations l10n, List<Map<String, String>> onboardingData, bool isDark) {
     bool isLastPage = _currentPage == onboardingData.length - 1;
     
     return Padding(
@@ -119,7 +128,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               onboardingData.length,
-              (index) => _buildDot(index),
+              (index) => _buildDot(index, isDark),
             ),
           ),
           const SizedBox(height: 32),
@@ -152,7 +161,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
               onPressed: _completeOnboarding,
               child: Text(
                 l10n.skip,
-                style: const TextStyle(color: Color(0xFF94A3B8), fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  color: isDark ? Colors.white60 : const Color(0xFF94A3B8),
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             )
           else
@@ -162,7 +174,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     );
   }
 
-  Widget _buildDot(int index) {
+  Widget _buildDot(int index, bool isDark) {
     bool isActive = _currentPage == index;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -170,7 +182,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
       height: 8,
       width: isActive ? 24 : 8,
       decoration: BoxDecoration(
-        color: isActive ? const Color(0xFF0D9488) : const Color(0xFFE2E8F0),
+        color: isActive
+            ? const Color(0xFF0D9488)
+            : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
         borderRadius: BorderRadius.circular(4),
       ),
     );

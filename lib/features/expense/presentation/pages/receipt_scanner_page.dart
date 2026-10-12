@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'package:pockettrack/features/expense/presentation/pages/add_expense_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/receipt_review_page.dart';
 
@@ -17,7 +18,6 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
   Future<void> _pickImage(ImageSource source) async {
     final XFile? image = await _picker.pickImage(source: source);
     if (image != null && mounted) {
-      // Navigate to review page with scanned image path
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -29,6 +29,8 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -45,7 +47,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                       Icon(Icons.receipt_long, size: 80, color: Colors.white.withValues(alpha: 0.3)),
                       const SizedBox(height: 16),
                       Text(
-                        "Kamerani chekka qarating",
+                        l10n.pointCameraAtReceipt,
                         style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 16),
                       ),
                     ],
@@ -71,9 +73,9 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                       child: const Icon(Icons.close, color: Colors.white, size: 20),
                     ),
                   ),
-                  const Text(
-                    "Chekni skanerlash",
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  Text(
+                    l10n.scanReceipt,
+                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
                     onTap: () => setState(() => _isFlashOn = !_isFlashOn),
@@ -98,13 +100,13 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  "Chekni ramka ichiga joylang",
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                Text(
+                  l10n.alignReceiptInFrame,
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Matn tiniq ko'rinishi uchun telefonni tekis ushlang",
+                  l10n.holdPhoneSteady,
                   style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
                 ),
                 const SizedBox(height: 30),
@@ -118,7 +120,6 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                     ),
                     child: Stack(
                       children: [
-                        // Corner borders simulation
                         ..._buildCornerDecorations(),
                       ],
                     ),
@@ -158,12 +159,12 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                             ),
                           ],
                         ),
-                        child:  Center(
+                        child: Center(
                           child: Container(
                             width: 56,
                             height: 56,
                             decoration: BoxDecoration(
-                              color: Color(0xFF0D9488),
+                              color: const Color(0xFF0D9488),
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 2),
                             ),
@@ -172,9 +173,9 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      "Skanerlash imkoni bo'lmadi?",
-                      style: TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                    Text(
+                      l10n.unableToScan,
+                      style: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton.icon(
@@ -185,9 +186,9 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                         );
                       },
                       icon: const Icon(Icons.edit, color: Color(0xFF0D9488), size: 18),
-                      label: const Text(
-                        "Qo'lda kiritish",
-                        style: TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.bold, fontSize: 15),
+                      label: Text(
+                        l10n.manualEntry,
+                        style: const TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.bold, fontSize: 15),
                       ),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32),

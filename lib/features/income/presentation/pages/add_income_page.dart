@@ -94,19 +94,20 @@ class _AddIncomePageState extends State<AddIncomePage> {
     final l10n = AppLocalizations.of(context)!;
     final currencySymbol = context.watch<SettingsCubit>().state.currency;
     final categories = _getCategories(l10n);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: isDark ? Colors.white : Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           l10n.addIncome,
-          style: const TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(color: isDark ? Colors.white : const Color(0xFF1E293B), fontWeight: FontWeight.bold, fontSize: 18),
         ),
         centerTitle: true,
       ),
@@ -118,7 +119,7 @@ class _AddIncomePageState extends State<AddIncomePage> {
             Center(
               child: Text(
                 l10n.enterAmount.toUpperCase(),
-                style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1),
+                style: TextStyle(color: isDark ? Colors.white70 : const Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1),
               ),
             ),
             const SizedBox(height: 12),
@@ -134,10 +135,10 @@ class _AddIncomePageState extends State<AddIncomePage> {
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         autofocus: true,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                        style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B)),
                         decoration: InputDecoration(
                           hintText: "0",
-                          hintStyle: TextStyle(color: Colors.black.withValues(alpha: 0.1)),
+                          hintStyle: TextStyle(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1)),
                           border: InputBorder.none, 
                           isDense: true,
                         ),
@@ -157,21 +158,21 @@ class _AddIncomePageState extends State<AddIncomePage> {
               ),
             ),
             const SizedBox(height: 40),
-            _buildLabel(l10n.title),
-            _buildTextField(_nameController, l10n.exampleSalary),
+            _buildLabel(l10n.title, isDark),
+            _buildTextField(_nameController, l10n.exampleSalary, isDark),
             const SizedBox(height: 24),
-            _buildLabel(l10n.category),
+            _buildLabel(l10n.category, isDark),
             Wrap(
               spacing: 12,
               runSpacing: 12,
-              children: categories.map((cat) => _buildCategoryChip(cat)).toList(),
+              children: categories.map((cat) => _buildCategoryChip(cat, isDark)).toList(),
             ),
             const SizedBox(height: 24),
-            _buildLabel(l10n.description),
-            _buildTextField(_descController, l10n.addDescription, maxLines: 3),
+            _buildLabel(l10n.description, isDark),
+            _buildTextField(_descController, l10n.addDescription, isDark, maxLines: 3),
             const SizedBox(height: 24),
-            _buildLabel(l10n.date),
-            _buildStaticField("${l10n.today}, ${DateFormat('HH:mm', l10n.localeName).format(DateTime.now())}"),
+            _buildLabel(l10n.date, isDark),
+            _buildStaticField("${l10n.today}, ${DateFormat('HH:mm', l10n.localeName).format(DateTime.now())}", isDark),
             const SizedBox(height: 120),
           ],
         ),
@@ -197,29 +198,30 @@ class _AddIncomePageState extends State<AddIncomePage> {
     );
   }
 
-  Widget _buildLabel(String text) {
+  Widget _buildLabel(String text, bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B)),
       ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, {int maxLines = 1}) {
+  Widget _buildTextField(TextEditingController controller, String hint, bool isDark, {int maxLines = 1}) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
       ),
       child: TextField(
         controller: controller,
         maxLines: maxLines,
+        style: TextStyle(color: isDark ? Colors.white : Colors.black),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: const TextStyle(color: Color(0xFF94A3B8)),
+          hintStyle: TextStyle(color: isDark ? Colors.white38 : const Color(0xFF94A3B8)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           border: InputBorder.none,
         ),
@@ -227,20 +229,20 @@ class _AddIncomePageState extends State<AddIncomePage> {
     );
   }
 
-  Widget _buildStaticField(String text) {
+  Widget _buildStaticField(String text, bool isDark) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
       ),
-      child: Text(text, style: const TextStyle(fontSize: 16, color: Color(0xFF1E293B))),
+      child: Text(text, style: TextStyle(fontSize: 16, color: isDark ? Colors.white : const Color(0xFF1E293B))),
     );
   }
 
-  Widget _buildCategoryChip(String label) {
+  Widget _buildCategoryChip(String label, bool isDark) {
     final l10n = AppLocalizations.of(context)!;
     final displayTitle = CategoryHelper.getLocalizedName(label, l10n);
     bool isSelected = _selectedCategory == label;
@@ -249,14 +251,14 @@ class _AddIncomePageState extends State<AddIncomePage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF0D9488) : Colors.white,
+          color: isSelected ? const Color(0xFF0D9488) : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isSelected ? const Color(0xFF0D9488) : const Color(0xFFE2E8F0)),
+          border: Border.all(color: isSelected ? const Color(0xFF0D9488) : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
         ),
         child: Text(
           displayTitle,
           style: TextStyle(
-            color: isSelected ? Colors.white : const Color(0xFF64748B),
+            color: isSelected ? Colors.white : (isDark ? Colors.white70 : const Color(0xFF64748B)),
             fontWeight: FontWeight.bold,
           ),
         ),

@@ -19,6 +19,7 @@ class _ExportPageState extends State<ExportPage> {
   String selectedFormat = 'PDF';
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: isStart ? startDate : endDate,
@@ -27,7 +28,9 @@ class _ExportPageState extends State<ExportPage> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(primary: Color(0xFF0D9488)),
+            colorScheme: isDark 
+                ? const ColorScheme.dark(primary: Color(0xFF0D9488))
+                : const ColorScheme.light(primary: Color(0xFF0D9488)),
           ),
           child: child!,
         );
@@ -73,17 +76,19 @@ class _ExportPageState extends State<ExportPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           l10n.export,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : const Color(0xFF1E293B)),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark ? const Color(0xFF1E293B) : Colors.white,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: isDark ? Colors.white : Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.pop(context),
@@ -96,10 +101,10 @@ class _ExportPageState extends State<ExportPage> {
           children: [
             Text(
               l10n.dateRange,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 24),
@@ -110,6 +115,7 @@ class _ExportPageState extends State<ExportPage> {
                     l10n.startDateLabel,
                     startDate,
                     () => _selectDate(context, true),
+                    isDark,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -118,6 +124,7 @@ class _ExportPageState extends State<ExportPage> {
                     l10n.endDateLabel,
                     endDate,
                     () => _selectDate(context, false),
+                    isDark,
                   ),
                 ),
               ],
@@ -125,10 +132,10 @@ class _ExportPageState extends State<ExportPage> {
             const SizedBox(height: 32),
             Text(
               l10n.fileFormat,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
               ),
             ),
             const SizedBox(height: 16),
@@ -136,11 +143,12 @@ class _ExportPageState extends State<ExportPage> {
               "PDF",
               l10n.pdfDesc,
               Icons.picture_as_pdf_outlined,
+              isDark,
             ),
             const SizedBox(height: 12),
-            _buildFormatOption("Excel", l10n.excelDesc, Icons.grid_on_outlined),
+            _buildFormatOption("Excel", l10n.excelDesc, Icons.grid_on_outlined, isDark),
             const SizedBox(height: 12),
-            _buildFormatOption("CSV", l10n.csvDesc, Icons.storage_outlined),
+            _buildFormatOption("CSV", l10n.csvDesc, Icons.storage_outlined, isDark),
           ],
         ),
       ),
@@ -171,15 +179,15 @@ class _ExportPageState extends State<ExportPage> {
     );
   }
 
-  Widget _buildDateInput(String label, DateTime date, VoidCallback onTap) {
+  Widget _buildDateInput(String label, DateTime date, VoidCallback onTap, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
-            color: Color(0xFF64748B),
+            color: isDark ? Colors.white70 : const Color(0xFF64748B),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -191,16 +199,16 @@ class _ExportPageState extends State<ExportPage> {
             height: 64,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+              border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0), width: 1),
             ),
             child: Text(
               DateFormat('dd.MM.yyyy').format(date),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1E293B),
+                color: isDark ? Colors.white : const Color(0xFF1E293B),
               ),
             ),
           ),
@@ -209,19 +217,19 @@ class _ExportPageState extends State<ExportPage> {
     );
   }
 
-  Widget _buildFormatOption(String title, String desc, IconData icon) {
+  Widget _buildFormatOption(String title, String desc, IconData icon, bool isDark) {
     bool isSelected = selectedFormat == title;
     return GestureDetector(
       onTap: () => setState(() => selectedFormat = title),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
                 ? const Color(0xFF0D9488)
-                : const Color(0xFFF1F5F9),
+                : (isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9)),
             width: 1.5,
           ),
         ),
@@ -230,7 +238,7 @@ class _ExportPageState extends State<ExportPage> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0FDFA),
+                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDFA),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: const Color(0xFF0D9488), size: 22),
@@ -242,18 +250,18 @@ class _ExportPageState extends State<ExportPage> {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Color(0xFF1E293B),
+                      color: isDark ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     desc,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF64748B),
+                      color: isDark ? Colors.white70 : const Color(0xFF64748B),
                       height: 1.3,
                     ),
                   ),
@@ -268,7 +276,7 @@ class _ExportPageState extends State<ExportPage> {
                 height: 24,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFE2E8F0), width: 2),
+                  border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0), width: 2),
                 ),
               ),
           ],
