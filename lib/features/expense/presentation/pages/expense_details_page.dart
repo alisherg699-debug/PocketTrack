@@ -6,6 +6,7 @@ import 'package:pockettrack/features/expense/application/expense/expense_event.d
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/expense/presentation/pages/add_expense_page.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
+import 'package:pockettrack/core/utils/category_helper.dart';
 
 class ExpenseDetailsPage extends StatefulWidget {
   final Expense expense;
@@ -21,14 +22,7 @@ class _ExpenseDetailsPageState extends State<ExpenseDetailsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    IconData categoryIcon;
-    switch (widget.expense.category.toLowerCase()) {
-      case 'oziq-ovqat': categoryIcon = Icons.restaurant; break;
-      case 'transport': categoryIcon = Icons.directions_car; break;
-      case 'xaridlar': categoryIcon = Icons.shopping_bag_outlined; break;
-      default: categoryIcon = Icons.payments_outlined;
-    }
+    final emoji = CategoryHelper.getEmojiForCategory(widget.expense.category);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -57,7 +51,7 @@ class _ExpenseDetailsPageState extends State<ExpenseDetailsPage> {
                 color: const Color(0xFF0D9488).withValues(alpha: 0.05),
                 shape: BoxShape.circle,
               ),
-              child: Icon(categoryIcon, color: const Color(0xFF0D9488), size: 48),
+              child: Text(emoji, style: const TextStyle(fontSize: 48)),
             ),
             const SizedBox(height: 24),
             Text(
@@ -232,6 +226,7 @@ class _ExpenseDetailsPageState extends State<ExpenseDetailsPage> {
               // Action Buttons
               Row(
                 children: [
+                  Divider(color: Colors.transparent), // placeholder
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),

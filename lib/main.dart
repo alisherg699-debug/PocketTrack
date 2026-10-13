@@ -20,6 +20,8 @@ import 'package:pockettrack/injection_container.dart' as di;
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'package:pockettrack/core/utils/category_helper.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -37,8 +39,68 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   bool _isPinVerified = false;
+  DateTime? _pausedTime;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.paused) {
+      _pausedTime = DateTime.now();
+    } else if (state == AppLifecycleState.resumed && _pausedTime != null) {
+      final elapsedSeconds = DateTime.now().difference(_pausedTime!).inSeconds;
+      _pausedTime = null;
+
+      final prefs = await SharedPreferences.getInstance();
+      final pin = await const FlutterSecureStorage().read(key: 'user_pin');
+      if (pin != null && pin.isNotEmpty) {
+        final durationStr = prefs.getString('auto_lock_duration') ?? "5 daqiqa";
+        int thresholdSeconds = 300; // default 5 minutes
+        if (durationStr == "Darhol") {
+          thresholdSeconds = 0;
+        } else if (durationStr == "1 daqiqa") {
+          thresholdSeconds = 60;
+        } else if (durationStr == "5 daqiqa") {
+          thresholdSeconds = 300;
+        } else if (durationStr == "15 daqiqa") {
+          thresholdSeconds = 900;
+        } else if (durationStr == "30 daqiqa") {
+          thresholdSeconds = 1800;
+        }
+
+        if (elapsedSeconds >= thresholdSeconds) {
+          setState(() {
+            _isPinVerified = false;
+          });
+          navigatorKey.currentState?.push(
+            MaterialPageRoute(
+              builder: (context) => PinEntryPage(
+                onVerified: () {
+                  setState(() {
+                    _isPinVerified = true;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          );
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +114,7 @@ class _MyAppState extends State<MyApp> {
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, settingsState) {
           return MaterialApp(
+            navigatorKey: navigatorKey,
             debugShowCheckedModeBanner: false,
             locale: settingsState.locale,
             themeMode: settingsState.themeMode,

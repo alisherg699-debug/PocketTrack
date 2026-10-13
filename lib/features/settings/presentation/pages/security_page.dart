@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class SecurityPage extends StatefulWidget {
@@ -16,11 +18,13 @@ class _SecurityPageState extends State<SecurityPage> {
   bool _isBiometricEnabled = true;
   String _autoLockDuration = "5 daqiqa";
   bool _hasOtherSessions = true;
+  String _deviceName = "Ushbu qurilma";
 
   @override
   void initState() {
     super.initState();
     _loadSecuritySettings();
+    _initDeviceInfo();
   }
 
   Future<void> _loadSecuritySettings() async {
@@ -33,6 +37,25 @@ class _SecurityPageState extends State<SecurityPage> {
       _autoLockDuration = prefs.getString('auto_lock_duration') ?? "5 daqiqa";
       _hasOtherSessions = prefs.getBool('has_other_sessions') ?? true;
     });
+  }
+
+  Future<void> _initDeviceInfo() async {
+    try {
+      final deviceInfo = DeviceInfoPlugin();
+      if (Platform.isAndroid) {
+        final androidInfo = await deviceInfo.androidInfo;
+        if (!mounted) return;
+        setState(() {
+          _deviceName = "${androidInfo.brand} ${androidInfo.model}";
+        });
+      } else if (Platform.isIOS) {
+        final iosInfo = await deviceInfo.iosInfo;
+        if (!mounted) return;
+        setState(() {
+          _deviceName = iosInfo.name.isNotEmpty ? iosInfo.name : iosInfo.model;
+        });
+      }
+    } catch (_) {}
   }
 
   Future<void> _toggleBiometric(bool value) async {
@@ -104,8 +127,8 @@ class _SecurityPageState extends State<SecurityPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.phone_iphone_rounded, color: Color(0xFF0D9488)),
-              title: Text(l10n.thisDevice, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B))),
+              leading: Icon(Platform.isIOS ? Icons.phone_iphone_rounded : Icons.phone_android_rounded, color: const Color(0xFF0D9488)),
+              title: Text(_deviceName, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B))),
               subtitle: Text(l10n.currentDeviceSubtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
               trailing: Text(l10n.current, style: const TextStyle(color: Color(0xFF34D399), fontWeight: FontWeight.bold, fontSize: 12)),
             ),
@@ -483,13 +506,13 @@ class _SecurityPageState extends State<SecurityPage> {
             ),
             const SizedBox(height: 12),
 
-            // 4. Ushbu iPhone
+            // 4. Ushbu qurilma (Dynamic Device Name)
             _buildSecurityCard(
               context,
-              icon: Icons.phone_iphone_rounded,
+              icon: Platform.isIOS ? Icons.phone_iphone_rounded : Icons.phone_android_rounded,
               iconBgColor: const Color(0xFF0D9488).withValues(alpha: 0.1),
               iconColor: const Color(0xFF0D9488),
-              title: l10n.thisDevice,
+              title: _deviceName,
               subtitle: l10n.currentDeviceSubtitle,
               trailing: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
