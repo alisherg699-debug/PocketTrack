@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pockettrack/features/expense/infrastructure/datasources/expense_local_data_source.dart';
@@ -27,48 +28,66 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
 
         final remoteExpenses = snapshot.docs.map((doc) {
           final data = doc.data();
-          return ExpenseModel.fromJson({...data, 'id': doc.id}).toEntity();
+          DateTime parseDate(dynamic val) {
+            if (val is Timestamp) return val.toDate();
+            if (val is String) return DateTime.tryParse(val) ?? DateTime.now();
+            return DateTime.now();
+          }
+
+          return ExpenseModel(
+            id: doc.id,
+            title: data['title'] ?? '',
+            amount: (data['amount'] as num?)?.toDouble() ?? 0.0,
+            category: data['category'] ?? '',
+            description: data['description'],
+            date: parseDate(data['date']),
+            createdAt: parseDate(data['createdAt']),
+            updatedAt: parseDate(data['updatedAt']),
+          ).toEntity();
         }).toList();
 
-        // 2. Lokal bazani (Hive) yangilab qo'yamiz (Offline ishlashi uchun)
         for (var expense in remoteExpenses) {
           await localDataSource.add(ExpenseModel.fromEntity(expense));
         }
         
         return remoteExpenses;
       } catch (e) {
-        // Xatolik bo'lsa (masalan, internet yo'q), lokal bazadan qaytaramiz
+        debugPrint("❌Firestore'dan xarajatlarni olishda xato: $e");
         final models = await localDataSource.getAll();
         return models.map((model) => model.toEntity()).toList();
       }
     }
 
-    // Tizimga kirmagan bo'lsa, faqat lokal
     final models = await localDataSource.getAll();
     return models.map((model) => model.toEntity()).toList();
   }
 
   @override
   Future<void> add(Expense expense) async {
-    // 1. Lokal bazaga yozamiz
     await localDataSource.add(ExpenseModel.fromEntity(expense));
 
-    // 2. Firestore'ga yozamiz
     if (_uid != null) {
-      await _firestore
-          .collection('users')
-          .doc(_uid)
-          .collection('expenses')
-          .doc(expense.id)
-          .set({
-        'title': expense.title,
-        'amount': expense.amount,
-        'category': expense.category,
-        'description': expense.description,
-        'date': expense.date.toIso8601String(),
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+      try {
+        await _firestore
+            .collection('users')
+            .doc(_uid)
+            .collection('expenses')
+            .doc(expense.id)
+            .set({
+          'title': expense.title,
+          'amount': expense.amount,
+          'category': expense.category,
+          'description': expense.description,
+          'date': expense.date.toIso8601String(),
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+        debugPrint("✅ Firestore'ga xarajat muvaffaqiyatli saqlandi: ${expense.id}");
+      } catch (e) {
+        debugPrint("❌ Firestore'ga xarajat saqlashda xato: $e");
+      }
+    } else {
+      debugPrint("❌ Firestore'ga saqlanmadi: _uid null (foydalanuvchi Firebase'ga kirmagan)");
     }
   }
 
@@ -77,19 +96,23 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     await localDataSource.update(ExpenseModel.fromEntity(expense));
 
     if (_uid != null) {
-      await _firestore
-          .collection('users')
-          .doc(_uid)
-          .collection('expenses')
-          .doc(expense.id)
-          .update({
-        'title': expense.title,
-        'amount': expense.amount,
-        'category': expense.category,
-        'description': expense.description,
-        'date': expense.date.toIso8601String(),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+      try {
+        await _firestore
+            .collection('users')
+            .doc(_uid)
+            .collection('expenses')
+            .doc(expense.id)
+            .update({
+          'title': expense.title,
+          'amount': expense.amount,
+          'category': expense.category,
+          'description': expense.description,
+          'date': expense.date.toIso8601String(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      } catch (e) {
+        debugPrint("❌ Firestore'da xarajatni yangilashda xato: $e");
+      }
     }
   }
 
@@ -98,12 +121,16 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     await localDataSource.delete(id);
 
     if (_uid != null) {
-      await _firestore
-          .collection('users')
-          .doc(_uid)
-          .collection('expenses')
-          .doc(id)
-          .delete();
+      try {
+        await _firestore
+            .collection('users')
+            .doc(_uid)
+            .collection('expenses')
+            .doc(id)
+            .delete();
+      } catch (e) {
+        debugPrint("❌ Firestore'dan xarajatni o'chirishda xato: $e");
+      }
     }
   }
 }

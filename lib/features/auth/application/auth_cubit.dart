@@ -102,6 +102,34 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  Future<void> sendPasswordResetEmail(String email) async {
+    emit(const AuthState.loading());
+    try {
+      await _repository.sendPasswordResetEmail(email);
+      emit(const AuthState.unauthenticated());
+    } catch (e) {
+      emit(AuthState.error(e.toString()));
+    }
+  }
+
+  Future<void> confirmPasswordReset(String code, String newPassword) async {
+    emit(const AuthState.loading());
+    try {
+      await _repository.confirmPasswordReset(code, newPassword);
+      emit(const AuthState.unauthenticated());
+    } catch (e) {
+      emit(AuthState.error(e.toString()));
+    }
+  }
+
+  Future<bool> checkEmailExists(String email) async {
+    try {
+      return await _repository.checkEmailExists(email);
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<void> changePassword(String currentPassword, String newPassword) async {
     emit(const AuthState.loading());
     try {

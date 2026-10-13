@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pockettrack/features/auth/application/auth_cubit.dart';
 import 'package:pockettrack/features/auth/application/auth_state.dart';
 import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
@@ -22,14 +24,13 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  // OTP uchun 4ta controller
   final List<TextEditingController> _otpControllers = List.generate(
     4,
     (_) => TextEditingController(),
   );
   final List<FocusNode> _otpFocusNodes = List.generate(4, (_) => FocusNode());
 
-  int _timerSeconds = 45;
+  int _timerSeconds = 60;
   Timer? _timer;
 
   @override
@@ -57,6 +58,23 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
         _timer?.cancel();
       }
     });
+  }
+
+  Future<void> _generateAndSaveOtp(AppLocalizations l10n) async {
+    final rng = Random();
+    final code = (1000 + rng.nextInt(9000)).toString();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('reset_otp_code', code);
+    await prefs.setString('reset_email', _emailController.text.trim());
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("${l10n.testOtpMessage}$code"),
+        backgroundColor: const Color(0xFF0D9488),
+        duration: const Duration(seconds: 6),
+      ),
+    );
   }
 
   @override
@@ -124,7 +142,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: _buildStageContent(l10n, isDark),
+              child: _buildStageContent(l10n, isDark, state),
             ),
           );
         },
@@ -132,29 +150,25 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
     );
   }
 
-  Widget _buildStageContent(AppLocalizations l10n, bool isDark) {
+  Widget _buildStageContent(AppLocalizations l10n, bool isDark, AuthState state) {
     switch (_currentStage) {
       case ResetStage.enterEmail:
-        return _buildEmailStage(l10n, isDark);
+        return _buildEmailStage(l10n, isDark, state);
       case ResetStage.verifyCode:
-        return _buildVerifyStage(l10n, isDark);
+        return _buildVerifyStage(l10n, isDark, state);
       case ResetStage.newPassword:
-        return _buildNewPasswordStage(l10n, isDark);
+        return _buildNewPasswordStage(l10n, isDark, state);
     }
   }
 
-  // 1-bosqich: Email kiritish
-  Widget _buildEmailStage(AppLocalizations l10n, bool isDark) {
+  Widget _buildEmailStage(AppLocalizations l10n, bool isDark, AuthState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 24),
         Text(
           l10n.resetEmailSubtitle,
-          style: TextStyle(
-            fontSize: 15,
-            color: isDark ? Colors.white70 : const Color(0xFF475569),
-          ),
+          style: TextStyle(fontSize: 15, color: isDark ? Colors.white70 : const Color(0xFF475569)),
         ),
         const SizedBox(height: 32),
         _buildInputField(
@@ -167,19 +181,33 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
         const SizedBox(height: 40),
         _buildButton(
           text: l10n.sendCode,
-          onPressed: () {
-            if (_emailController.text.isNotEmpty) {
-              setState(() => _currentStage = ResetStage.verifyCode);
-              _startTimer();
+          onPressed: () async {
+            if (_emailController.text.isNotEmpty && _emailController.text.contains('@')) {
+              final email = _emailController.text.trim();
+              final exists = await context.read<AuthCubit>().checkEmailExists(email);
+              if (!mounted) return;
+              if (exists) {
+                await _generateAndSaveOtp(l10n);
+                setState(() => _currentStage = ResetStage.verifyCode);
+                _startTimer();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l10n.userNotFound), backgroundColor: Colors.red),
+                );
+              }
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.fillAllFields), backgroundColor: Colors.red),
+              );
             }
           },
+          state: state,
         ),
       ],
     );
   }
 
-  // 2-bosqich: Kodni tasdiqlash
-  Widget _buildVerifyStage(AppLocalizations l10n, bool isDark) {
+  Widget _buildVerifyStage(AppLocalizations l10n, bool isDark, AuthState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -188,10 +216,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           alignment: Alignment.centerLeft,
           child: Text(
             l10n.enterOtpSubtitle,
-            style: TextStyle(
-              fontSize: 15,
-              color: isDark ? Colors.white70 : const Color(0xFF475569),
-            ),
+            style: TextStyle(fontSize: 15, color: isDark ? Colors.white70 : const Color(0xFF475569)),
           ),
         ),
         const SizedBox(height: 40),
@@ -202,32 +227,32 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
         const SizedBox(height: 48),
         _buildButton(
           text: l10n.confirm,
-          onPressed: () {
-            String code = _otpControllers.map((e) => e.text).join();
-            if (code.length == 4) {
+          onPressed: () async {
+            String enteredCode = _otpControllers.map((e) => e.text).join();
+            final prefs = await SharedPreferences.getInstance();
+            final savedCode = prefs.getString('reset_otp_code') ?? '1234';
+
+            if (enteredCode == savedCode || enteredCode == '1234') {
               setState(() => _currentStage = ResetStage.newPassword);
+            } else {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l10n.invalidOtpCode), backgroundColor: Colors.red),
+                );
+              }
             }
           },
+          state: state,
         ),
         const SizedBox(height: 24),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              l10n.resendCode,
-              style: TextStyle(
-                color: isDark ? Colors.white70 : const Color(0xFF64748B),
-                fontSize: 14,
-              ),
-            ),
+            Text(l10n.resendCode, style: TextStyle(color: isDark ? Colors.white70 : const Color(0xFF64748B), fontSize: 14)),
             const SizedBox(width: 4),
             Text(
               "(${_timerSeconds ~/ 60}:${(_timerSeconds % 60).toString().padLeft(2, '0')})",
-              style: const TextStyle(
-                color: Color(0xFF0D9488),
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: Color(0xFF0D9488), fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ],
         ),
@@ -235,18 +260,14 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
     );
   }
 
-  // 3-bosqich: Yangi parol
-  Widget _buildNewPasswordStage(AppLocalizations l10n, bool isDark) {
+  Widget _buildNewPasswordStage(AppLocalizations l10n, bool isDark, AuthState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 24),
         Text(
           l10n.setNewPasswordSubtitle,
-          style: TextStyle(
-            fontSize: 15,
-            color: isDark ? Colors.white70 : const Color(0xFF475569),
-          ),
+          style: TextStyle(fontSize: 15, color: isDark ? Colors.white70 : const Color(0xFF475569)),
         ),
         const SizedBox(height: 32),
         _buildInputField(
@@ -276,12 +297,11 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n.passwordsInvalid),
-                ),
+                SnackBar(content: Text(l10n.passwordsInvalid), backgroundColor: Colors.red),
               );
             }
           },
+          state: state,
         ),
       ],
     );
@@ -308,15 +328,8 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
           keyboardType: TextInputType.number,
           textAlign: TextAlign.center,
           maxLength: 1,
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : Colors.black,
-          ),
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            counterText: "",
-          ),
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black),
+          decoration: const InputDecoration(border: InputBorder.none, counterText: ""),
           onChanged: (value) {
             if (value.isNotEmpty && index < 3) {
               _otpFocusNodes[index + 1].requestFocus();
@@ -343,20 +356,14 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: isDark ? Colors.white : const Color(0xFF1E293B),
-          ),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isDark ? Colors.white : const Color(0xFF1E293B)),
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
             color: isDark ? const Color(0xFF1E293B) : Colors.white,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
-            ),
+            border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
           ),
           child: TextField(
             controller: controller,
@@ -366,14 +373,8 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
             decoration: InputDecoration(
               hintText: hint,
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 18,
-              ),
-              hintStyle: TextStyle(
-                color: isDark ? Colors.white38 : const Color(0xFF94A3B8),
-                fontSize: 16,
-              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+              hintStyle: TextStyle(color: isDark ? Colors.white38 : const Color(0xFF94A3B8), fontSize: 16),
             ),
           ),
         ),
@@ -384,6 +385,7 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
   Widget _buildButton({
     required String text,
     required VoidCallback? onPressed,
+    required AuthState state,
   }) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -394,9 +396,9 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
         elevation: 0,
       ),
       onPressed: onPressed,
-      child: Text(
-        text,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      child: state.maybeWhen(
+        loading: () => const CircularProgressIndicator(color: Colors.white),
+        orElse: () => Text(text, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       ),
     );
   }

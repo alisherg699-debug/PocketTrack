@@ -271,6 +271,10 @@ class AppLocalizations {
   String get autoLockSelected => translate('autoLockSelected');
   String get allSessionsShown => translate('allSessionsShown');
   String get loggedOutOtherSessions => translate('loggedOutOtherSessions');
+  String get passwordResetEmailSent => translate('passwordResetEmailSent');
+  String get userNotFound => translate('userNotFound');
+  String get invalidOtpCode => translate('invalidOtpCode');
+  String get testOtpMessage => translate('testOtpMessage');
   String get total => translate('total');
   String get resendCode => translate('resendCode');
   String get setNewPasswordSubtitle => translate('setNewPasswordSubtitle');

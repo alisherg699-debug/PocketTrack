@@ -131,6 +131,28 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: email.trim());
+  }
+
+  @override
+  Future<void> confirmPasswordReset(String code, String newPassword) async {
+    await _firebaseAuth.confirmPasswordReset(
+      code: code.trim(),
+      newPassword: newPassword.trim(),
+    );
+  }
+
+  @override
+  Future<bool> checkEmailExists(String email) async {
+    final query = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: email.trim())
+        .get();
+    return query.docs.isNotEmpty;
+  }
+
+  @override
   Future<void> changePassword(String currentPassword, String newPassword) async {
     final user = _firebaseAuth.currentUser;
     if (user != null && user.email != null) {

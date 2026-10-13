@@ -18,12 +18,14 @@ import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 
 import 'package:pockettrack/injection_container.dart' as di;
 import 'package:pockettrack/core/l10n/app_localizations.dart';
+import 'package:pockettrack/core/utils/category_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Barcha servislarni ishga tushirish (Firebase, Hive va h.k.)
   await di.init();
+  await CategoryHelper.loadCustomCategories();
   
   runApp(const MyApp());
 }

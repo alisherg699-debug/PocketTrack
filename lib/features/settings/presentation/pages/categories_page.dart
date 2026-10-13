@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
+import 'package:pockettrack/core/utils/category_helper.dart';
 
 class CategoryItem {
   final String title;
@@ -74,6 +75,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
       'custom_categories',
       categories.map((c) => c.title).toList(),
     );
+    await CategoryHelper.loadCustomCategories();
   }
 
   void _addOrUpdateCategory(BuildContext dialogContext, {int? index}) {

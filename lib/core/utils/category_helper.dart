@@ -1,9 +1,40 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 
 class CategoryHelper {
+  static Map<String, String> customEmojis = {};
+
+  static Future<void> loadCustomCategories() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final List<String>? savedData = prefs.getStringList('custom_categories_v2');
+      if (savedData != null) {
+        customEmojis.clear();
+        for (var s in savedData) {
+          final map = jsonDecode(s) as Map<String, dynamic>;
+          final title = map['title'] as String? ?? '';
+          final emoji = map['emoji'] as String? ?? '📁';
+          if (title.isNotEmpty) {
+            customEmojis[title.toLowerCase()] = emoji;
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
   static String getEmojiForCategory(String categoryName) {
     final lower = categoryName.toLowerCase();
+    if (customEmojis.containsKey(lower)) {
+      return customEmojis[lower]!;
+    }
+    for (var entry in customEmojis.entries) {
+      if (lower.contains(entry.key) || entry.key.contains(lower)) {
+        return entry.value;
+      }
+    }
+
     if (lower.contains('oziq') || lower.contains('food') || lower.contains('продукт')) return '🍕';
     if (lower.contains('transport') || lower.contains('транспорт')) return '🚗';
     if (lower.contains('xarid') || lower.contains('shop') || lower.contains('покуп')) return '🛍️';
