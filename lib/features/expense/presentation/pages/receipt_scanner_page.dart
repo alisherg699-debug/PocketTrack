@@ -30,6 +30,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -39,7 +40,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
             // Background camera view simulation / placeholder
             Positioned.fill(
               child: Container(
-                color: const Color(0xFF1E293B),
+                color: isDark ? const Color(0xFF0F172A) : const Color(0xFF1E293B),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -135,9 +136,9 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
               right: 0,
               child: Container(
                 padding: const EdgeInsets.fromLTRB(24, 24, 24, 36),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1E293B) : Colors.white,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -175,7 +176,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> {
                     const SizedBox(height: 24),
                     Text(
                       l10n.unableToScan,
-                      style: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                      style: TextStyle(color: isDark ? Colors.white70 : const Color(0xFF64748B), fontSize: 13),
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton.icon(

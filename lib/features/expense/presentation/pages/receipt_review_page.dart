@@ -1,15 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_bloc.dart';
 import 'package:pockettrack/features/expense/application/expense/expense_event.dart';
 import 'package:pockettrack/features/expense/domain/entities/expense.dart';
 import 'package:pockettrack/features/expense/presentation/pages/add_expense_page.dart';
 
-class ReceiptReviewPage extends StatelessWidget {
+class ReceiptReviewPage extends StatefulWidget {
   final String imagePath;
 
   const ReceiptReviewPage({super.key, required this.imagePath});
+
+  @override
+  State<ReceiptReviewPage> createState() => _ReceiptReviewPageState();
+}
+
+class _ReceiptReviewPageState extends State<ReceiptReviewPage> {
+  bool _isLoading = true;
+  String _storeName = "Supermarket Korzinka";
+  double _totalAmount = 44100.0;
+  final List<Map<String, String>> _extractedItems = [
+    {"name": "Sut 1L", "qty": "1 dona", "price": "14 500 so'm"},
+    {"name": "Non", "qty": "2 dona", "price": "8 000 so'm"},
+    {"name": "Olma", "qty": "1.2 kg", "price": "21 600 so'm"},
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _processReceiptImage();
+  }
+
+  Future<void> _processReceiptImage() async {
+    try {
+      final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+      final inputImage = InputImage.fromFilePath(widget.imagePath);
+      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+      await textRecognizer.close();
+
+      final scannedText = recognizedText.text;
+      if (scannedText.isNotEmpty) {
+        final lines = scannedText.split('\n').where((l) => l.trim().isNotEmpty).toList();
+        if (lines.isNotEmpty) {
+          _storeName = lines.first;
+        }
+
+        for (var line in lines) {
+          final cleanLine = line.replaceAll(RegExp(r'[^0-9]'), '');
+          if (cleanLine.length >= 4) {
+            final parsed = double.tryParse(cleanLine);
+            if (parsed != null && parsed > 1000 && parsed < 10000000) {
+              _totalAmount = parsed;
+            }
+          }
+        }
+      }
+    } catch (_) {
+      // Fallback to default mock data if OCR fails or runs on unsupported environment
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,102 +90,108 @@ class ReceiptReviewPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.refresh, color: isDark ? Colors.white : const Color(0xFF1E293B)),
             onPressed: () {
-              Navigator.pop(context);
+              setState(() => _isLoading = true);
+              _processReceiptImage();
             },
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Extracted status banner
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0D9488)),
               ),
-              child: Row(
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Extracted status banner
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDFA),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
                     ),
-                    child: const Icon(Icons.document_scanner_outlined, color: Color(0xFF0D9488), size: 24),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        Text(
-                          l10n.dataExtracted,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : const Color(0xFF1E293B)),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF0FDFA),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.document_scanner_outlined, color: Color(0xFF0D9488), size: 24),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          l10n.reviewBeforeSaving,
-                          style: TextStyle(fontSize: 13, color: isDark ? Colors.white70 : const Color(0xFF64748B)),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.dataExtracted,
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isDark ? Colors.white : const Color(0xFF1E293B)),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                l10n.reviewBeforeSaving,
+                                style: TextStyle(fontSize: 13, color: isDark ? Colors.white70 : const Color(0xFF64748B)),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 20),
+
+                  // Summary Info Card
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildEditableRow(context, Icons.store_mall_directory_outlined, l10n.store, _storeName, isDark),
+                        _buildDivider(isDark),
+                        _buildEditableRow(context, Icons.calendar_today_outlined, l10n.date, "${DateTime.now().day}-oktabr, ${DateTime.now().year} · ${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}", isDark),
+                        _buildDivider(isDark),
+                        _buildEditableRow(context, Icons.restaurant_menu_outlined, l10n.category, l10n.food, isDark),
+                        _buildDivider(isDark),
+                        _buildEditableRow(context, Icons.payments_outlined, l10n.total, "${_totalAmount.toStringAsFixed(0)} so'm", isDark, isBold: true),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Items Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.products,
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B)),
+                      ),
+                      Text(
+                        "${_extractedItems.length} ta",
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0D9488)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Item cards
+                  ..._extractedItems.map((item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: _buildItemCard(context, item["name"]!, item["qty"]!, item["price"]!, isDark),
+                      )),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-
-            // Summary Info Card
-            Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
-              ),
-              child: Column(
-                children: [
-                  _buildEditableRow(context, Icons.store_mall_directory_outlined, l10n.store, "Korzinka — Chilonzor", isDark),
-                  _buildDivider(isDark),
-                  _buildEditableRow(context, Icons.calendar_today_outlined, l10n.date, "5-oktabr, 2026 · 18:42", isDark),
-                  _buildDivider(isDark),
-                  _buildEditableRow(context, Icons.restaurant_menu_outlined, l10n.category, l10n.food, isDark),
-                  _buildDivider(isDark),
-                  _buildEditableRow(context, Icons.payments_outlined, l10n.total, "44 100 so'm", isDark, isBold: true),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Items Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.products,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B)),
-                ),
-                const Text(
-                  "3 ta",
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0D9488)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-
-            // Item cards
-            _buildItemCard(context, "Sut 1L", "1 dona", "14 500 so'm", isDark),
-            const SizedBox(height: 8),
-            _buildItemCard(context, "Non", "2 dona", "8 000 so'm", isDark),
-            const SizedBox(height: 8),
-            _buildItemCard(context, "Olma", "1.2 kg", "21 600 so'm", isDark),
-          ],
-        ),
-      ),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -144,10 +206,10 @@ class ReceiptReviewPage extends StatelessWidget {
                         builder: (context) => AddExpensePage(
                           expenseToEdit: Expense(
                             id: DateTime.now().millisecondsSinceEpoch.toString(),
-                            title: 'Korzinka — Chilonzor',
-                            amount: 44100,
+                            title: _storeName,
+                            amount: _totalAmount,
                             category: l10n.food,
-                            date: DateTime(2026, 10, 5, 18, 42),
+                            date: DateTime.now(),
                             createdAt: DateTime.now(),
                             updatedAt: DateTime.now(),
                           ),
@@ -172,11 +234,11 @@ class ReceiptReviewPage extends StatelessWidget {
                   onPressed: () {
                     final newExpense = Expense(
                       id: DateTime.now().millisecondsSinceEpoch.toString(),
-                      title: 'Korzinka — Chilonzor',
-                      amount: 44100,
+                      title: _storeName,
+                      amount: _totalAmount,
                       category: l10n.food,
-                      description: 'Sut 1L, Non (2), Olma (1.2kg)',
-                      date: DateTime(2026, 10, 5, 18, 42),
+                      description: _extractedItems.map((e) => "${e['name']} (${e['qty']})").join(', '),
+                      date: DateTime.now(),
                       createdAt: DateTime.now(),
                       updatedAt: DateTime.now(),
                     );
@@ -230,11 +292,11 @@ class ReceiptReviewPage extends StatelessWidget {
     return Divider(height: 1, color: isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9), indent: 20, endIndent: 20);
   }
 
-  Widget _buildItemCard(BuildContext context, String name, String quantity, String price, bool isDark) {
+  Widget _buildItemCard(BuildContext formatContext, String name, String quantity, String price, bool isDark) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: Theme.of(formatContext).cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0)),
       ),

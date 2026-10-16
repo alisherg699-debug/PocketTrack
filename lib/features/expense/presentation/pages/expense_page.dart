@@ -387,36 +387,41 @@ class _ExpensePageState extends State<ExpensePage> {
 
   Widget _buildFilters(AppLocalizations l10n, bool isDark) {
     final List<String> filters = [l10n.today, l10n.week, l10n.month, l10n.year];
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: filters.map((f) {
-        bool isSelected = selectedFilter == f;
-        return GestureDetector(
-          onTap: () {
-            if (selectedFilter != f) {
-              setState(() {
-                _isLoadingFilter = true;
-                selectedFilter = f;
-              });
-              Future.delayed(const Duration(milliseconds: 300), () {
-                if (mounted) {
-                  setState(() => _isLoadingFilter = false);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: filters.map((f) {
+          bool isSelected = selectedFilter == f;
+          return Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: GestureDetector(
+              onTap: () {
+                if (selectedFilter != f) {
+                  setState(() {
+                    _isLoadingFilter = true;
+                    selectedFilter = f;
+                  });
+                  Future.delayed(const Duration(milliseconds: 300), () {
+                    if (mounted) {
+                      setState(() => _isLoadingFilter = false);
+                    }
+                  });
                 }
-              });
-            }
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-            decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFF0D9488) : Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(color: isSelected ? const Color(0xFF0D9488) : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
-              boxShadow: isSelected ? [BoxShadow(color: const Color(0xFF0D9488).withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 4))] : [],
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected ? const Color(0xFF0D9488) : Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: isSelected ? const Color(0xFF0D9488) : (isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0))),
+                  boxShadow: isSelected ? [BoxShadow(color: const Color(0xFF0D9488).withValues(alpha: 0.2), blurRadius: 8, offset: const Offset(0, 4))] : [],
+                ),
+                child: Text(f, style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.white70 : const Color(0xFF64748B)), fontWeight: FontWeight.bold, fontSize: 14)),
+              ),
             ),
-            child: Text(f, style: TextStyle(color: isSelected ? Colors.white : (isDark ? Colors.white70 : const Color(0xFF64748B)), fontWeight: FontWeight.bold, fontSize: 14)),
-          ),
-        );
-      }).toList(),
+          );
+        }).toList(),
+      ),
     );
   }
 
