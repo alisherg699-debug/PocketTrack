@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 // Features
@@ -19,6 +18,7 @@ import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 import 'package:pockettrack/injection_container.dart' as di;
 import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'package:pockettrack/core/utils/category_helper.dart';
+import 'package:pockettrack/core/utils/secure_storage_helper.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       _pausedTime = null;
 
       final prefs = await SharedPreferences.getInstance();
-      final pin = await const FlutterSecureStorage().read(key: 'user_pin');
+      final pin = await SecureStorageHelper.read(key: 'user_pin');
       if (pin != null && pin.isNotEmpty) {
         final durationStr = prefs.getString('auto_lock_duration') ?? "5 daqiqa";
         int thresholdSeconds = 300; // default 5 minutes
@@ -170,7 +170,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     if (_isPinVerified) return const HomePage();
 
                     return FutureBuilder<String?>(
-                      future: const FlutterSecureStorage().read(key: 'user_pin'),
+                      future: SecureStorageHelper.read(key: 'user_pin'),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const SplashPage();

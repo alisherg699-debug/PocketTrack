@@ -4,12 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pockettrack/features/auth/presentation/pages/pin_entry_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pockettrack/features/auth/presentation/pages/login_page.dart';
 import 'package:pockettrack/features/expense/presentation/pages/home_page.dart';
 import 'package:pockettrack/features/auth/presentation/pages/onboarding_page.dart';
 import 'package:pockettrack/features/auth/presentation/pages/language_selection_page.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
+import 'package:pockettrack/core/utils/secure_storage_helper.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -37,7 +37,7 @@ class _SplashPageState extends State<SplashPage> {
     final bool isOnboardingDone = prefs.getBool('is_onboarding_completed') ?? false;
     
     final fbUser = FirebaseAuth.instance.currentUser;
-    final pin = await const FlutterSecureStorage().read(key: 'user_pin');
+    final pin = await SecureStorageHelper.read(key: 'user_pin');
 
     if (!mounted) return;
 

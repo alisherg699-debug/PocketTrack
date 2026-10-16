@@ -153,6 +153,7 @@
   "allSessionsShown": "Barcha faol seanslar ko'rsatildi",
   "loggedOutOtherSessions": "Barcha boshqa seanslardan chiqildi",
   "retry": "Qaytadan urinish",
+  "expenseDeleted": "Xarajat o'chirildi",
   "passwordResetEmailSent": "Parolni tiklash havolasi emailingizga yuborildi!",
   "userNotFound": "Bunday email bilan ro'yxatdan o'tgan foydalanuvchi topilmadi!",
   "invalidOtpCode": "Tasdiqlash kodi noto'g'ri!",

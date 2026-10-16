@@ -1,9 +1,10 @@
-import 'dart:io';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:pockettrack/core/l10n/app_localizations.dart';
+import 'package:pockettrack/core/utils/secure_storage_helper.dart';
 
 class SecurityPage extends StatefulWidget {
   const SecurityPage({super.key});
@@ -13,7 +14,6 @@ class SecurityPage extends StatefulWidget {
 }
 
 class _SecurityPageState extends State<SecurityPage> {
-  final _storage = const FlutterSecureStorage();
   bool _isPinEnabled = false;
   bool _isBiometricEnabled = true;
   String _autoLockDuration = "5 daqiqa";
@@ -29,7 +29,7 @@ class _SecurityPageState extends State<SecurityPage> {
 
   Future<void> _loadSecuritySettings() async {
     final prefs = await SharedPreferences.getInstance();
-    final pin = await _storage.read(key: 'user_pin');
+    final pin = await SecureStorageHelper.read(key: 'user_pin');
     if (!mounted) return;
     setState(() {
       _isPinEnabled = pin != null;
@@ -41,6 +41,12 @@ class _SecurityPageState extends State<SecurityPage> {
 
   Future<void> _initDeviceInfo() async {
     try {
+      if (kIsWeb) {
+        setState(() {
+          _deviceName = "Web Browser";
+        });
+        return;
+      }
       final deviceInfo = DeviceInfoPlugin();
       if (Platform.isAndroid) {
         final androidInfo = await deviceInfo.androidInfo;
@@ -127,7 +133,7 @@ class _SecurityPageState extends State<SecurityPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(Platform.isIOS ? Icons.phone_iphone_rounded : Icons.phone_android_rounded, color: const Color(0xFF0D9488)),
+              leading: Icon(kIsWeb ? Icons.computer_rounded : (Platform.isIOS ? Icons.phone_iphone_rounded : Icons.phone_android_rounded), color: const Color(0xFF0D9488)),
               title: Text(_deviceName, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : const Color(0xFF1E293B))),
               subtitle: Text(l10n.currentDeviceSubtitle, style: const TextStyle(fontSize: 12, color: Colors.grey)),
               trailing: Text(l10n.current, style: const TextStyle(color: Color(0xFF34D399), fontWeight: FontWeight.bold, fontSize: 12)),
@@ -351,7 +357,7 @@ class _SecurityPageState extends State<SecurityPage> {
                       onPressed: () async {
                         String pin = controllers.map((e) => e.text).join();
                         if (pin.length == 4) {
-                          await _storage.write(key: 'user_pin', value: pin);
+                          await SecureStorageHelper.write(key: 'user_pin', value: pin);
                           if (!mounted) return;
                           setState(() {
                             _isPinEnabled = true;
@@ -509,7 +515,7 @@ class _SecurityPageState extends State<SecurityPage> {
             // 4. Ushbu qurilma (Dynamic Device Name)
             _buildSecurityCard(
               context,
-              icon: Platform.isIOS ? Icons.phone_iphone_rounded : Icons.phone_android_rounded,
+              icon: kIsWeb ? Icons.computer_rounded : (Platform.isIOS ? Icons.phone_iphone_rounded : Icons.phone_android_rounded),
               iconBgColor: const Color(0xFF0D9488).withValues(alpha: 0.1),
               iconColor: const Color(0xFF0D9488),
               title: _deviceName,

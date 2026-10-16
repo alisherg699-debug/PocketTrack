@@ -245,9 +245,35 @@ class _ExpenseDetailsPageState extends State<ExpenseDetailsPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        context.read<ExpenseBloc>().add(DeleteExpense(widget.expense.id));
+                        final expenseToDelete = widget.expense;
+                        context.read<ExpenseBloc>().add(DeleteExpense(expenseToDelete.id));
                         Navigator.pop(context); // close dialog
                         Navigator.pop(context); // pop details page
+
+                        // Show Snackbar with Undo action
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                const Icon(Icons.check_circle_outline, color: Colors.white),
+                                const SizedBox(width: 12),
+                                Text(l10n.expenseDeleted),
+                              ],
+                            ),
+                            action: SnackBarAction(
+                              label: l10n.cancel,
+                              textColor: const Color(0xFF14B8A6),
+                              onPressed: () {
+                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                context.read<ExpenseBloc>().add(AddExpense(expenseToDelete));
+                              },
+                            ),
+                            duration: const Duration(seconds: 5),
+                            behavior: SnackBarBehavior.floating,
+                            backgroundColor: const Color(0xFF1E293B),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFEF4444),

@@ -153,6 +153,7 @@
   "allSessionsShown": "All active sessions shown",
   "loggedOutOtherSessions": "Logged out of all other sessions",
   "retry": "Retry",
+  "expenseDeleted": "Expense deleted",
   "passwordResetEmailSent": "Password reset link has been sent to your email!",
   "userNotFound": "User with this email not found!",
   "invalidOtpCode": "Invalid verification code!",
