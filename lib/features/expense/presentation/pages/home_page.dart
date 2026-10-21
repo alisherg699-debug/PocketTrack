@@ -400,7 +400,34 @@ class _HomeContent extends StatelessWidget {
           itemBuilder: (context, index) {
             final expense = expenses[index];
             return GestureDetector(
-              onTap: () { Navigator.push(context, MaterialPageRoute(builder: (context) => ExpenseDetailsPage(expense: expense))); },
+              onTap: () async {
+                final deletedExpense = await Navigator.push(context, MaterialPageRoute(builder: (context) => ExpenseDetailsPage(expense: expense)));
+                if (deletedExpense is Expense && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          const Icon(Icons.check_circle_outline, color: Colors.white),
+                          const SizedBox(width: 12),
+                          Text(l10n.expenseDeleted),
+                        ],
+                      ),
+                      action: SnackBarAction(
+                        label: l10n.cancel,
+                        textColor: const Color(0xFF14B8A6),
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          context.read<ExpenseBloc>().add(AddExpense(deletedExpense));
+                        },
+                      ),
+                      duration: const Duration(seconds: 5),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: const Color(0xFF1E293B),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                  );
+                }
+              },
               child: _ExpenseItem(expense: expense, formatCurrency: _formatCurrency, l10n: l10n, isDark: isDark),
             );
           },

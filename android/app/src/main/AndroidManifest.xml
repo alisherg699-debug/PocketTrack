@@ -7,7 +7,7 @@
     <application
         android:label="pockettrack"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@drawable/ic_launcher_foreground">
         <activity
             android:name=".MainActivity"
             android:exported="true"

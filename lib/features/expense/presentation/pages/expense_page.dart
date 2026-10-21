@@ -12,6 +12,8 @@ import 'package:pockettrack/core/l10n/app_localizations.dart';
 import 'package:pockettrack/core/utils/category_helper.dart';
 import 'package:pockettrack/features/settings/application/settings_cubit.dart';
 
+import '../../application/expense/expense_event.dart';
+
 class ExpensePage extends StatefulWidget {
   const ExpensePage({super.key});
 
@@ -434,7 +436,37 @@ class _ExpensePageState extends State<ExpensePage> {
     final localizedCategory = CategoryHelper.getLocalizedName(expense.category, l10n);
 
     return GestureDetector(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ExpenseDetailsPage(expense: expense))),
+      onTap: () async {
+        final deletedExpense = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ExpenseDetailsPage(expense: expense)),
+        );
+        if (deletedExpense is Expense && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle_outline, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Text(l10n.expenseDeleted),
+                ],
+              ),
+              action: SnackBarAction(
+                label: l10n.cancel,
+                textColor: const Color(0xFF14B8A6),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  context.read<ExpenseBloc>().add(AddExpense(deletedExpense));
+                },
+              ),
+              duration: const Duration(seconds: 5),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: const Color(0xFF1E293B),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+          );
+        }
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
